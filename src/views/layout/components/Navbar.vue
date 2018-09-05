@@ -3,8 +3,9 @@
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
-        <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-        <i class="el-icon-caret-bottom"/>
+        <div class="navbar-menu">菜单
+          <i class="el-icon-arrow-down"/>
+        </div>
       </div>
       <el-dropdown-menu slot="dropdown" class="user-dropdown">
         <router-link class="inlineBlock" to="/">
@@ -73,6 +74,12 @@ export default {
       cursor: pointer;
       margin-top: 5px;
       position: relative;
+      .navbar-menu{
+        &:hover{
+          color: #3498db;
+          font-weight: 700;
+        }
+      }
       .user-avatar {
         width: 40px;
         height: 40px;
