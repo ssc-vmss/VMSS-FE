@@ -183,7 +183,7 @@ export const constantRouterMap = [
     children: [
       {
         path: 'Account',
-        component: () => import('@/views/nested/menu1/index'),
+        component: () => import('@/views/accountmanage/index'),
         name: 'Account',
         meta: { title: '账号管理' }
       },
@@ -192,6 +192,12 @@ export const constantRouterMap = [
         name: 'filteringRules',
         component: () => import('@/views/nested/menu2/index'),
         meta: { title: '系统过滤规则' }
+      },
+      {
+        path: 'test',
+        name: 'test',
+        component: () => import('@/components/pagination'),
+        meta: { title: '测试页' }
       }
     ]
   },

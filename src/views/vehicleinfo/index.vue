@@ -1,8 +1,14 @@
 <template>
   <div class="app-container">
-    <el-row class="toptools"  type="flex" justify="space-between">
+    
+    <Carloader v-if="listLoading"></Carloader>
+    <div v-else>
+      <el-row class="toptools"  type="flex" justify="space-between">
       <el-col :span="6"><el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button></el-col>
-      <div><el-input  placeholder="请输入内容" prefix-icon="el-icon-search" size="medium" style="width:200px" /><el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button></div>
+      <div>
+        <el-input class="search"  placeholder="请输入内容" size="medium" style="width:200px" />
+        <el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button>
+      </div>
     </el-row>
     <el-table
       v-loading="listLoading"
@@ -84,8 +90,8 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <el-pagination background layout="prev, pager, next" :total="1000" style="text-align:right;margin-top:20px"></el-pagination>
+    <pagination :pages="25"></pagination>
+    </div>
     <!-- add from -->
     <el-dialog title="添加车辆信息" :visible.sync="dialogFormVisible" width="600px">
       <el-form :model="form">
@@ -183,90 +189,126 @@
         <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import { getList } from '@/api/table'
+import { getList } from "@/api/table";
+import Carloader from "@/components/loader";
+import Pagination from "@/components/pagination";
 
 export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'gray',
-        deleted: 'danger'
-      }
-      return statusMap[status]
+        published: "success",
+        draft: "gray",
+        deleted: "danger"
+      };
+      return statusMap[status];
     }
   },
   data() {
     return {
       list: null,
       listLoading: true,
-      dialogFormVisible:false,
+      dialogFormVisible: false,
       form: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
-        },
-        formLabelWidth: '120px',
-    }
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
+        delivery: false,
+        type: [],
+        resource: "",
+        desc: ""
+      },
+      formLabelWidth: "120px"
+    };
   },
   created() {
-    this.fetchData()
+    this.fetchData();
+  },
+  components: {
+    Carloader,Pagination
   },
   methods: {
-    toDel(id){
-      this.$confirm('您确定要删除该记录?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
+    toDel(id) {
+      this.$confirm("您确定要删除该记录?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
           this.$message({
-            type: 'success',
-            message: '删除成功!'
+            type: "success",
+            message: "删除成功!"
           });
-        }).catch(() => {
-        });
+        })
+        .catch(() => {});
     },
-    handleCreate(){
-      this.dialogFormVisible = true
+    handleCreate() {
+      this.dialogFormVisible = true;
     },
     fetchData() {
-      this.listLoading = true
+      this.listLoading = true;
 
-      setTimeout(()=>{
-        this.list=[
+      setTimeout(() => {
+        this.list = [
           {
-          id:1,LPNO:'川A 88888',Color:'红色',Type:'小汽车',VehicleID:'LSGJR1122334455678',EngineNO:'2464766K',Load:'5T',BuyTime:'2018-01-01',Status:'运行',EnterpriseNO:'szf',VehicleNO:'szf-001',Emission:'国IV',equipmentModel:'LLT-2018',equipmentID:'LLT2018x332211'
+            id: 1,
+            LPNO: "川A 88888",
+            Color: "红色",
+            Type: "小汽车",
+            VehicleID: "LSGJR1122334455678",
+            EngineNO: "2464766K",
+            Load: "5T",
+            BuyTime: "2018-01-01",
+            Status: "运行",
+            EnterpriseNO: "szf",
+            VehicleNO: "szf-001",
+            Emission: "国IV",
+            equipmentModel: "LLT-2018",
+            equipmentID: "LLT2018x332211"
           },
           {
-          id:2,LPNO:'川A 88888',Color:'红色',Type:'小汽车',VehicleID:'LSGJR1122334455678',EngineNO:'2464766K',Load:'5T',BuyTime:'2018-01-01',Status:'运行',EnterpriseNO:'szf',VehicleNO:'szf-001',Emission:'国IV',equipmentModel:'LLT-2018',equipmentID:'LLT2018x332212'
-          },
-        ]
-        this.listLoading = false
-      },1500)
+            id: 2,
+            LPNO: "川A 88888",
+            Color: "红色",
+            Type: "小汽车",
+            VehicleID: "LSGJR1122334455678",
+            EngineNO: "2464766K",
+            Load: "5T",
+            BuyTime: "2018-01-01",
+            Status: "运行",
+            EnterpriseNO: "szf",
+            VehicleNO: "szf-001",
+            Emission: "国IV",
+            equipmentModel: "LLT-2018",
+            equipmentID: "LLT2018x332212"
+          }
+        ];
+        this.listLoading = false;
+      }, 1500);
       return;
 
       getList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.listLoading = false
-      })
+        this.list = response.data.items;
+        this.listLoading = false;
+      });
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
-.toptools{
+.toptools {
   margin-bottom: 20px;
+}
+.search {
+  outline-style: none;
+  &:hover {
+  }
 }
 </style>
 

@@ -4,7 +4,7 @@
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
         <div class="navbar-menu">菜单
-          <i class="el-icon-arrow-down"/>
+          <i class="el-icon-arrow-down"></i>
         </div>
       </div>
       <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -76,7 +76,7 @@ export default {
       position: relative;
       .navbar-menu{
         &:hover{
-          color: #3498db;
+          color: #1E90FF;
           font-weight: 700;
         }
       }
