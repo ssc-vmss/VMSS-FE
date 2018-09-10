@@ -56,13 +56,13 @@ export const constantRouterMap = [
       {
         path: 'driverinfo',
         name: 'driverInfo',
-        component: () => import('@/views/nested/menu2/index'),
+        component: () => import('@/views/driverinfo/index'),
         meta: { title: '驾驶员信息管理' }
       },
       {
         path: 'equipmentinfo',
         name: 'equipmentInfo',
-        component: () => import('@/views/nested/menu2/index'),
+        component: () => import('@/views/equipmentInfo/index'),
         meta: { title: '车载设备管理' }
       }
     ]
@@ -79,27 +79,21 @@ export const constantRouterMap = [
     children: [
       {
         path: 'toorder',
-        component: () => import('@/views/nested/menu1/index'),
+        component: () => import('@/views/vehicleorder/index'),
         name: 'toOrder',
-        meta: { title: '我要调度' }
-      },
-      {
-        path: 'inorder',
-        name: 'inOrder',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: '进行中的调度' }
-      },
-      {
-        path: 'orderlist',
-        name: 'orderList',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: '历史调度' }
+        meta: { title: '车辆调度' }
       },
       {
         path: 'returnregistration',
         name: 'returnRegistration',
-        component: () => import('@/views/nested/menu2/index'),
+        component: () => import('@/views/returnRegistration/index'),
         meta: { title: '归队登记' }
+      },
+      {
+        path: 'orderhistory',
+        name: 'orderHistory',
+        component: () => import('@/views/vehicleorderhistory/index'),
+        meta: { title: '历史调度' }
       }
     ]
   },

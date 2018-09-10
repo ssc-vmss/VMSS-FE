@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row class="toptools"  type="flex" justify="space-between">
       <el-col :span="6"><el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button></el-col>
-      <div><el-input  placeholder="请输入内容" prefix-icon="el-icon-search" size="medium" style="width:200px" /><el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button></div>
+      <div><el-input  placeholder="请输入内容" prefix-icon="el-icon-search" size="medium" style="width:200px" v-model="searchTxt" /><el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button></div>
     </el-row>
     <el-table
       v-loading="listLoading"
@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column label="车辆类型" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.Type }}</span>
+          <span>{{ vehicleType(scope.row.Type) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="车辆识别号" width="110" align="center">
@@ -36,9 +36,9 @@
           {{ scope.row.EngineNO }}
         </template>
       </el-table-column>
-      <el-table-column label="车辆载重">
+      <el-table-column label="发动机识别号">
         <template slot-scope="scope">
-          {{ scope.row.Load }}
+          {{ scope.row.engineId }}
         </template>
       </el-table-column>
       <el-table-column label="车辆购置时间" width="120" align="center">
@@ -49,7 +49,7 @@
       </el-table-column>
       <el-table-column label="车辆状态">
         <template slot-scope="scope">
-          {{ scope.row.Status }}
+          {{ vehicleStatus(scope.row.Status) }}
         </template>
       </el-table-column>
       <el-table-column label="企业编号">
@@ -79,93 +79,105 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="100">
         <template slot-scope="scope">
-          <el-button type="text" size="small">修改</el-button>
+          <el-button type="text" size="small" @click="toEdit(scope.row)">修改</el-button>
           <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-pagination background layout="prev, pager, next" :total="1000" style="text-align:right;margin-top:20px"></el-pagination>
+    <el-pagination background layout="prev, pager, next" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
+
     <!-- add from -->
-    <el-dialog title="添加车辆信息" :visible.sync="dialogFormVisible" width="600px">
-      <el-form :model="form">
+    <el-dialog title="添加车辆信息" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
+      <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="车牌号" :label-width="formLabelWidth">
-              <el-input v-model="form.name" auto-complete="off"></el-input>
+            <el-form-item label="车牌号" prop="LPNO" :label-width="formLabelWidth">
+              <el-input type="text" v-model="form.LPNO"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="车牌号颜色" :label-width="formLabelWidth">
-              <el-input v-model="form.name" auto-complete="off"></el-input>
+              <el-input type="text" v-model="form.Color" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆类型" :label-width="formLabelWidth">
-              <el-select v-model="form.region" placeholder="请选择车辆类型">
-                <el-option label="大型汽车" value="1"></el-option>
-                <el-option label="小型汽车" value="2"></el-option>
+              <el-select v-model="form.Type" placeholder="请选择车辆类型">
+                <el-option label="大型汽车" value="0"></el-option>
+                <el-option label="小型汽车" value="1"></el-option>
+                <el-option label="摩托车" value="2"></el-option>
+                <el-option label="拖拉机" value="3"></el-option>
+                <el-option label="挂车" value="4"></el-option>
+                <el-option label="新能源大型汽车" value="5"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="车辆识别号" :label-width="formLabelWidth">
-              <el-input v-model="form.name" auto-complete="off"></el-input>
+              <el-input type="text" v-model="form.VehicleID" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="发动机号" :label-width="formLabelWidth">
-             <el-input v-model="form.name" auto-complete="off"></el-input>
+            <el-form-item label="发动机号" prop="EngineNO" :label-width="formLabelWidth">
+             <el-input type="text" v-model="form.EngineNO" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="车辆载重" :label-width="formLabelWidth">
-              <el-input v-model="form.name" auto-complete="off"></el-input>
+            <el-form-item label="发动机识别号" prop="engineId" :label-width="formLabelWidth">
+              <el-input type="text" v-model="form.engineId" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆购置时间" :label-width="formLabelWidth">
-             <el-date-picker  v-model="value1" type="date" placeholder="选择日期"></el-date-picker>
+             <el-date-picker  v-model="form.BuyTime" type="date" placeholder="选择日期"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆状态" :label-width="formLabelWidth">
-              <el-select v-model="form.region" placeholder="请选择车辆状态">
+              <el-select v-model="form.Status" placeholder="请选择车辆状态">
+                <el-option label="未运行" value="0"></el-option>
                 <el-option label="运行" value="1"></el-option>
                 <el-option label="事故" value="2"></el-option>
+                <el-option label="理赔" value="3"></el-option>
+                <el-option label="保养" value="4"></el-option>
+                <el-option label="年检" value="5"></el-option>
+                <el-option label="报废" value="6"></el-option>
+                <el-option label="维修" value="7"></el-option>
+                <el-option label="注销" value="8"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="企业编号" :label-width="formLabelWidth">
-              <el-input v-model="form.name" auto-complete="off"></el-input>
+              <el-input type="text" v-model="form.EnterpriseNO" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆编号" :label-width="formLabelWidth">
-             <el-input v-model="form.name" auto-complete="off"></el-input>
+             <el-input v-model="form.VehicleNO" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="排放标准" :label-width="formLabelWidth">
-              <el-input v-model="form.name" auto-complete="off"></el-input>
+              <el-input type="text" v-model="form.Emission" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="车载设备型号" :label-width="formLabelWidth">
-              <el-select v-model="form.region" placeholder="请选择车辆状态">
+              <el-select v-model="form.equipmentModel" placeholder="请选择车辆状态">
                 <el-option label="LLT-2018" value="1"></el-option>
                 <el-option label="LLT-2017" value="2"></el-option>
               </el-select>
@@ -173,14 +185,14 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="车载设备编号" :label-width="formLabelWidth">
-              <el-input v-model="form.name" auto-complete="off"></el-input>
+              <el-input type="text" v-model="form.equipmentID" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addData('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -188,17 +200,12 @@
 </template>
 
 <script>
-import { getList } from '@/api/table'
+import { getInfoList,addInfo,editInfo,delInfo } from '@/api/vehicle'
 
 export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'gray',
-        deleted: 'danger'
-      }
-      return statusMap[status]
+  watch:{
+    page(){
+      this.fetchData();
     }
   },
   data() {
@@ -206,58 +213,194 @@ export default {
       list: null,
       listLoading: true,
       dialogFormVisible:false,
+      editact:false,
+      searchTxt:'',
       form: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
-        },
-        formLabelWidth: '120px',
+        LPNO: '',
+        Color: '',
+        Type: '',
+        VehicleID: '',
+        EngineNO: '',
+        engineId:'',
+        Load: '',
+        BuyTime: '',
+        Status: '',
+        EnterpriseNO:'',
+        VehicleNO:'',
+        Emission:'',
+        equipmentModel:'',
+        equipmentID:''
+      },
+      rules:{
+        LPNO:[
+          { required: true, message: '请输入车牌号', trigger: 'blur' },
+          { type:'string',min: 7, max: 8, message: '长度在 7 到 8 个字符', trigger: 'blur' }
+        ],
+        EngineNO:[
+          { type:'string',required: true, message: '请输入发动机号', trigger: 'blur' },
+        ],
+        engineId:[
+          { type:'string',required: true, message: '请输入发动机识别号', trigger: 'blur' },
+        ]
+      },
+      formLabelWidth: '120px',
+      page:1,
+      pageSize:10,
+      total:0
     }
+  },
+  computed:{
+
   },
   created() {
     this.fetchData()
   },
   methods: {
+    vehicleType(type){
+      switch (type) {
+        case 0:
+          return '大型汽车'
+          break;
+        case 2:
+          return '摩托车'
+          break;
+        case 3:
+          return '拖拉机'
+          break;
+        case 4:
+          return '挂车'
+          break;
+        case 5:
+          return '新能源大型汽车'
+          break;
+        default:
+          return '小型汽车'
+          break;
+      }
+    },
+    vehicleStatus(status){
+      switch (status) {
+        case 1:
+          return '运行'
+          break;
+        case 2:
+          return '事故'
+          break;
+        case 3:
+          return '理赔'
+          break;
+        case 4:
+          return '保养'
+          break;
+        case 5:
+          return '年检'
+          break;
+        case 6:
+          return '报废'
+          break;
+        case 7:
+          return '维修'
+          break;
+        case 8:
+          return '注销'
+          break;
+        default:
+          return '未运行'
+          break;
+      }
+    },
     toDel(id){
       this.$confirm('您确定要删除该记录?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
+          delInfo({id}).then(response=>{
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            this.fetchData();
+          })
         }).catch(() => {
         });
     },
     handleCreate(){
       this.dialogFormVisible = true
     },
+    closeDialog(formName){
+      this.editact=false;
+      this.resetForm();
+    },
+    resetForm(){
+      this.form={
+        LPNO: '',
+        Color: '',
+        Type: '',
+        VehicleID: '',
+        EngineNO: '',
+        engineId:'',
+        Load: '',
+        BuyTime: '',
+        Status: '',
+        EnterpriseNO:'',
+        VehicleNO:'',
+        Emission:'',
+        equipmentModel:'',
+        equipmentID:''
+      }
+    },
+    handleCurrentChange(val){
+      this.page=val;
+    },
     fetchData() {
       this.listLoading = true
-
-      setTimeout(()=>{
-        this.list=[
-          {
-          id:1,LPNO:'川A 88888',Color:'红色',Type:'小汽车',VehicleID:'LSGJR1122334455678',EngineNO:'2464766K',Load:'5T',BuyTime:'2018-01-01',Status:'运行',EnterpriseNO:'szf',VehicleNO:'szf-001',Emission:'国IV',equipmentModel:'LLT-2018',equipmentID:'LLT2018x332211'
-          },
-          {
-          id:2,LPNO:'川A 88888',Color:'红色',Type:'小汽车',VehicleID:'LSGJR1122334455678',EngineNO:'2464766K',Load:'5T',BuyTime:'2018-01-01',Status:'运行',EnterpriseNO:'szf',VehicleNO:'szf-001',Emission:'国IV',equipmentModel:'LLT-2018',equipmentID:'LLT2018x332212'
-          },
-        ]
+      getInfoList({pageNo:this.page,pageSize:this.pageSize}).then(response => {
+        let resData;
+        if(response.data){
+          resData=response.data.rows.map(item=>{
+            let{id,plateNumber:LPNO,plateColour:Color,plateType:Type,engineId:EngineNO,engineId,engineNumber,type:Status,enterpriseNumber:EnterpriseNO,emissionStandard:Emission,}=item;
+            return {id,LPNO,Color,Type,EngineNO,engineId,Status,EnterpriseNO,Emission}
+          })
+          this.list = resData;
+          this.total=response.data.total;
+        }
         this.listLoading = false
-      },1500)
-      return;
+      })
+    },
+    addData(formName){
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.saveData();
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    toEdit(data){
+      this.form=data;
+      this.dialogFormVisible=true;
+      this.editact=true;
+    },
+    saveData(){
+      let{id,LPNO:plateNumber,Color:plateColour,Type:plateType,engineId,EngineNO:engineNumber,Status:type,EnterpriseNO:enterpriseNumber,Emission:emissionStandard}=this.form;
+      let data={id,plateNumber,plateColour,plateType,engineId,engineNumber,type,enterpriseNumber,emissionStandard};
+      if(this.editact){
+        editInfo(data).then(response=>{
 
-      getList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.listLoading = false
+        });
+        return;
+      }
+      addInfo(data).then(response=>{
+        if(response.status==200){
+          this.dialogFormVisible=false;
+          this.$message({
+            message: response.message,
+            type: 'success'
+          });
+          this.fetchData();
+        }
       })
     }
   }
