@@ -1,25 +1,25 @@
 <template>
   <div class="pagination-view">
-    <div class="pagination-container" v-show="show">
+    <div v-show="show" class="pagination-container">
       <div class="pagination-outline">
         <ul class="pagination-ul">
-          <li class="jump" v-show="current_page>1" @click="current_page--">
+          <li v-show="current_page>1" class="jump" @click="current_page--">
             <button>上页</button>
           </li>
           <li v-show="current_page>4" class="jump" @click="jumpPage(1)">
             <button>1</button>
           </li>
-          <li class="ellipsis" v-show="efont">
+          <li v-show="efont" class="ellipsis">
             <button>...</button>
           </li>
-          <li class="jump" v-for="num in indexs" :key="num" @click="jumpPage(num)">
-            <button :class="{bgprimary:current_page==num}">{{num}}</button>
+          <li v-for="num in indexs" :key="num" class="jump" @click="jumpPage(num)">
+            <button :class="{bgprimary:current_page==num}">{{ num }}</button>
           </li>
-          <li class="ellipsis" v-show="current_page<pages-3">
+          <li v-show="current_page<totalpages-3" class="ellipsis">
             <button>...</button>
           </li>
-          <li v-show="current_page<pages-3" class="jump" @click="jumpPage(pages)">
-            <button>{{pages}}</button>
+          <li v-show="current_page<totalpages-3" class="jump" @click="jumpPage(totalpages)">
+            <button>{{ totalpages }}</button>
           </li>
           <li class="jump" @click="current_page++">
             <button>下页</button>
@@ -28,7 +28,7 @@
             <button>跳转</button>
           </li>
           <li class="jumpinp">
-            <input type="text" v-model="changePage" />
+            <input v-model="changePage" type="text" />
           </li>
           <li class="jump gobtn" @click="jumpPage(changePage)">
             <button>GO</button>
@@ -46,61 +46,59 @@ export default {
   },
   data() {
     return {
-      current_page: 1, //当前页
-      pages: this.props, //总页数
-      changePage: "" //跳转页
-    };
-  },
-  created() {
-    this.getPages();
+      current_page: 1, // 当前页
+      totalpages: this.pages, // 总页数
+      changePage: '' // 跳转页
+    }
   },
   computed: {
-    getPages() {
-      console.log(this.pages);
-      if (this.pages == undefined) {
-        this.pages = 1;
-      }
-    },
     // 只有一页时不显示分页
-    show: function () {
-      return this.pages && this.pages != 1;
+    show() {
+      return this.totalpages && this.totalpages !== 1
     },
-    efont: function () {
-      if (this.pages <= 6) return false;
-      return this.current_page > 4;
+    efont() {
+      if (this.totalpages <= 6) return false
+      return this.current_page > 4
     },
-    indexs: function () {
-      var left = 1,
-        right = this.pages,
-        ar = [];
-      if (this.pages >= 5) {
-        if (this.current_page > 4 && this.current_page < this.pages - 3) {
-          left = Number(this.current_page) - 2;
-          right = Number(this.current_page) + 2;
+    indexs() {
+      let left = 1, right = this.totalpages, ar = []
+      if (this.totalpages >= 5) {
+        if (this.current_page > 4 && this.current_page < this.totalpages - 3) {
+          left = Number(this.current_page) - 2
+          right = Number(this.current_page) + 2
         } else {
           if (this.current_page <= 4) {
-            left = 1;
-            right = 5;
+            left = 1
+            right = 5
           } else {
-            right = this.pages;
+            right = this.totalpages
 
-            left = this.pages - 5;
+            left = this.totalpages - 5
           }
         }
       }
       while (left <= right) {
-        ar.push(left);
-        left++;
+        ar.push(left)
+        left++
       }
-      return ar;
+      return ar
     }
   },
+  created() {
+    this.getPages()
+  },
+
   methods: {
-    jumpPage: function (id) {
-      this.current_page = id;
+    getPages() {
+      if (this.pages === undefined) {
+        this.totalpages = 1
+      }
+    },
+    jumpPage(id) {
+      this.current_page = id
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

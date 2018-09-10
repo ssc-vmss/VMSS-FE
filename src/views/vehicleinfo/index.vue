@@ -1,96 +1,92 @@
 <template>
   <div class="app-container">
-    
+
     <Carloader v-if="listLoading"></Carloader>
     <div v-else>
-      <el-row class="toptools"  type="flex" justify="space-between">
-      <el-col :span="6"><el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button></el-col>
-      <div>
-        <el-input class="search"  placeholder="请输入内容" size="medium" style="width:200px" />
-        <el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button>
-      </div>
-    </el-row>
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      element-loading-text="Loading"
-      border
-      fit
-      highlight-current-row>
-      <el-table-column align="center" label="车牌号" width="95">
-        <template slot-scope="scope">
-          {{ scope.row.LPNO }}
-        </template>
-      </el-table-column>
-      <el-table-column label="车牌号颜色" width="110" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.Color }}
-        </template>
-      </el-table-column>
-      <el-table-column label="车辆类型" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.Type }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="车辆识别号" width="110" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.VehicleID }}
-        </template>
-      </el-table-column>
-      <el-table-column label="发动机号" width="110" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.EngineNO }}
-        </template>
-      </el-table-column>
-      <el-table-column label="车辆载重">
-        <template slot-scope="scope">
-          {{ scope.row.Load }}
-        </template>
-      </el-table-column>
-      <el-table-column label="车辆购置时间" width="120" align="center">
-        <template slot-scope="scope">
-          <i class="el-icon-time"/>
-          <span>{{ scope.row.BuyTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="车辆状态">
-        <template slot-scope="scope">
-          {{ scope.row.Status }}
-        </template>
-      </el-table-column>
-      <el-table-column label="企业编号">
-        <template slot-scope="scope">
-          {{ scope.row.EnterpriseNO }}
-        </template>
-      </el-table-column>
-      <el-table-column label="车辆编号">
-        <template slot-scope="scope">
-          {{ scope.row.VehicleNO }}
-        </template>
-      </el-table-column>
-      <el-table-column label="排放标准">
-        <template slot-scope="scope">
-          {{ scope.row.Emission }}
-        </template>
-      </el-table-column>
-      <el-table-column label="车载设备型号" width="120" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.equipmentModel }}
-        </template>
-      </el-table-column>
-      <el-table-column label="车载设备编号" width="120" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.equipmentID }}
-        </template>
-      </el-table-column>
-      <el-table-column fixed="right" label="操作" width="100">
-        <template slot-scope="scope">
-          <el-button type="text" size="small">修改</el-button>
-          <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination :pages="25"></pagination>
+      <el-row class="toptools" type="flex" justify="space-between">
+        <el-col :span="6">
+          <el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
+        </el-col>
+        <div>
+          <el-input class="search" placeholder="请输入内容" size="medium" style="width:200px" />
+          <el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button>
+        </div>
+      </el-row>
+      <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit highlight-current-row>
+        <el-table-column align="center" label="车牌号" width="95">
+          <template slot-scope="scope">
+            {{ scope.row.LPNO }}
+          </template>
+        </el-table-column>
+        <el-table-column label="车牌号颜色" width="110" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.Color }}
+          </template>
+        </el-table-column>
+        <el-table-column label="车辆类型" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.Type }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="车辆识别号" width="110" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.VehicleID }}
+          </template>
+        </el-table-column>
+        <el-table-column label="发动机号" width="110" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.EngineNO }}
+          </template>
+        </el-table-column>
+        <el-table-column label="车辆载重">
+          <template slot-scope="scope">
+            {{ scope.row.Load }}
+          </template>
+        </el-table-column>
+        <el-table-column label="车辆购置时间" width="120" align="center">
+          <template slot-scope="scope">
+            <i class="el-icon-time" />
+            <span>{{ scope.row.BuyTime }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="车辆状态">
+          <template slot-scope="scope">
+            {{ scope.row.Status }}
+          </template>
+        </el-table-column>
+        <el-table-column label="企业编号">
+          <template slot-scope="scope">
+            {{ scope.row.EnterpriseNO }}
+          </template>
+        </el-table-column>
+        <el-table-column label="车辆编号">
+          <template slot-scope="scope">
+            {{ scope.row.VehicleNO }}
+          </template>
+        </el-table-column>
+        <el-table-column label="排放标准">
+          <template slot-scope="scope">
+            {{ scope.row.Emission }}
+          </template>
+        </el-table-column>
+        <el-table-column label="车载设备型号" width="120" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.equipmentModel }}
+          </template>
+        </el-table-column>
+        <el-table-column label="车载设备编号" width="120" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.equipmentID }}
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="100">
+          <template slot-scope="scope">
+            <el-button type="text" size="small">修改</el-button>
+            <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination :pages="25"></pagination>
     </div>
     <!-- add from -->
     <el-dialog title="添加车辆信息" :visible.sync="dialogFormVisible" width="600px">
@@ -125,7 +121,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="发动机号" :label-width="formLabelWidth">
-             <el-input v-model="form.name" auto-complete="off"></el-input>
+              <el-input v-model="form.name" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -137,7 +133,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆购置时间" :label-width="formLabelWidth">
-             <el-date-picker  v-model="value1" type="date" placeholder="选择日期"></el-date-picker>
+              <el-date-picker v-model="value1" type="date" placeholder="选择日期"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -159,7 +155,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆编号" :label-width="formLabelWidth">
-             <el-input v-model="form.name" auto-complete="off"></el-input>
+              <el-input v-model="form.name" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -230,7 +226,7 @@ export default {
     this.fetchData();
   },
   components: {
-    Carloader,Pagination
+    Carloader, Pagination
   },
   methods: {
     toDel(id) {
@@ -245,7 +241,7 @@ export default {
             message: "删除成功!"
           });
         })
-        .catch(() => {});
+        .catch(() => { });
     },
     handleCreate() {
       this.dialogFormVisible = true;

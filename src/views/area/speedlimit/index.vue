@@ -150,18 +150,20 @@
       </div>
     </div>
     <div class="arrow-left" @click="handleIsShowLeftBox">
-      <i v-bind:class="[isshowleftbox?'el-icon-d-arrow-left':'el-icon-d-arrow-right']"></i>
+      <i :class="[isshowleftbox?'el-icon-d-arrow-left':'el-icon-d-arrow-right']"></i>
     </div>
-    <div class="map-box">map</div>
+    <div class="map-box">
+      <b-map-component></b-map-component>
+    </div>
   </div>
 </template>
 
 <script>
-import Mytable from '@/components/Mytable'
+import BMapComponent from '@/components/BMapComponent'
 
 export default {
   components: {
-    Mytable
+    BMapComponent
   },
   data() {
     return {
@@ -563,6 +565,5 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 </style>
