@@ -2,7 +2,7 @@
   <div class="view">
     <div :class="{hide:!isshowleftbox}" class="left-box">
       <div class="conf-box">
-        <h4 class="conf-h4">区域限速设置</h4>
+        <h4 class="conf-h4">禁区设置</h4>
         <div v-if="!issetrule&&!issetapplvehicles&&!issetapplorgs" class="conf-form">
           <div class="conf-form-row">
             <div class="conf-form-label">

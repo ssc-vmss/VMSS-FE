@@ -2,7 +2,7 @@
   <div class="view">
     <div :class="{hide:!isshowleftbox}" class="left-box">
       <div class="conf-box">
-        <h4 class="conf-h4">区域限速设置</h4>
+        <h4 class="conf-h4">电子栅栏</h4>
         <div v-if="!issetrule&&!issetapplvehicles&&!issetapplorgs" class="conf-form">
           <div class="conf-form-row">
             <div class="conf-form-label">
@@ -565,45 +565,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.view {
-  display: flex;
-}
-.left-box {
-  border-width: 0 1px 0 0;
-  border-style: solid;
-  border-color: #e6e6e6;
-  width: 480px;
-  padding: 10px;
-  animation: right-to-left 5s linear;
-}
-
-.list-box {
-  .area-list {
-    padding: 0 10px 5px 10px;
-    ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    li {
-      padding: 10px;
-      border-bottom: 1px solid #e6e6e6;
-      &:hover {
-        background: rgba(67, 159, 252, 0.1);
-      }
-    }
-    .selected {
-      background: rgba(67, 159, 252, 0.2);
-    }
-  }
-}
-.map-box {
-  border: 1px solide #e6e6e6;
-  height: 100%;
-  width: 100%;
-}
-.conf-h4 {
-  margin: 0;
-  padding: 10px;
-}
 </style>

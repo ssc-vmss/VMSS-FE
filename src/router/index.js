@@ -146,13 +146,13 @@ export const constantRouterMap = [
           {
             path: 'forbidden',
             name: 'forbidden',
-            component: () => import('@/views/nested/menu2/index'),
+            component: () => import('@/views/area/nogoarea'),
             meta: { title: '禁区管理' }
           },
           {
             path: 'electronicfence',
             name: 'electronicFence',
-            component: () => import('@/views/nested/menu2/index'),
+            component: () => import('@/views/area/electricfence'),
             meta: { title: '电子围栏' }
           },
           {
