@@ -7,46 +7,46 @@
           <div class="mirror-wrap">
             <div class="mirror-inner">
               <div class="mirror">
-                <div class="shine"/>
+                <div class="shine"></div>
               </div>
             </div>
           </div>
           <div class="middle">
             <div class="top">
-              <div class="line"/>
+              <div class="line"></div>
             </div>
             <div class="bottom">
               <div class="lights">
-                <div class="line"/>
+                <div class="line"></div>
               </div>
             </div>
           </div>
           <div class="bumper">
-            <div class="top"/>
+            <div class="top"></div>
             <!-- <div class="middle" data-numb="&#2348;&#2366; &#2415;&#2411; &#2330; &#2415;&#2411;&#2415;&#2411;"></div> -->
-            <div class="bottom"/>
+            <div class="bottom"></div>
           </div>
         </div>
         <div class="tyres">
-          <div class="tyre back"/>
-          <div class="tyre front"/>
+          <div class="tyre back"></div>
+          <div class="tyre front"></div>
         </div>
       </div>
       <div class="road-wrap">
         <div class="road">
           <div class="lane-wrap">
             <div class="lane">
-              <div/>
-              <div/>
-              <div/>
-              <div/>
-              <div/>
-              <div/>
-              <div/>
-              <div/>
-              <div/>
-              <div/>
-              <div/>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
             </div>
           </div>
         </div>
@@ -57,10 +57,10 @@
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
           <h1>车辆调度管理系统</h1>
           <el-form-item prop="username">
-            <input v-model="loginForm.username" class="login-input" name="username" type="text" auto-complete="on" placeholder="用户名" >
+            <input v-model="loginForm.username" class="login-input" name="username" type="text" auto-complete="on" placeholder="用户名">
           </el-form-item>
           <el-form-item prop="password">
-            <input :type="pwdType" v-model="loginForm.password" class="login-input" name="password" auto-complete="on" placeholder="密码" @keyup.enter.native="handleLogin" >
+            <input :type="pwdType" v-model="loginForm.password" class="login-input" name="password" auto-complete="on" placeholder="密码" @keyup.enter.native="handleLogin">
           </el-form-item>
           <el-form-item>
             <el-button :loading="loading" type="primary" @click.native.prevent="handleLogin">
@@ -81,7 +81,7 @@ import { isvalidUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
-  data() {
+  data () {
     const validateUsername = (rule, value, callback) => {
       if (!isvalidUsername(value)) {
         callback(new Error('请输入正确的用户名'))
@@ -112,7 +112,7 @@ export default {
     }
   },
   methods: {
-    handleLogin() {
+    handleLogin () {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true

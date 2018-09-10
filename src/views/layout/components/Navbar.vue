@@ -1,10 +1,11 @@
 <template>
   <el-menu class="navbar" mode="horizontal">
     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
+    <breadcrumb/>
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
         <div class="navbar-menu">菜单
-          <i class="el-icon-arrow-down"/>
+          <i class="el-icon-arrow-down"></i>
         </div>
       </div>
       <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -24,10 +25,11 @@
 <script>
 import { mapGetters } from 'vuex'
 import Hamburger from '@/components/Hamburger'
+import Breadcrumb from '@/components/Breadcrumb'
 
 export default {
   components: {
-    Hamburger
+    Hamburger,Breadcrumb
   },
   computed: {
     ...mapGetters([
@@ -76,7 +78,7 @@ export default {
       position: relative;
       .navbar-menu{
         &:hover{
-          color: #3498db;
+          color: #1E90FF;
           font-weight: 700;
         }
       }

@@ -134,25 +134,25 @@ export const constantRouterMap = [
       {
         path: 'area',
         name: 'area',
-        component: () => import('@/views/nested/menu2/index'),
+        component: () => import('@/views/area/index'),
         meta: { title: '区域管理' },
         children: [
           {
             path: 'forbidden',
             name: 'forbidden',
-            component: () => import('@/views/nested/menu2/index'),
+            component: () => import('@/views/area/nogoarea'),
             meta: { title: '禁区管理' }
           },
           {
             path: 'electronicfence',
             name: 'electronicFence',
-            component: () => import('@/views/nested/menu2/index'),
+            component: () => import('@/views/area/electricfence'),
             meta: { title: '电子围栏' }
           },
           {
             path: 'speedlimit',
             name: 'speedLimit',
-            component: () => import('@/views/nested/menu2/index'),
+            component: () => import('@/views/area/speedlimit'),
             meta: { title: '区域限速' }
           }
         ]
@@ -177,7 +177,7 @@ export const constantRouterMap = [
     children: [
       {
         path: 'Account',
-        component: () => import('@/views/nested/menu1/index'),
+        component: () => import('@/views/accountmanage/index'),
         name: 'Account',
         meta: { title: '账号管理' }
       },
@@ -186,6 +186,12 @@ export const constantRouterMap = [
         name: 'filteringRules',
         component: () => import('@/views/nested/menu2/index'),
         meta: { title: '系统过滤规则' }
+      },
+      {
+        path: 'test',
+        name: 'test',
+        component: () => import('@/components/Mytable/index'),
+        meta: { title: '测试页' }
       }
     ]
   },

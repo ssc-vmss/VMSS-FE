@@ -1,6 +1,5 @@
 <template>
   <section class="app-main">
-    <breadcrumb />
     <transition name="fade" mode="out-in">
       <!-- <router-view :key="key"></router-view> -->
       <router-view/>
@@ -26,7 +25,7 @@ export default {
 <style scoped>
 .app-main {
   /*50 = navbar  */
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - 50px);
   position: relative;
   overflow: hidden;
 }
