@@ -1,42 +1,42 @@
 <template>
-    <div>
-        <div class="page"  v-show="show"> 
-          <div class="pagelist">
-              <ul class="pagination-ul">
-                  <li class="jump" v-show="current_page>1" @click="current_page--">
-                    <button>上页</button>
-                      </li> 
-                  <li v-show="current_page>4" class="jump" @click="jumpPage(1)">
-                    <button>1</button>
-                    </li> 
-                  <li class="ellipsis"  v-show="efont">
-                    <button>...</button>
-                    </li> 
-                  <li class="jump" v-for="num in indexs" :key="num" @click="jumpPage(num)">
-                    <button :class="{bgprimary:current_page==num}">{{num}}</button>
-                  </li> 
-                  <li class="ellipsis"  v-show="current_page<pages-3">
-                    <button>...</button>
-                    </li> 
-                    <li v-show="current_page<pages-3" class="jump" @click="jumpPage(pages)">
-                    <button>{{pages}}</button>
-                    </li> 
-                  <li class="jump" @click="current_page++">
-                    <button>下页</button>
-                    </li> 
-                  <li class="jumppoint">
-                    <button>跳转</button>
-                    </li> 
-                  <li class="jumpinp">
-                    <input type="text" v-model="changePage"/>
-                    </li> 
-                  <li class="jump gobtn" @click="jumpPage(changePage)">
-                    <button>GO</button>
-                    </li> 
-              </ul> 
-          </div>
+  <div class="pagination-view">
+    <div class="pagination-container" v-show="show">
+      <div class="pagination-outline">
+        <ul class="pagination-ul">
+          <li class="jump" v-show="current_page>1" @click="current_page--">
+            <button>上页</button>
+          </li>
+          <li v-show="current_page>4" class="jump" @click="jumpPage(1)">
+            <button>1</button>
+          </li>
+          <li class="ellipsis" v-show="efont">
+            <button>...</button>
+          </li>
+          <li class="jump" v-for="num in indexs" :key="num" @click="jumpPage(num)">
+            <button :class="{bgprimary:current_page==num}">{{num}}</button>
+          </li>
+          <li class="ellipsis" v-show="current_page<pages-3">
+            <button>...</button>
+          </li>
+          <li v-show="current_page<pages-3" class="jump" @click="jumpPage(pages)">
+            <button>{{pages}}</button>
+          </li>
+          <li class="jump" @click="current_page++">
+            <button>下页</button>
+          </li>
+          <li class="jumppoint">
+            <button>跳转</button>
+          </li>
+          <li class="jumpinp">
+            <input type="text" v-model="changePage" />
+          </li>
+          <li class="jump gobtn" @click="jumpPage(changePage)">
+            <button>GO</button>
+          </li>
+        </ul>
       </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -62,14 +62,14 @@ export default {
       }
     },
     // 只有一页时不显示分页
-    show: function() {
+    show: function () {
       return this.pages && this.pages != 1;
     },
-    efont: function() {
+    efont: function () {
       if (this.pages <= 6) return false;
       return this.current_page > 4;
     },
-    indexs: function() {
+    indexs: function () {
       var left = 1,
         right = this.pages,
         ar = [];
@@ -96,7 +96,7 @@ export default {
     }
   },
   methods: {
-    jumpPage: function(id) {
+    jumpPage: function (id) {
       this.current_page = id;
     }
   }
@@ -104,7 +104,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pagelist {
+.pagination-outline {
   background: linear-gradient(
     to right,
     rgba(255, 255, 255, 0) 0%,
@@ -113,17 +113,17 @@ export default {
     rgba(255, 255, 255, 0) 100%
   );
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=1 );
-  height: 50px;
+  height: 40px;
   left: 50%;
   position: absolute;
   text-align: center;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
-  top: 50%;
   width: 100%;
+  bottom: 0;
 }
-.pagelist:before,
-.pagelist:after {
+.pagination-outline:before,
+.pagination-outline:after {
   background: linear-gradient(
     to right,
     rgba(30, 144, 255, 0) 0%,
@@ -132,16 +132,16 @@ export default {
     rgba(30, 144, 255, 0) 100%
   );
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#00000000',GradientType=1 );
-  content: "";
+  content: '';
   height: 1px;
   left: 0;
   position: absolute;
   width: 100%;
 }
-.pagelist:before {
+.pagination-outline:before {
   top: -1px;
 }
-.pagelist:after {
+.pagination-outline:after {
   bottom: -1px;
 }
 .pagination-ul {
@@ -160,9 +160,9 @@ export default {
   color: rgba(0, 0, 0, 0.6);
   display: block;
   font-size: 16px;
-  height: 40px;
-  line-height: 40px;
-  min-width: 40px;
+  height: 30px;
+  line-height: 30px;
+  min-width: 30px;
   padding: 0;
   outline: none;
   position: relative;
@@ -172,7 +172,7 @@ export default {
 .pagination-ul button:before {
   background: rgba(30, 144, 255, 0.2);
   border-radius: 50%;
-  content: "";
+  content: '';
   cursor: pointer;
   height: 0;
   left: 50%;
@@ -204,16 +204,16 @@ export default {
 .pagination-ul button:hover:not(.bgprimary):before {
   -webkit-animation: hoverAnimation 510ms linear forwards;
   animation: hoverAnimation 510ms linear forwards;
-  height: 40px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
 }
 .pagination-ul .bgprimary {
   background: rgba(30, 144, 255, 0.2);
   color: black;
 }
 .jumpinp input {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   font-size: 16px;
   border: 1px solid #ccc;
   -webkit-border-radius: 50%;

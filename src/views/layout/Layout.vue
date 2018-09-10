@@ -5,7 +5,7 @@
     <div class="main-container">
       <navbar/>
       <app-main/>
-      <el-footer style="height:20px">Copyright © 2018 VMSS.</el-footer>
+      <!-- <el-footer style="height:20px">Copyright © 2018 VMSS.</el-footer> -->
     </div>
   </div>
 </template>

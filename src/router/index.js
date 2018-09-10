@@ -140,7 +140,7 @@ export const constantRouterMap = [
       {
         path: 'area',
         name: 'area',
-        component: () => import('@/views/nested/menu2/index'),
+        component: () => import('@/views/area/index'),
         meta: { title: '区域管理' },
         children: [
           {
@@ -158,7 +158,7 @@ export const constantRouterMap = [
           {
             path: 'speedlimit',
             name: 'speedLimit',
-            component: () => import('@/views/nested/menu2/index'),
+            component: () => import('@/views/area/speedlimit'),
             meta: { title: '区域限速' }
           }
         ]
@@ -196,7 +196,7 @@ export const constantRouterMap = [
       {
         path: 'test',
         name: 'test',
-        component: () => import('@/components/pagination'),
+        component: () => import('@/components/Mytable/index'),
         meta: { title: '测试页' }
       }
     ]
