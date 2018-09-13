@@ -127,7 +127,6 @@ export default {
 .loading-window {
   animation: fadeIn 0.4s both;
 }
-
 .loading-window {
   border: none;
   color: #2d3a4b;
@@ -135,7 +134,7 @@ export default {
   left: 50%;
   margin-left: -150px;
   margin-top: -100px;
-  position: fixed;
+  position: absolute;
   top: 50%;
   width: 300px;
   z-index: 99;
