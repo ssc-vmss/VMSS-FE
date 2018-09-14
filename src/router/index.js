@@ -188,8 +188,8 @@ export const constantRouterMap = [
         meta: { title: '系统过滤规则' }
       },
       {
-        path: 'test',
-        name: 'test',
+        path: 'Mytable',
+        name: 'Mytable',
         component: () => import('@/components/Mytable/index'),
         meta: { title: '测试页' }
       }

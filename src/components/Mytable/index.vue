@@ -9,11 +9,11 @@
               <th class="vmss-th">
                 <el-checkbox></el-checkbox>
               </th>
-              <th v-for="title in headerList" :key="title" class="vmss-th">{{ title }}</th>
+              <th v-for="(title,index) in headerList" :key="index" class="vmss-th">{{ title }}</th>
             </tr>
           </thead>
           <tbody class="vmss-tbody">
-            <tr v-for="item in tableList" :key="item" class="vmss-tr">
+            <tr v-for="(item,index) in tableList" :key="index" class="vmss-tr">
               <td class="vmss-td">
                 <el-checkbox></el-checkbox>
               </td>

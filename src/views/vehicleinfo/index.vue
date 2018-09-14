@@ -14,13 +14,7 @@
         </el-input>
       </div>
     </el-row>
-    <el-table
-      v-loading="listLoading"
-      :data="list"
-      element-loading-text="Loading"
-      border
-      fit
-      highlight-current-row>
+    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit highlight-current-row>
       <el-table-column align="center" label="车牌号" width="95">
         <template slot-scope="scope">
           {{ scope.row.LPNO }}
@@ -134,7 +128,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="发动机号" prop="EngineNO" :label-width="formLabelWidth">
-             <el-input type="text" v-model="form.EngineNO" auto-complete="off"></el-input>
+              <el-input type="text" v-model="form.EngineNO" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -175,7 +169,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆编号" :label-width="formLabelWidth">
-             <el-input v-model="form.VehicleNO" auto-complete="off"></el-input>
+              <el-input v-model="form.VehicleNO" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -210,11 +204,11 @@
 </template>
 
 <script>
-import { getInfoList,addInfo,editInfo,delInfo } from '@/api/vehicle'
+import { getInfoList, addInfo, editInfo, delInfo } from '@/api/vehicle'
 
 export default {
-  watch:{
-    page(){
+  watch: {
+    page() {
       this.fetchData();
     }
   },
@@ -232,20 +226,20 @@ export default {
         Type: '',
         plateBrand: '',
         EngineNO: '',
-        engineId:'',
+        engineId: '',
         Load: '',
         buyTimes: '',
         Status: '',
-        EnterpriseNO:'',
-        VehicleNO:'',
-        Emission:'',
-        equipmentModel:'',
-        equipmentID:''
+        EnterpriseNO: '',
+        VehicleNO: '',
+        Emission: '',
+        equipmentModel: '',
+        equipmentID: ''
       },
-      rules:{
-        LPNO:[
+      rules: {
+        LPNO: [
           { required: true, message: '请输入车牌号', trigger: 'blur' },
-          { type:'string',min: 7, max: 8, message: '长度在 7 到 8 个字符', trigger: 'blur' }
+          { type: 'string', min: 7, max: 8, message: '长度在 7 到 8 个字符', trigger: 'blur' }
         ],
         Type:[
           { required: true, message: '请选择车辆类型', trigger: 'change' },
@@ -253,24 +247,24 @@ export default {
         EngineNO:[
           { type:'string',required: true, message: '请输入发动机号', trigger: 'blur' },
         ],
-        engineId:[
-          { type:'string',required: true, message: '请输入发动机识别号', trigger: 'blur' },
+        engineId: [
+          { type: 'string', required: true, message: '请输入发动机识别号', trigger: 'blur' },
         ]
       },
       formLabelWidth: '120px',
-      page:1,
-      pageSize:10,
-      total:0
+      page: 1,
+      pageSize: 10,
+      total: 0
     }
   },
-  computed:{
+  computed: {
 
   },
   created() {
     this.fetchData()
   },
   methods: {
-    vehicleType(type){
+    vehicleType(type) {
       switch (type) {
         case 0:
           return '大型汽车'
@@ -292,7 +286,7 @@ export default {
           break;
       }
     },
-    vehicleStatus(status){
+    vehicleStatus(status) {
       switch (status) {
         case 1:
           return '运行'
@@ -323,49 +317,49 @@ export default {
           break;
       }
     },
-    toDel(id){
+    toDel(id) {
       this.$confirm('您确定要删除该记录?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          delInfo({id}).then(response=>{
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            });
-            this.fetchData();
-          })
-        }).catch(() => {
-        });
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delInfo({ id }).then(response => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+          this.fetchData();
+        })
+      }).catch(() => {
+      });
     },
-    handleCreate(){
+    handleCreate() {
       this.dialogFormVisible = true
     },
-    closeDialog(formName){
-      this.editact=false;
+    closeDialog(formName) {
+      this.editact = false;
       this.resetForm();
     },
-    resetForm(){
-      this.form={
+    resetForm() {
+      this.form = {
         LPNO: '',
         Color: '',
         Type: '',
         plateBrand: '',
         EngineNO: '',
-        engineId:'',
+        engineId: '',
         Load: '',
         buyTimes: '',
         Status: '',
-        EnterpriseNO:'',
-        VehicleNO:'',
-        Emission:'',
-        equipmentModel:'',
-        equipmentID:''
+        EnterpriseNO: '',
+        VehicleNO: '',
+        Emission: '',
+        equipmentModel: '',
+        equipmentID: ''
       }
     },
-    handleCurrentChange(val){
-      this.page=val;
+    handleCurrentChange(val) {
+      this.page = val;
     },
     fetchData() {
       this.listLoading = true
@@ -401,7 +395,7 @@ export default {
         this.listLoading = false
       })
     },
-    addData(formName){
+    addData(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.saveData();
@@ -432,9 +426,9 @@ export default {
         });
         return;
       }
-      addInfo(data).then(response=>{
-        if(response.status==200){
-          this.dialogFormVisible=false;
+      addInfo(data).then(response => {
+        if (response.status == 200) {
+          this.dialogFormVisible = false;
           this.$message({
             message: response.message,
             type: 'success'
@@ -448,7 +442,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.toptools{
+.toptools {
   margin-bottom: 20px;
 }
 </style>

@@ -15,6 +15,13 @@
     border-radius: 20px
   }
 }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+  input[type="number"]{
+    -moz-appearance: textfield;
+  }
 .view{
   position: absolute;
   height: 100%;
@@ -22,12 +29,12 @@
   display: flex;
 }
 .btn {
-  line-height: 30px;
-  padding: 0 8px;
-  margin: 5px;
+  line-height: 25px;
+  padding: 0 10px;
+  margin: 5px 6px;
   font-size: 14px;
   border-radius: 5px;
-  background-color: transparent;
+  background-color: #fff;
   border: 1px solid #606266;
   color: #606266;
   outline-style: none;
@@ -53,27 +60,37 @@
     padding: 5px;
   }
   .left-box {
-    border-width: 0 1px 0 0;
-    border-style: solid;
-    border-color: #e6e6e6;
+    min-width: 300px;
     width: 500px;
-    padding: 10px;
+    padding: 5px;
     animation: right-to-left 5s linear;
   }
   .list-box {
-    .area-list {
-      padding: 0 10px 5px 10px;
+    .list {
+      border: 1px solid #e6e6e6;
+      border-radius: 5px;
+      margin: 5px 10px;
+      padding: 5px 10px;
+      overflow-y: auto;
+      height: 335px;
+      text-align: center;
+      // overflow: hidden;
+      @extend %section;
       ul {
         list-style: none;
         margin: 0;
         padding: 0;
       }
       li {
-        padding: 10px;
+        padding: 6px 10px;
         border-bottom: 1px solid #e6e6e6;
         &:hover {
-          background: rgba(67, 159, 252, 0.1);
+        cursor: pointer;
+        background: rgba(67, 159, 252, 0.1);
         }
+      }
+      .disabled{
+        pointer-events: none;
       }
       .selected {
         background: rgba(67, 159, 252, 0.2);
@@ -85,15 +102,16 @@
     height: 100%;
     width: 100%;
   }
-  .conf-h4 {
+  .conf-h {
     margin: 0;
     padding: 10px;
+    display: inline-block;
   }
 .conf-form{
   font-size: 14px;
   font-weight: 700;
   .conf-form-row{
-    padding: 5px;
+    padding: 0 5px 5px;
     display: flex;
     width: 100%;
     box-sizing: border-box;
@@ -127,6 +145,7 @@
       width: 100%;
       margin: 0 5px 0 10px;
       input{
+        border-color: #000;
         height: 36px;
         padding: 5px 10px;
         &:hover{
@@ -152,11 +171,6 @@
       .el-icon-time{
         border-left: 1px solid #bfcbd9;
         width: 35px;
-        &:hover{
-          color: #3498db;
-          transition: all 0.3s;
-          font-weight: 700;
-        }
       }
       .el-icon-circle-close{
         background: #fff;
@@ -172,9 +186,9 @@
       }
     }
     .conf-form-input{
-      border: 1px solid #bfcbd9;
+      border: 1px solid #000;
       border-radius: 5px;
-      line-height: 20px;
+      line-height: 15px;
       outline-style: none;
       display: block;
       padding: 5px 10px;
@@ -201,7 +215,7 @@
     .conf-form-icon{
       color: #bfcbd9;
       padding: 10px;
-      top: 6px;
+      top: 0px;
       position: absolute;
       border-left: 1px solid #bfcbd9;
       cursor: pointer;
@@ -225,10 +239,10 @@
         }
       }
     .dropdown-menu{
-      border: 1px solid #bfcbd9;
+      border: 1px solid #000;
       background-color: #fff;
       position: absolute;
-      top: 40px;
+      top: 35px;
       right: 5px;
       margin: 2px 5px;
       width: calc(100% - 100px);
@@ -257,6 +271,23 @@
     }
   }
 }
+.vehicle-checkbox{
+  border: 1px solid #e6e6e6;
+  border-radius: 5px;
+  margin: 0 10px 5px;
+  padding: 5px 10px;
+}
+.el-checkbox-group{
+    .el-checkbox{
+      display: inline-block;
+      width: 100%;
+      padding: 0;
+      &:first-child{
+        padding-left: 30px;
+      }
+  }
+}
+
 .el-time-panel{
   width: 245px;
   border-radius: 5px;
@@ -269,22 +300,28 @@
       transition: all 0.3s;
       transform: scale(1.1)
     }
+
   }
-}
-.tree-box{
-  border: 1px solid #bfcbd9;
 }
 .arrow-left{
   width: 25px;
   top: calc(50% - 90px);
+  right: 0;
   font-size: 25px;
   padding: 30px 0;
   height: 90px;
   position: relative;
+  float: left;
   &:hover{
     background: rgba(30, 144, 255,.1);
   }
 }
 .el-table th{
   background:#ecf5ff;
+}
+.BMap_cpyCtrl {
+  display: none;
+}
+.anchorBL {
+  display: none;
 }

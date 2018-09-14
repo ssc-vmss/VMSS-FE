@@ -14,7 +14,7 @@
             <div class="conf-form-label">
               <span>是否启用</span>
             </div>
-            <input :disabled="isadd" v-model="state" class="conf-form-input" type="text" @click="handleShowMenu" placeholder="请选择">
+            <input :disabled="isadd" v-model="state" class="conf-form-input" type="text" placeholder="请选择" @click="handleShowMenu">
             <i :class="{isdisabled:isadd}" class="el-icon-caret-bottom conf-form-icon righticon" @click="handleShowMenu"></i>
             <div v-show="isshowmenu" class="dropdown-menu">
               <ul>
@@ -35,14 +35,14 @@
                 <span>名称</span>
                 <span class="required-span">*</span>
               </div>
-              <input class="conf-form-input" :disabled="isadd" v-model="name" type="text">
+              <input :disabled="isadd" v-model="name" class="conf-form-input" type="text">
             </div>
             <div class="conf-form-row">
               <div class="conf-form-label">
                 <span>最高时速</span>
                 <span class="required-span">*</span>
               </div>
-              <input class="conf-form-input" :disabled="isadd" v-model="max" type="text">
+              <input :disabled="isadd" v-model="max" class="conf-form-input" type="text">
               <span class="unit-span">km/h</span>
               <i :class="{isdisabled:(isadd||max==1)}" class="el-icon-minus conf-form-icon lefticon" @click="max--"></i>
               <i :class="{isdisabled:isadd}" class="el-icon-plus conf-form-icon righticon" @click="max++"></i>
@@ -65,7 +65,7 @@
               <div class="conf-form-label">
                 <span>是否应用</span>
               </div>
-              <input class="conf-form-input" :disabled="isadd" v-model="state" type="text" @click="handleShowMenu" placeholder="请选择">
+              <input :disabled="isadd" v-model="state" type="text" class="conf-form-input" placeholder="请选择" @click="handleShowMenu">
               <i :class="{isdisabled:isadd}" class="el-icon-caret-bottom conf-form-icon righticon" @click="handleShowMenu"></i>
               <div v-show="isshowmenu" class="dropdown-menu">
                 <ul>
@@ -82,7 +82,7 @@
             返回
           </button>
           <div class="tree-box">
-            <el-tree accordion show-checkbox :data="vehicletree" :props="defaultVehicleProps" @check-change="handleClickVehicleTree"></el-tree>
+            <el-tree accordion :props="defaultVehicleProps" :data="vehicletree" show-checkbox @check-change="handleClickVehicleTree"></el-tree>
           </div>
           <div class="btn-padding">
             <button class="btn" @click="handleAddVehicles">添加车辆</button>
@@ -150,18 +150,20 @@
       </div>
     </div>
     <div class="arrow-left" @click="handleIsShowLeftBox">
-      <i v-bind:class="[isshowleftbox?'el-icon-d-arrow-left':'el-icon-d-arrow-right']"></i>
+      <i :class="[isshowleftbox?'el-icon-d-arrow-left':'el-icon-d-arrow-right']"></i>
     </div>
-    <div class="map-box">map</div>
+    <div class="map-box">
+      <b-map-component></b-map-component>      
+    </div>
   </div>
 </template>
 
 <script>
-import Mytable from '@/components/Mytable'
+import BMapComponent from '@/components/BMapComponent'
 
 export default {
   components: {
-    Mytable
+    BMapComponent
   },
   data() {
     return {
@@ -203,7 +205,7 @@ export default {
           children: [
             { vehiclename: '班车' },
             { vehiclename: '客车' },
-            { vehiclename: '小轿车' }]        }]      }],
+            { vehiclename: '小轿车' }] }] }],
       defaultVehicleProps: {
         label: 'vehiclename',
         children: 'children'
@@ -215,7 +217,7 @@ export default {
           children: [
             { orgname: '产品开发/能力开放事业部' },
             { orgname: '财务风险法务部' },
-            { orgname: '综合人事采购部' }]        }]      }],
+            { orgname: '综合人事采购部' }] }] }],
       defaultOrgProps: {
         label: 'orgname',
         children: 'children'
