@@ -47,7 +47,7 @@
     transform: scale(1);
     cursor: not-allowed;
   }
-  
+
 }
 .btn-padding{
     padding: 5px;
@@ -172,7 +172,7 @@
       }
     }
     .conf-form-input{
-      border: 1px solid #bfcbd9; 
+      border: 1px solid #bfcbd9;
       border-radius: 5px;
       line-height: 20px;
       outline-style: none;
@@ -284,4 +284,7 @@
   &:hover{
     background: rgba(30, 144, 255,.1);
   }
+}
+.el-table th{
+  background:#ecf5ff;
 }

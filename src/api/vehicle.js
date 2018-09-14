@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getInfoList(params) {
   return request({
-    url: '/admin/pageQuery',
+    url: '/admin/vehicle/pageQuery',
     method: 'get',
     params
   })

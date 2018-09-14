@@ -88,7 +88,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="准驾车型" :label-width="formLabelWidth">
+            <el-form-item label="准驾车型" prop="driverLicenseType" :label-width="formLabelWidth">
              <el-select v-model="form.driverLicenseType" placeholder="请选择准驾车型">
                 <el-option label="A1" value="A1"></el-option>
                 <el-option label="A2" value="A2"></el-option>
@@ -104,7 +104,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="入职时间" :label-width="formLabelWidth">
-              <el-date-picker  v-model="form.startTime" type="date" placeholder="选择日期" style="width:200px"></el-date-picker>
+              <el-date-picker  v-model="form.startTime" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" style="width:180px"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -160,11 +160,14 @@ export default {
         mobile:[
           { required: true, message: '请输入手机号', trigger: 'blur' },
         ],
+        driverLicenseType:[
+           { required: true, message: '请选择准驾类型', trigger: 'change' },
+        ],
         driverLicenseNumber:[
           { required: true, message: '请输入驾驶证编号', trigger: 'blur' },
         ]
       },
-      formLabelWidth: '80px',
+      formLabelWidth: '100px',
       page:1,
       pageSize:10,
       total:0
