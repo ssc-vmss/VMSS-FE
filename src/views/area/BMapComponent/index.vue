@@ -42,7 +42,7 @@ export default {
   },
   methods: {
     ready() {
-      var map = new BMap.Map("allmap", { enableMapClick: false }); // 创建Map实例
+      var map = new BMap.Map("allmap", { enableMapClick: false }) // 创建Map实例
       var point = new BMap.Point(104.085145, 30.642301)
       map.centerAndZoom(point, 15) // 初始化地图,设置中心点坐标和地图级别
       map.enableScrollWheelZoom() // 启用鼠标滚动对地图放大缩小
@@ -204,18 +204,6 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.map-view {
-  display: block;
-  height: 100%;
-  padding: 10px;
-}
-#allmap {
-  width: 100%;
-  padding-right: 500px;
-  height: 100%;
-  position: relative;
-  margin-top: -40px;
-}
 .conf-form {
   .conf-form-row {
     width: 400px;

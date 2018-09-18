@@ -113,7 +113,7 @@
       <div class="list-box">
         <div v-if="!issetrule&&!issetapplvehicles&&!issetapplorgs">
           <h4 class="conf-h4">区域列表</h4>
-          <div class="area-list">
+          <div class="list">
             <ul>
               <li v-for="(area,index) in arealist" :class="{selected:areaindex == index}" :key="index" @click="handleSelectArea($event,index)">{{ area.description }}</li>
             </ul>
@@ -125,7 +125,7 @@
             <button :disabled="ruleindex== -1" class="btn" @click="handleApplVehicles">适用车辆</button>
             <button :disabled="ruleindex== -1" class="btn" @click="handleApplOrgs">适用单位</button>
           </div>
-          <div class="area-list">
+          <div class="list">
             <ul>
               <li v-for="(rule,index) in rulelist" :class="{selected:ruleindex == index}" :key="index" @click="handleSelectRule($event,index)">{{ rule.name }}</li>
             </ul>
@@ -133,7 +133,7 @@
         </div>
         <div v-else-if="issetapplvehicles">
           <h4 class="conf-h4">车辆</h4>
-          <div class="area-list">
+          <div class="list">
             <ul>
               <li v-for="(vehicle,index) in vehicleslist" :class="{selected:vehicleindex == index}" :key="index" @click="handleSelectVehicle($event,index)">{{ vehicle }}</li>
             </ul>
@@ -141,7 +141,7 @@
         </div>
         <div v-else-if="issetapplorgs">
           <h4 class="conf-h4">机构部门</h4>
-          <div class="area-list">
+          <div class="list">
             <ul>
               <li v-for="(org,index) in orgslist" :class="{selected:orgindex == index}" :key="index" @click="handleSelectOrg($event,index)">{{ org }}</li>
             </ul>
@@ -152,14 +152,14 @@
     <div class="arrow-left" @click="handleIsShowLeftBox">
       <i :class="[isshowleftbox?'el-icon-d-arrow-left':'el-icon-d-arrow-right']"></i>
     </div>
-    <div class="map-box">
+    <div class="right-box">
       <b-map-component></b-map-component>      
     </div>
   </div>
 </template>
 
 <script>
-import BMapComponent from '@/components/BMapComponent'
+import BMapComponent from '../BMapComponent'
 
 export default {
   components: {

@@ -108,21 +108,21 @@ export const constantRouterMap = [
     },
     children: [
       {
-        path: 'realtimemonitor',
-        component: () => import('@/views/vehicleinfo/index'),
-        name: 'realTimeMonitor',
+        path: 'constans',
+        component: () => import('@/views/constans/index'),
+        name: 'constans',
         meta: { title: '实时监控' }
       },
       {
-        path: 'trajectoryanalysis',
-        name: 'trajectoryAnalysis',
-        component: () => import('@/views/nested/menu2/index'),
+        path: 'analysis',
+        name: 'analysis',
+        component: () => import('@/views/analysis/index'),
         meta: { title: '轨迹分析' }
       },
       {
-        path: 'searchinfo',
-        name: 'searchInfo',
-        component: () => import('@/views/nested/menu2/index'),
+        path: 'location',
+        name: 'location',
+        component: () => import('@/views/location/index'),
         meta: { title: '信息查询' }
       },
       {
