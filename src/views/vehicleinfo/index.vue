@@ -14,7 +14,7 @@
         </el-input>
       </div>
     </el-row>
-    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit highlight-current-row>
+    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit>
       <el-table-column align="center" label="车牌号" width="95">
         <template slot-scope="scope">
           {{ scope.row.LPNO }}
@@ -169,7 +169,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆编号" :label-width="formLabelWidth">
-              <el-input v-model="form.VehicleNO" auto-complete="off"></el-input>
+              <el-input v-model.trim="form.VehicleNO" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -213,6 +213,15 @@ export default {
     }
   },
   data() {
+    let validataLPNO=(rule,value,callback)=>{
+      let reg="^(([\u4e00-\u9fa5]{1}[A-Z]{1})[-]?|([wW][Jj][\u4e00-\u9fa5]{1}[-]?)|([a-zA-Z]{2}))([A-Za-z0-9]{5}|[DdFf][A-HJ-NP-Za-hj-np-z0-9][0-9]{4}|[0-9]{5}[DdFf])$",
+          LPNOReg=new RegExp(reg);
+      if(!LPNOReg.test(value)){
+        callback('请输入正确的车牌号');
+      }else{
+        callback();
+      }
+    }
     return {
       list: null,
       listLoading: true,
@@ -239,7 +248,8 @@ export default {
       rules: {
         LPNO: [
           { required: true, message: '请输入车牌号', trigger: 'blur' },
-          { type: 'string', min: 7, max: 8, message: '长度在 7 到 8 个字符', trigger: 'blur' }
+          // { type: 'string', min: 7, max: 8, message: '长度在 7 到 8 个字符', trigger: 'blur' },
+          { validator: validataLPNO, trigger: 'blur' }
         ],
         Type:[
           { required: true, message: '请选择车辆类型', trigger: 'change' },
@@ -334,11 +344,11 @@ export default {
       });
     },
     handleCreate() {
+      this.resetForm();
       this.dialogFormVisible = true
     },
     closeDialog(formName) {
       this.editact = false;
-      this.resetForm();
     },
     resetForm() {
       this.form = {

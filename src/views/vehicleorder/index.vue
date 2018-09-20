@@ -22,9 +22,7 @@
           :data="listData"
           element-loading-text="Loading"
           border
-          fit
-          highlight-current-row
-          header-row-class-name="headerbg">
+          fit>
           <el-table-column prop="ddid" align="center" label="申请单号" width="95">
           </el-table-column>
           <el-table-column prop="staffName" label="申请人" width="110" align="center">
@@ -134,9 +132,9 @@
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="100" align="center">
-            <template slot-scope="scope" v-if="scope.row.doStatus==1">
+            <template slot-scope="scope" v-if="scope.row.dispatchStatus==1">
               <!-- <el-button type="text" size="small">修改</el-button> -->
-              <el-button  type="text" size="small" >执行</el-button>
+              <el-button  type="text" size="small" @click="toEdit(scope.row.id)" >执行</el-button>
               <el-button type="text" size="small" @click="toInvalidDispatch(scope.row.id)">作废</el-button>
               <!-- <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button> -->
             </template>
@@ -267,7 +265,7 @@
 </template>
 
 <script>
-import { getApplyList,getDispatchList,VehicleDataFilter,DriverDataFilter,addDispatch,delDispatch,invalidDispatch } from '@/api/dispatch'
+import { getApplyList,getDispatchList,VehicleDataFilter,DriverDataFilter,addDispatch,editDispatch,delDispatch,invalidDispatch } from '@/api/dispatch'
 
 export default {
   data() {
@@ -417,6 +415,16 @@ export default {
         default:
           break;
       }
+    },
+    toEdit(id){
+      let data={id,dispatchStatus:2}
+      editDispatch(data).then(response=>{
+        this.$message({
+          type: 'success',
+          message: '执行成功!'
+        });
+        this.fetchData();
+      })
     },
     toDel(id){
       this.$confirm('您确定要删除该记录?', '提示', {

@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+export function getUserList(params) {
+  return request({
+    url: '/admin/queryUserAndDepartByUserName',
+    method: 'get',
+    params
+  })
+}
+
 export function getInfoList(params) {
   return request({
     url: '/admin/driver/pageQuery',
@@ -10,7 +18,7 @@ export function getInfoList(params) {
 
 export function addInfo(data) {
   return request({
-    url: '/admin/driver/driver',
+    url: '/admin/driver',
     method: 'post',
     data
   })
@@ -18,7 +26,7 @@ export function addInfo(data) {
 
 export function editInfo(data) {
   return request({
-    url: '/admin/driver/driver',
+    url: '/admin/driver',
     method: 'put',
     data
   })
