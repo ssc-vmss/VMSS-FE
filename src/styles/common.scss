@@ -54,7 +54,7 @@ input::-webkit-inner-spin-button {
     transform: scale(1);
     cursor: not-allowed;
   }
-  
+
 }
 .btn-padding{
     padding: 5px;
@@ -363,7 +363,7 @@ input::-webkit-inner-spin-button {
       transition: all 0.3s;
       transform: scale(1.1)
     }
-    
+
   }
 }
 .el-date-picker .el-picker-panel__content{
@@ -409,6 +409,9 @@ input::-webkit-inner-spin-button {
   &:hover{
     background: rgba(30, 144, 255,.1);
   }
+}
+.el-table th{
+  background:#ecf5ff;
 }
 .BMap_cpyCtrl {
   display: none;

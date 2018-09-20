@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getAreaList(params) {
   return request({
-    url: '/area/findList',
+    url: '/gis/area/findList',
     method: 'get',
     params
   })
@@ -10,7 +10,7 @@ export function getAreaList(params) {
 
 export function addArea(data) {
   return request({
-    url: '/area/add',
+    url: '/gis/area/add',
     method: 'post',
     data
   })
@@ -18,7 +18,7 @@ export function addArea(data) {
 
 export function editArea(data) {
   return request({
-    url: '/area/update',
+    url: '/gis/area/update',
     method: 'put',
     data
   })
@@ -26,7 +26,7 @@ export function editArea(data) {
 
 export function delArea(params) {
   return request({
-    url: `/area/${params}`,
+    url: `/gis/area/${params}`,
     method: 'delete',
     params
   })

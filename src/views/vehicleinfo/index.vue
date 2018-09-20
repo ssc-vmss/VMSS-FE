@@ -1,15 +1,20 @@
 <template>
   <div class="app-container">
-    <el-row class="toptools" type="flex" justify="space-between">
-      <el-col :span="6">
-        <el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
-      </el-col>
+    <el-row class="toptools"  type="flex" justify="space-between">
+      <el-col :span="6"><el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button></el-col>
       <div>
-        <el-input placeholder="请输入内容" prefix-icon="el-icon-search" size="medium" style="width:200px" v-model="searchTxt" />
-        <el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button>
+        <!-- <el-input  placeholder="请输入内容" prefix-icon="el-icon-search" size="medium" style="width:200px" v-model="searchTxt" /><el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button> -->
+        <el-input v-model="searchTxt">
+          <el-select slot="prepend" v-model="searchType" style="width:120px">
+            <el-option label="车牌号" value="1"></el-option>
+            <el-option label="车辆类型" value="2"></el-option>
+            <el-option label="车辆品牌" value="3"></el-option>
+          </el-select>
+          <el-button type="primary" slot="append" icon="el-icon-search" @click="fetchData">查询</el-button>
+        </el-input>
       </div>
     </el-row>
-    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit highlight-current-row>
+    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit>
       <el-table-column align="center" label="车牌号" width="95">
         <template slot-scope="scope">
           {{ scope.row.LPNO }}
@@ -25,9 +30,9 @@
           <span>{{ vehicleType(scope.row.Type) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆识别号" width="110" align="center">
+      <el-table-column label="车辆品牌" width="110" align="center">
         <template slot-scope="scope">
-          {{ scope.row.VehicleID }}
+          {{ scope.row.plateBrand }}
         </template>
       </el-table-column>
       <el-table-column label="发动机号" width="110" align="center">
@@ -42,8 +47,8 @@
       </el-table-column>
       <el-table-column label="车辆购置时间" width="120" align="center">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ scope.row.BuyTime }}</span>
+          <i class="el-icon-time"/>
+          <span>{{ scope.row.buyTimes }}</span>
         </template>
       </el-table-column>
       <el-table-column label="车辆状态">
@@ -84,7 +89,7 @@
       </el-table-column>
     </el-table>
 
-    <el-pagination background layout="prev, pager, next" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
+    <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
 
     <!-- add from -->
     <el-dialog title="添加车辆信息" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
@@ -103,7 +108,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="车辆类型" :label-width="formLabelWidth">
+            <el-form-item label="车辆类型" prop="Type" :label-width="formLabelWidth">
               <el-select v-model="form.Type" placeholder="请选择车辆类型">
                 <el-option label="大型汽车" value="0"></el-option>
                 <el-option label="小型汽车" value="1"></el-option>
@@ -115,8 +120,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="车辆识别号" :label-width="formLabelWidth">
-              <el-input type="text" v-model="form.VehicleID" auto-complete="off"></el-input>
+            <el-form-item label="车辆品牌" :label-width="formLabelWidth">
+              <el-input type="text" v-model="form.plateBrand" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -135,7 +140,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆购置时间" :label-width="formLabelWidth">
-              <el-date-picker v-model="form.BuyTime" type="date" placeholder="选择日期"></el-date-picker>
+             <el-date-picker  v-model="form.buyTimes" type="date" placeholder="选择日期" value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -164,7 +169,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆编号" :label-width="formLabelWidth">
-              <el-input v-model="form.VehicleNO" auto-complete="off"></el-input>
+              <el-input v-model.trim="form.VehicleNO" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -208,21 +213,31 @@ export default {
     }
   },
   data() {
+    let validataLPNO=(rule,value,callback)=>{
+      let reg="^(([\u4e00-\u9fa5]{1}[A-Z]{1})[-]?|([wW][Jj][\u4e00-\u9fa5]{1}[-]?)|([a-zA-Z]{2}))([A-Za-z0-9]{5}|[DdFf][A-HJ-NP-Za-hj-np-z0-9][0-9]{4}|[0-9]{5}[DdFf])$",
+          LPNOReg=new RegExp(reg);
+      if(!LPNOReg.test(value)){
+        callback('请输入正确的车牌号');
+      }else{
+        callback();
+      }
+    }
     return {
       list: null,
       listLoading: true,
-      dialogFormVisible: false,
-      editact: false,
-      searchTxt: '',
+      dialogFormVisible:false,
+      editact:false,
+      searchType:'',
+      searchTxt:'',
       form: {
         LPNO: '',
         Color: '',
         Type: '',
-        VehicleID: '',
+        plateBrand: '',
         EngineNO: '',
         engineId: '',
         Load: '',
-        BuyTime: '',
+        buyTimes: '',
         Status: '',
         EnterpriseNO: '',
         VehicleNO: '',
@@ -233,10 +248,14 @@ export default {
       rules: {
         LPNO: [
           { required: true, message: '请输入车牌号', trigger: 'blur' },
-          { type: 'string', min: 7, max: 8, message: '长度在 7 到 8 个字符', trigger: 'blur' }
+          // { type: 'string', min: 7, max: 8, message: '长度在 7 到 8 个字符', trigger: 'blur' },
+          { validator: validataLPNO, trigger: 'blur' }
         ],
-        EngineNO: [
-          { type: 'string', required: true, message: '请输入发动机号', trigger: 'blur' },
+        Type:[
+          { required: true, message: '请选择车辆类型', trigger: 'change' },
+        ],
+        EngineNO:[
+          { type:'string',required: true, message: '请输入发动机号', trigger: 'blur' },
         ],
         engineId: [
           { type: 'string', required: true, message: '请输入发动机识别号', trigger: 'blur' },
@@ -325,22 +344,22 @@ export default {
       });
     },
     handleCreate() {
+      this.resetForm();
       this.dialogFormVisible = true
     },
     closeDialog(formName) {
       this.editact = false;
-      this.resetForm();
     },
     resetForm() {
       this.form = {
         LPNO: '',
         Color: '',
         Type: '',
-        VehicleID: '',
+        plateBrand: '',
         EngineNO: '',
         engineId: '',
         Load: '',
-        BuyTime: '',
+        buyTimes: '',
         Status: '',
         EnterpriseNO: '',
         VehicleNO: '',
@@ -354,16 +373,35 @@ export default {
     },
     fetchData() {
       this.listLoading = true
-      getInfoList({ pageNo: this.page, pageSize: this.pageSize }).then(response => {
+      let params={pageNo:this.page,pageSize:this.pageSize},
+          searchType=this.searchType,
+          searchTxt=this.searchTxt;
+
+          if(searchTxt.trim()){
+            switch (searchType) {
+              case '1':
+                params.plateNumber=searchTxt
+                break;
+              case '2':
+                params.plateType=searchTxt
+                break;
+              case '3':
+                params.plateBrand=searchTxt
+                break;
+              default:
+                break;
+            }
+          }
+
+      getInfoList(params).then(response => {
         let resData;
-        if (response.data) {
-          resData = response.data.rows.map(item => {
-            let { id, plateNumber: LPNO, plateColour: Color, plateType: Type, engineId: EngineNO, engineId, engineNumber, type: Status, enterpriseNumber: EnterpriseNO, emissionStandard: Emission, } = item;
-            return { id, LPNO, Color, Type, EngineNO, engineId, Status, EnterpriseNO, Emission }
-          })
-          this.list = resData;
-          this.total = response.data.total;
-        }
+        resData=response.data.rows&&response.data.rows.map(item=>{
+          let{id,plateNumber:LPNO,plateColour:Color,plateType:Type,engineId:EngineNO,engineId,engineNumber,type:Status,enterpriseNumber:EnterpriseNO,emissionStandard:Emission,buyTimes,plateBrand,}=item;
+          return {id,LPNO,Color,Type,EngineNO,engineId,Status,EnterpriseNO,Emission,buyTimes,plateBrand}
+        })
+        this.list = resData;
+        this.total=response.data.total;
+
         this.listLoading = false
       })
     },
@@ -377,17 +415,24 @@ export default {
         }
       });
     },
-    toEdit(data) {
-      this.form = data;
-      this.dialogFormVisible = true;
-      this.editact = true;
+    toEdit(data){
+      data.Type=data.Type+'';
+      data.Status=data.Status+'';
+      this.form=data;
+      this.dialogFormVisible=true;
+      this.editact=true;
     },
-    saveData() {
-      let { id, LPNO: plateNumber, Color: plateColour, Type: plateType, engineId, EngineNO: engineNumber, Status: type, EnterpriseNO: enterpriseNumber, Emission: emissionStandard } = this.form;
-      let data = { id, plateNumber, plateColour, plateType, engineId, engineNumber, type, enterpriseNumber, emissionStandard };
-      if (this.editact) {
-        editInfo(data).then(response => {
-
+    saveData(){
+      let{id,LPNO:plateNumber,Color:plateColour,Type:plateType,plateBrand,engineId,EngineNO:engineNumber,buyTimes,Status:type,EnterpriseNO:enterpriseNumber,Emission:emissionStandard}=this.form;
+      let data={id,plateNumber,plateColour,plateType,plateBrand,engineId,engineNumber,buyTimes,type,enterpriseNumber,emissionStandard};
+      if(this.editact){
+        editInfo(data).then(response=>{
+          this.dialogFormVisible=false;
+          this.$message({
+            message: response.message,
+            type: 'success'
+          });
+          this.fetchData();
         });
         return;
       }
