@@ -463,6 +463,7 @@ export default {
   position: relative;
   margin: 0 10px;
   height: calc(100vh - 170px);
+  overflow-y: hidden;
   @extend %section;
 }
 .vmss-table {

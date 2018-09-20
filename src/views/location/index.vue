@@ -6,10 +6,10 @@
         <div class="conf-form">
           <div class="conf-form-row">
             <span class="conf-form-label">车辆状态</span>
-            <el-checkbox-group class="singleline-checkbox">
-              <el-checkbox>运动</el-checkbox>
-              <el-checkbox>静止</el-checkbox>
-              <el-checkbox>离线</el-checkbox>
+            <el-checkbox-group v-model="state" class="singleline-checkbox">
+              <el-checkbox label="1">运动</el-checkbox>
+              <el-checkbox label="2">静止</el-checkbox>
+              <el-checkbox label="0">离线</el-checkbox>
             </el-checkbox-group>
           </div>
           <div class="conf-form-row">
@@ -30,17 +30,21 @@
       <i :class="[isshowleftbox?'el-icon-d-arrow-left':'el-icon-d-arrow-right']"></i>
     </div>
     <div class="right-box">
+      <my-table></my-table>
     </div>
   </div>
 </template>
 
 <script>
 import { getPageQuery } from '@/api/points'
+import MyTable from '@/components/Mytable'
 export default {
   components: {
+    MyTable
   },
   data() {
     return {
+      state: [],
       vehicle: { id: '', number: '' },
       searchVehicle: { id: '', number: '' },
       isSelected: false,
@@ -122,6 +126,21 @@ export default {
         }
       })
     },
+    query() {
+      console.log(this.state)
+      console.log(this.vehicle.number)
+      getPageQuery().then(response => {
+        let resData
+        if (response.data) {
+          resData = response.data.rows.map(item => {
+            let { id, speed, state, driverId, driverName, posTime, vehicleId, plateNumber, plateType, plateBrand, volume, orgId, createTime, location, lng, lat, equipmentNum } = item;
+            return { id, speed, state, driverId, driverName, posTime, vehicleId, plateNumber, plateType, plateBrand, volume, orgId, createTime, location, lng, lat, equipmentNum }
+          })
+          this.newPointsList = resData
+          this.showMonitorVehicles()
+        }
+      })
+    }
   }
 }
 </script>
