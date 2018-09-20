@@ -16,43 +16,6 @@ export default {
       location: '',
       overlays: [], // 点位信息
       map: null, // 创建Map实例
-      // list: [
-      //   {
-      //     'id': '4d7986d6f97e41ce96b03b03184bc301',
-      //     'speed': null,
-      //     'state': '2',
-      //     'driverId': null,
-      //     'driverName': null,
-      //     'posTime': null,
-      //     'vehicleId': 'B',
-      //     'plateNumber': 'B002',
-      //     'plateType': null,
-      //     'plateBrand': null,
-      //     'volume': null,
-      //     'orgId': null,
-      //     'createTime': '2018-09-12 14:24:26',
-      //     'location': '104.051934,30.64888830',
-      //     'lng': '104.052934',
-      //     'lat': '30.64888830'
-      //   }, {
-      //     'id': '360c87bf3b9a4aae9d0a47d6b4ae3d56',
-      //     'speed': 0,
-      //     'state': '1',
-      //     'driverId': 'driverId',
-      //     'driverName': 'driverName',
-      //     'posTime': null,
-      //     'vehicleId': 'A',
-      //     'plateNumber': 'A001',
-      //     'plateType': 'plateType',
-      //     'plateBrand': 'plateBrand',
-      //     'volume': 0,
-      //     'orgId': 'orgId',
-      //     'createTime': '2018-09-12 14:23:26',
-      //     'location': '104.051944,30.64888830',
-      //     'lng': '104.051944',
-      //     'lat': '30.64888830'
-      //   }
-      // ], // 数据接收点
       imgPath: '' // 创建标注点并添加到地图中
     }
   },
@@ -67,9 +30,6 @@ export default {
       map.enableScrollWheelZoom() //启用鼠标滚动对地图放大缩小
       map.addControl(new BMap.ScaleControl())
       map.addControl(new BMap.NavigationControl())
-      this.map = map
-      // this.setZoom(this.list)
-      // this.addMarker(this.list)
       this.map = map
     },
     // 获取中心点
@@ -139,15 +99,14 @@ export default {
         const marker = new BMap.Marker(nowPoint, {
           icon: myIcon
         })
-        this.map.addOverlay(marker);
+        this.map.addOverlay(marker)
         // 循环添加监听事件
-        (function () {
-          let thePoint = list[i]
-          marker.addEventListener('click', function () {
-            this.showInfo(this, thePoint) // 展示车辆信息
-            let q = this.map.getZoom()
-          })
-        })()
+        const thePoint = list[i]
+        const that = this
+        marker.addEventListener('click', function () {
+          that.showInfo(this, thePoint) // 展示车辆信息
+          // const q = this.map.getZoom()
+        })
       }
     },
     showInfo(thisMarker, points) {

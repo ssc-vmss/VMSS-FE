@@ -8,9 +8,10 @@
             <div class="conf-form-row">
               <div class="conf-form-label">
                 <span>车牌号</span>
-                <span class="required-span">*</span>
               </div>
-              <input class="conf-form-input" v-model="plateNumber" type="text" placeholder="请输入车牌号">
+              <div class="search-vehicle">
+                <el-autocomplete valueKey="number" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" v-model="vehicle.number" placeholder="输入车牌号搜索"></el-autocomplete>
+              </div>
             </div>
             <div class="conf-form-row">
               <div class="conf-form-label">
@@ -33,19 +34,13 @@
       </div>
       <div class="list-box">
         <h4 class="conf-h">历史轨迹数据</h4>
-        <loader v-if="listLoading"></loader>
-        <div v-else class="list">
-          <ul>
-            <li v-for="(vehicle,index) in monitorList" :class="{selected:vehicleIndex == index}" :key="index" @click="handleSelectVehicle(index)">{{ vehicle.number }}</li>
-          </ul>
-        </div>
       </div>
     </div>
     <div class="arrow-left" @click="handleIsShowLeftBox">
       <i :class="[isshowleftbox?'el-icon-d-arrow-left':'el-icon-d-arrow-right']"></i>
     </div>
     <div class="right-box">
-      <!-- <b-map-component ref="map" @handleGetLocation="handleGetLocation"></b-map-component> -->
+      <b-map-component ref="map"></b-map-component>
     </div>
   </div>
 </template>
@@ -61,7 +56,7 @@ export default {
   },
   data() {
     return {
-      plateNumbers: [],
+      vehicle: { id: '', number: '' },
       plateNumber: '',
       startTime: '',
       endTime: '',
@@ -93,14 +88,11 @@ export default {
       isindeterminate: true,
       ischeckedall: false,
       vehiclearray: [
-        { id: '0', number: '川A4661561' },
-        { id: '1', number: '川C4564965' },
-        { id: '2', number: '渝A7484414' },
-        { id: '3', number: '粤A4558587' },
-        { id: '4', number: '川C4567777' },
-        { id: '5', number: '渝B4848448' }],
-      vehicleIds: [],
-      monitorList: []
+        { id: 'dfbbb464c900431b9d728491117004f9', number: '川A111114' },
+        { id: '681af98e12ed4fa2b95b81d252032a55', number: '川A11111' },
+        { id: 'f9b99a7954324a389009631801ef5042', number: '川A222222' }
+      ],
+      vehicleIds: []
     }
   },
   watch: {
@@ -113,17 +105,40 @@ export default {
     }
   },
   created() {
-    // this.fetchData()
   },
   methods: {
     // 查询
     handleQuery() {
-      console.log(this.plateNumber)
-      console.log(this.startTime)
-      console.log(this.endTime)
+      let isExistence = false
+      this.vehiclearray.map(vehicle => {
+        if (this.vehicle.number === vehicle.number) {
+          isExistence = true
+        }
+      })
+      if (!isExistence) {
+        this.vehicle = { id: '', number: '' }
+        this.$message({
+          type: 'warning',
+          message: '车牌号不存在'
+        })
+      } else {
+        getPointList({ vehicleId: this.vehicle.id }).then(response => {
+          let resData
+          if (response.data) {
+            resData = response.data.rows.map(item => {
+              const { id, speed, state, driverId, driverName, posTime, vehicleId, plateNumber, plateType, plateBrand, volume, orgId, createTime, location, lng, lat } = item
+              return { id, speed, state, driverId, driverName, posTime, vehicleId, plateNumber, plateType, plateBrand, volume, orgId, createTime, location, lng, lat }
+            })
+            this.pointsList = resData
+            this.$refs.map.list = this.pointsList
+            this.$refs.map.ready()
+          }
+        })
+      }
     },
     // 清空
     handleClear() {
+      this.vehicle = { id: '', number: '' }
       this.plateNumber = ''
       this.startTime = ''
       this.endTime = ''
@@ -142,8 +157,8 @@ export default {
       })
     },
     // 输入车牌号时获取相似车牌号提供输入建议
-    handleFetchVehicle(querystring, callback) {
-      let results = this.vehiclearray.filter(vehicle => {
+    handleFetchNumber(querystring, callback) {
+      const results = this.vehiclearray.filter(vehicle => {
         if (vehicle.number.toLowerCase().indexOf(querystring.toLowerCase()) === 0) {
           return vehicle
         }
@@ -152,44 +167,7 @@ export default {
     },
     // 点击建议项里的车牌号
     handleSelectNumber(data) {
-      this.searchVehicle = JSON.parse(JSON.stringify(data))
-    },
-    // 点击选中当前搜索车辆
-    handleCheckVehicle() {
-      this.vehicleIds.push(this.searchVehicle.id)
-      this.isSelected = false
-      this.isChecked = true
-    },
-    // 点击取消选中当前搜索车辆
-    handleCancleCheckVehicle() {
-      this.isSelected = true
-      this.isChecked = false
-      this.vehicleIds.map((id, index) => {
-        if (this.searchVehicle.id === id) {
-          this.vehicleIds.splice(index, 1)
-        }
-      })
-    },
-    // 获取区域列表
-    fetchData() {
-      // 未加载时显示加载动画
-      this.listLoading = true
-      getPointList().then(response => {
-        let resData
-        if (response.data) {
-          resData = response.data.rows.map(item => {
-            let { id, speed, state, driverId, driverName, posTime, vehicleId, plateNumber, plateType, plateBrand, volume, orgId, createTime, location, lng, lat } = item;
-            return { id, speed, state, driverId, driverName, posTime, vehicleId, plateNumber, plateType, plateBrand, volume, orgId, createTime, location, lng, lat }
-          })
-          this.pointsList = resData
-          console.log(this.pointsList)
-          this.pointsList.map(point => {
-            this.plateNumbers.push(point.plateNumber)
-          })
-          this.vehicle
-        }
-        this.listLoading = false
-      })
+      this.vehicle = JSON.parse(JSON.stringify(data))
     },
     // 点击隐藏或显示左边菜单栏
     handleIsShowLeftBox() {
@@ -199,53 +177,9 @@ export default {
         document.getElementsByClassName('left-box')[0].style.display = ''
       }
       this.isshowleftbox = !this.isshowleftbox
-    },
-    // 点击监控车辆列表
-    handleSelectVehicle(index) {
-      this.searchVehicle = { id: '', number: '' }
-      if (this.vehicleIndex === -1) {
-        this.vehicleIndex = index
-      } else {
-        this.vehicleIndex = -1
-      }
-      console.log(this.pointsList)
-      console.log(typeof this.pointsList)
-      this.$refs.map.setZoom(this.pointsList)
-      this.$refs.map.addMarker(this.pointsList)
-    },
-    // 点击全选
-    handleCheckAllChange() {
-      this.vehicleIds = this.ischeckedall ? this.vehiclearray.map(item => {
-        return item.id
-      }) : []
-      this.isindeterminate = false
-      this.searchVehicle = { id: '', number: '' }
-    },
-    // 点击车辆列表的单选框
-    handleCheckChange() {
-      this.searchVehicle = { id: '', number: '' }
-    },
-    // 选中车辆列表改变时全选的状态
-    // handleVehicleChange(value) {
-    //   this.ischeckedall = value.length === this.vehiclearray.length
-    //   this.isindeterminate = value.length > 0 && value.length < this.vehiclearray.length
-    // },
-    handleGetLocation(location) {
-      this.list.location = location
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-.search-vehicle {
-  position: relative;
-  .btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: none;
-    padding: 2px 10px;
-    margin: 10px 15px;
-  }
-}
 </style>

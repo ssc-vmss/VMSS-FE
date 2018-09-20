@@ -248,15 +248,4 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.search-vehicle {
-  position: relative;
-  .btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: none;
-    padding: 2px 10px;
-    margin: 10px 15px;
-  }
-}
 </style>

@@ -2,9 +2,28 @@
   <div class="map-view">
     <div class="conf-form">
       <div class="conf-form-row">
+        <button class="btn">
+          <el-checkbox :checked="isChecked" class="allow-checkbox">画面跟随</el-checkbox>
+        </button>
+        <button ref="play" :disabled="isPlaying" class="btn" @click="play">播放</button>
+        <button ref="pause" :disabled="!isPlaying" class="btn" @click="pause">暂停</button>
+        <button class="btn" @click="reset">重置</button>
+        <button class="btn" @click="add">加速</button>
+        <button class="btn" @click="reduce">减速</button>
       </div>
     </div>
     <div id="allmap" ref="map"></div>
+    <div v-if="list.length>0&&list[index]" class="conf-form label-box">
+      <div class="label-row">
+        <span>车牌号码：{{ list[index].plateNumber }}</span>
+      </div>
+      <!-- <div class="label-row">
+        <span>行驶速度：{{ list[index].speed }}</span>
+      </div> -->
+      <div class="label-row">
+        <span>定位时间：{{ list[index].createTime }}</span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -12,48 +31,27 @@
 export default {
   data() {
     return {
+      map: null, // 创建Map实例
+      points: [],
+      isChecked: false,
+      isPlaying: false,
       hasOverlays: false,
       location: '',
       overlays: [], // 点位信息
-      map: null, // 创建Map实例
-      // list: [
-      //   {
-      //     'id': '4d7986d6f97e41ce96b03b03184bc301',
-      //     'speed': null,
-      //     'state': '2',
-      //     'driverId': null,
-      //     'driverName': null,
-      //     'posTime': null,
-      //     'vehicleId': 'B',
-      //     'plateNumber': 'B002',
-      //     'plateType': null,
-      //     'plateBrand': null,
-      //     'volume': null,
-      //     'orgId': null,
-      //     'createTime': '2018-09-12 14:24:26',
-      //     'location': '104.051934,30.64888830',
-      //     'lng': '104.052934',
-      //     'lat': '30.64888830'
-      //   }, {
-      //     'id': '360c87bf3b9a4aae9d0a47d6b4ae3d56',
-      //     'speed': 0,
-      //     'state': '1',
-      //     'driverId': 'driverId',
-      //     'driverName': 'driverName',
-      //     'posTime': null,
-      //     'vehicleId': 'A',
-      //     'plateNumber': 'A001',
-      //     'plateType': 'plateType',
-      //     'plateBrand': 'plateBrand',
-      //     'volume': 0,
-      //     'orgId': 'orgId',
-      //     'createTime': '2018-09-12 14:23:26',
-      //     'location': '104.051944,30.64888830',
-      //     'lng': '104.051944',
-      //     'lat': '30.64888830'
-      //   }
-      // ], // 数据接收点
-      imgPath: '' // 创建标注点并添加到地图中
+      list: [], // 数据接收点
+      car: '', // 汽车图标
+      centerPoint: '',
+      imgPath: 'src/assets/images/1.png',
+      startImg: 'src/assets/images/start.png',
+      endImg: 'src/assets/images/end.png',
+      timer: '', // 定时器
+      index: 0, // 记录播放到第几个point
+      speed: 1000, // 默认一秒钟(后期与接口频率调整一致)
+      lineStyle: {
+        strokeColor: '#1910A2',
+        strokeWeight: 3.5,
+        strokeOpacity: 1
+      }
     }
   },
   mounted() {
@@ -61,122 +59,133 @@ export default {
   },
   methods: {
     ready() {
-      const map = new BMap.Map("allmap", { enableMapClick: false }) // 创建Map实例
-      const point = new BMap.Point(104.085145, 30.642301)
-      map.centerAndZoom(point, 15) // 初始化地图,设置中心点坐标和地图级别
-      map.enableScrollWheelZoom() //启用鼠标滚动对地图放大缩小
-      map.addControl(new BMap.ScaleControl())
-      map.addControl(new BMap.NavigationControl())
-      this.map = map
-      this.setZoom(this.list)
-      this.addMarker(this.list)
-      this.map = map
-    },
-    // 获取中心点
-    setZoom(list) {
-      if (list.length > 0) {
-        let maxLng = list[0].lng
-        let minLng = list[0].lng
-        let maxLat = list[0].lat
-        let minLat = list[0].lat
-        let res
-        for (let i = list.length - 1; i >= 0; i--) {
-          res = list[i]
-          if (res.lng > maxLng) {
-            maxLng = res.lng
-          }
-          if (res.lng < minLng) {
-            minLng = res.lng
-          }
-          if (res.lat > maxLat) {
-            maxLat = res.lat
-          }
-          if (res.lat < minLat) {
-            minLat = res.lat
-          }
+      this.map = new BMap.Map('allmap', { enableMapClick: false }) // 创建Map实例
+      this.map.enableScrollWheelZoom() // 启用鼠标滚动对地图放大缩小
+      this.map.addControl(new BMap.ScaleControl())
+      this.map.addControl(new BMap.NavigationControl())
+      this.map.centerAndZoom(new BMap.Point(104.085145, 30.642301), 15) // 初始化地图,设置中心点坐标和地图级别
+      if (this.list.length > 0) {
+        this.points = []
+        for (var i = 0; i < this.list.length; i++) {
+          var point = new BMap.Point(this.list[i].lng, this.list[i].lat)
+          this.points.push(point)
         }
-        const cenLng = (parseFloat(maxLng) + parseFloat(minLng)) / 2 // 缩放中心的精度
-        const cenLat = (parseFloat(maxLat) + parseFloat(minLat)) / 2 // 缩放中心的纬度
-        const zoom = this.getZoom(maxLng, minLng, maxLat, minLat) // 缩放级别
-        this.map.centerAndZoom(new BMap.Point(cenLng, cenLat), zoom) // 中心点和缩放级别
+        this.map.centerAndZoom(this.points[0], 15) // 初始化地图,设置中心点坐标和地图级别
+        var start = new BMap.Point(this.list[0].lng, this.list[0].lat) // 起点
+        var end = new BMap.Point(this.list[this.list.length - 1].lng, this.list[this.list.length - 1].lat) // 终点
+        var myIcon = new BMap.Icon(this.imgPath, new BMap.Size(52, 26))
+        var startIcon = new BMap.Icon(this.startImg, new BMap.Size(32, 32), { anchor: new BMap.Size(16, 32) })
+        var endIcon = new BMap.Icon(this.endImg, new BMap.Size(32, 32), { anchor: new BMap.Size(16, 32) })
+        var myStart = new BMap.Marker(this.points[0], { icon: startIcon })
+        this.map.addOverlay(myStart)
+        // 终点标记
+        var myEnd = new BMap.Marker(end, { icon: endIcon })
+        this.map.addOverlay(myEnd)
+        var map = this.map
+        var points = this.points
+        // 通过DrivingRoute获取一条路线的point
+        var driving = new BMap.DrivingRoute(this.map)
+        driving.search(start, end)
+        const that = this
+        driving.setSearchCompleteCallback(function () {
+          // 画面移动到起点和终点的中间
+          var centerPoint = new BMap.Point((points[0].lng + points[points.length - 1].lng) / 2, (points[0].lat + points[points.length - 1].lat) / 2)
+          map.panTo(centerPoint)
+          that.centerPoint = centerPoint
+          // 连接所有点
+          map.addOverlay(new BMap.Polyline(points, that.lineStyle))
+          // 显示小车子
+          var car = new BMap.Marker(points[0], { icon: myIcon })
+          map.addOverlay(car)
+          that.car = car
+          // 点亮操作按钮
+          that.isPlaying = false
+        })
+      }
+    },
+    play() {
+      this.isPlaying = true
+      var point = this.points[this.index]
+      if (this.index > 0) {
+        this.map.addOverlay(new BMap.Polyline([this.points[this.index - 1], point], { strokeColor: '#E80110', strokeWeight: 3.5, strokeOpacity: 1 }))
+        this.setRotation(this.points[this.index - 1], point, this.car)
+      }
+      this.car.setPosition(point)
+      this.index++
+      if (this.isChecked) {
+        this.map.panTo(point)
+      }
+      if (this.index < this.points.length) {
+        this.timer = window.setTimeout(() => { this.play() }, this.speed)
       } else {
-        const myFun = (result) => {
-          const cityName = result.name
-          this.map.setCenter(cityName)
-        }
-        const myCity = new BMap.LocalCity()
-        myCity.get(myFun)
+        this.isPlaying = true
+        // 		map.panTo(point);
+      }
+      if (this.index === this.points.length) {
+        this.index--
       }
     },
-    // 获取最佳缩放级别
-    getZoom(maxLng, minLng, maxLat, minLat) {
-      const zoom = ['50', '100', '200', '500', '1000', '2000', '5000',
-        '10000', '20000', '25000', '50000', '100000', '200000',
-        '500000', '1000000', '2000000'] // 级别18到3
-      const pointA = new BMap.Point(maxLng, maxLat) // 创建点坐标A
-      const pointB = new BMap.Point(minLng, minLat) // 创建点坐标B
-      const distance = this.map.getDistance(pointA, pointB).toFixed(1) // 获取两点距离,保留小数点后两位
-      for (let i = 0, zoomLen = zoom.length; i < zoomLen; i++) {
-        if (zoom[i] - distance > 0) {
-          return 18 - i + 2 // 之所以会多2，是因为地图范围常常是比例尺距离的10倍以上。所以级别会增加2
-        }
+    pause() {
+      this.isPlaying = false
+      if (this.timer) {
+        window.clearTimeout(this.timer)
       }
     },
-    addMarker(list) {
-      console.log(this.list)
-      for (let i = 0; i < list.length; i++) {
-        const nowPoint = new BMap.Point(list[i].lng, list[i].lat)
-        // console.log(this.list)
-        if (this.list[i].state === '0') {
-          this.imgPath = '0.png' // 图片路径
-        } else if (list[i].state === '1') {
-          this.imgPath = 'src/assets/images/1.png'
+    reset() {
+      this.isChecked = false
+      this.isPlaying = false
+      if (this.timer) {
+        window.clearTimeout(this.timer)
+      }
+      this.index = 0
+      this.speed = 1000
+      this.car.setPosition(this.points[0])
+      this.map.panTo(this.centerPoint)
+      this.map.addOverlay(new BMap.Polyline(this.points, this.lineStyle))
+
+    },
+    add() {
+      this.speed = this.speed / 2
+      console.log(this.speed)
+    },
+    reduce() {
+      this.speed = this.speed * 2
+      console.log(this.speed)
+    },
+    // 设置方向 curPos 起点 targetPos 终点
+    setRotation(curPos, targetPos, marker) {
+      var deg = 0
+      curPos = this.map.pointToPixel(curPos)
+      targetPos = this.map.pointToPixel(targetPos)
+
+      if (targetPos.x !== curPos.x) {
+        var tan = (targetPos.y - curPos.y) / (targetPos.x - curPos.x), atan = Math.atan(tan)
+        deg = atan * 360 / (2 * Math.PI)
+        if (targetPos.x < curPos.x) {
+          deg = -deg + 90 + 90
         } else {
-          this.imgPath = 'src/assets/images/2.png'
+          deg = -deg
         }
-        const myIcon = new BMap.Icon(this.imgPath, new BMap.Size(52, 26), {
-          anchor: new BMap.Size(25, 15)
-        })
-        const marker = new BMap.Marker(nowPoint, {
-          icon: myIcon
-        })
-        this.map.addOverlay(marker);
-        // 循环添加监听事件
-        (function () {
-          let thePoint = list[i]
-          marker.addEventListener('click', function () {
-            this.showInfo(this, thePoint) // 展示车辆信息
-            let q = this.map.getZoom()
-            console.log(q)
-          })
-        })()
+        marker.setRotation(-deg)
+      } else {
+        var disy = targetPos.y - curPos.y
+        var bias = 0
+        if (disy > 0) {
+          bias = -1
+        } else {
+          bias = 1
+        }
+        marker.setRotation(-bias * 90)
       }
-    },
-    showInfo(thisMarker, points) {
-      // 获取点的信息
-      const vehicleInfo = '车牌号码：' + points.plateNumber + '<br />' + '车辆品牌：' + points.plateBrand + '<br />' + '行驶速度：' + points.speed + '<br />' + '司机姓名：' + points.driverName + '<br />'
-      const infoWindow = new BMap.InfoWindow(vehicleInfo)
-      thisMarker.openInfoWindow(infoWindow)
+      return
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-.map-view {
-  display: block;
-  height: 100%;
-  padding: 10px;
-}
-#allmap {
-  width: 100%;
-  padding-right: 500px;
-  height: 100%;
-  position: relative;
-  margin-top: -40px;
-}
 .conf-form {
   .conf-form-row {
-    width: 400px;
+    width: 420px;
     margin: 0 auto;
     z-index: 999;
     height: 40px;
@@ -190,10 +199,7 @@ export default {
     }
   }
 }
-#searchResult {
-  border: 1px solid #c0c0c0;
-  width: 150px;
-  height: auto;
-  display: none;
+.allow-checkbox {
+  padding-right: 0;
 }
 </style>

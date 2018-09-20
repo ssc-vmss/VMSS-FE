@@ -150,7 +150,6 @@ input::-webkit-inner-spin-button {
       width: 100%;
       margin: 0 5px 0 10px;
       input{
-        border-color: #000;
         height: 36px;
         padding: 5px 10px;
         &:hover{
@@ -192,9 +191,8 @@ input::-webkit-inner-spin-button {
     }
     .datetime-picker{
       width: 100%;
-      margin: 0 5px 0 10px;
       input{
-        border-color: #000;
+        border-color: #bfcbd9;
         height: 36px;
         padding: 5px 10px;
         &:hover{
@@ -235,7 +233,7 @@ input::-webkit-inner-spin-button {
       }
     }
     .conf-form-input{
-      border: 1px solid #000; 
+      border: 1px solid #bfcbd9; 
       border-radius: 5px;
       line-height: 15px;
       outline-style: none;
@@ -324,25 +322,27 @@ input::-webkit-inner-spin-button {
   border: 1px solid #e6e6e6;
   border-radius: 5px;
   margin: 0 10px 5px;
-  padding: 5px 10px;
+  padding: 10px 20px;
 }
 .el-checkbox-group{
-  .el-checkbox{
+  padding: 5px;
+}
+.el-checkbox{
     display: inline-block;
     width: 100%;
-    padding: 0;
+    padding-right: 20px;
     &:hover{
       transition: all 0.3s;
       transition: all 0.3s;
       transform: scale(1.05);
       color:#3498db;
     }
-    &:first-child{
-      padding-left: 30px;
-    }
 }
+.el-checkbox+.el-checkbox{
+  margin-left: 0;
 }
 .singleline-checkbox{
+  width: 100%;
   padding: 5px 10px;
     .el-checkbox{
       width: auto;
@@ -386,7 +386,16 @@ input::-webkit-inner-spin-button {
 }
 .el-autocomplete{
   width: 100%;
-  padding: 5px 10px;
+  .el-input__inner{
+    border-color: #bfcbd9;
+    &:hover{
+    border-color:#3498db;
+    transition: all 0.3s;
+    transition: all 0.3s;
+    transform: scale(1.05);
+    color:#3498db;
+    }
+  }
 }
 .arrow-left{
   width: 25px;
@@ -418,4 +427,28 @@ input::-webkit-inner-spin-button {
   height: 100%;
   position: relative;
   margin-top: -40px;
+}
+.search-vehicle {
+  position: relative;
+  width: 100%;
+  .btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: none;
+    padding: 2px 10px;
+    margin: 10px 15px;
+  }
+}
+.label-box{
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 10px;
+  padding: 10px;
+  background-color: rgba(255,255,255,0.8);
+  border-bottom-left-radius: 10px;
+  .label-row{
+    padding: 5px;
+  }
 }
