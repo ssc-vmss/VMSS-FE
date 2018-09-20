@@ -1,29 +1,27 @@
 <template>
   <div class="table-view">
     <Carloader v-if="listLoading"></Carloader>
-    <div v-else>
-      <div class="table-container">
-        <table class="vmss-table">
-          <thead class="vmss-thead">
-            <tr class="vmss-tr">
-              <th class="vmss-th">
-                <el-checkbox></el-checkbox>
-              </th>
-              <th v-for="(title,index) in headerList" :key="index" class="vmss-th">{{ title }}</th>
-            </tr>
-          </thead>
-          <tbody class="vmss-tbody">
-            <tr v-for="(item,index) in tableList" :key="index" class="vmss-tr">
-              <td class="vmss-td">
-                <el-checkbox></el-checkbox>
-              </td>
-              <td v-for="key in item" :key="key" class="vmss-td">{{ key }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <!-- <pagination :pages="25"></pagination> -->
+    <div v-else class="table-container">
+      <table class="vmss-table">
+        <thead class="vmss-thead">
+          <tr class="vmss-tr">
+            <th class="vmss-th">
+              <el-checkbox></el-checkbox>
+            </th>
+            <th v-for="(title,index) in headerList" :key="index" class="vmss-th">{{ title }}</th>
+          </tr>
+        </thead>
+        <tbody class="vmss-tbody">
+          <tr v-for="(item,index) in tableList" :key="index" class="vmss-tr">
+            <td class="vmss-td">
+              <el-checkbox></el-checkbox>
+            </td>
+            <td v-for="key in item" :key="key" class="vmss-td">{{ key }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+    <!-- <pagination :pages="25"></pagination> -->
   </div>
 </template>
 
@@ -462,13 +460,15 @@ export default {
 .table-container {
   position: relative;
   margin: 0 10px;
-  height: calc(100vh - 170px);
+  height: calc(100vh - 200px);
+  overflow-y: hidden;
   @extend %section;
 }
 .vmss-table {
   border-collapse: collapse;
   font-size: 14px;
   text-align: center;
+  width: 100%;
 }
 .vmss-table,
 .vmss-th,

@@ -4,11 +4,11 @@
       <div class="conf-form">
         <div class="conf-form-row">
           <div class="conf-form-box">
-            <span class="top-label">车辆状态</span>
+            <span class="top-label">报警类型</span>
             <el-checkbox-group v-model="state" class="singleline-checkbox">
-              <el-checkbox label="1">运动</el-checkbox>
-              <el-checkbox label="2">静止</el-checkbox>
-              <el-checkbox label="0">离线</el-checkbox>
+              <el-checkbox label="1">1/运动</el-checkbox>
+              <el-checkbox label="2">2/静止</el-checkbox>
+              <el-checkbox label="0">0/离线</el-checkbox>
             </el-checkbox-group>
           </div>
           <div class="conf-form-box">
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { getPageQuery } from '@/api/points'
+import { getPageQuery } from '@/api/warn'
 import MyTable from '@/components/Mytable'
 export default {
   components: {
@@ -63,7 +63,7 @@ export default {
       },
       listLoading: false, // 列表加载状态
       isshowleftbox: true,
-      headerList: ['id', '速度', '状态', '驾驶员id', '驾驶员姓名', 'posTime', '车辆id', '车牌号', '车牌类型', 'plateBrand', 'volume', '组织id', '创建时间', '点位', '起点', '终点', '设备号'],
+      headerList: ['id', '速度', '类型', '驾驶员id', '车辆id', '组织id', 'common', '创建时间', '点位'],
       locationList: [],
       vehicleIndex: -1,
       isindeterminate: true,
@@ -96,8 +96,8 @@ export default {
         if (response.data) {
           response.data.rows.map((item, index) => {
             delete item.id
-            const { id, speed, state, driverId, driverName, posTime, vehicleId, plateNumber, plateType, plateBrand, volume, orgId, createTime, location, lng, lat, equipmentNum } = item
-            this.locationList.push({ id: index + 1, speed, state, driverId, driverName, posTime, vehicleId, plateNumber, plateType, plateBrand, volume, orgId, createTime, location, lng, lat, equipmentNum })
+            const { id, speed, type, driverId, vehicleId, orgId, common, createTime, location } = item
+            this.locationList.push({ id: index + 1, speed, type, driverId, vehicleId, orgId, common, createTime, location })
           })
         }
       })

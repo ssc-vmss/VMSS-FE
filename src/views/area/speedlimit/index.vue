@@ -207,7 +207,9 @@ export default {
       this.isdelete = true
       this.areaindex = index
       this.list = JSON.parse(JSON.stringify(this.arealist[this.areaindex]))
-      this.$refs.map.show(this.list.location)
+      if (this.list.location) {
+        this.$refs.map.show(this.list.location)
+      }
     },
     // 清空表单
     handleClear() {

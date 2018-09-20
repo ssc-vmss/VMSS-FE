@@ -19,7 +19,7 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
   }
-  input[type="number"]{
+input[type="number"]{
     -moz-appearance: textfield;
   }
 .view{
@@ -57,61 +57,65 @@ input::-webkit-inner-spin-button {
 
 }
 .btn-padding{
+  padding: 5px;
+  text-align: center;
+}
+.left-box {
+ min-width: 300px;
+  width: 500px;
+  padding: 5px;
+  animation: right-to-left 5s linear;
+  border-right: 1px solid #e6e6e6;
+}
+.list-box {
+  .list {
+    border: 1px solid #e6e6e6;
+    border-radius: 5px;
+    margin: 5px 10px;
     padding: 5px;
+    overflow-y: auto;
+    height: 330px;
     text-align: center;
-  }
-  .left-box {
-    min-width: 300px;
-    width: 500px;
-    padding: 5px;
-    animation: right-to-left 5s linear;
-    border-right: 1px solid #e6e6e6;
-  }
-  .list-box {
-    .list {
-      border: 1px solid #e6e6e6;
-      border-radius: 5px;
-      margin: 5px 10px;
-      padding: 5px;
-      overflow-y: auto;
-      height: 330px;
-      text-align: center;
-      // overflow: hidden;
-      @extend %section;
-      ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
-      li {
-        padding: 6px 10px;
-        border-bottom: 1px solid #e6e6e6;
-        &:hover {
+    // overflow: hidden;
+    @extend %section;
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    li {
+      padding: 6px 10px;
+      border-bottom: 1px solid #e6e6e6;
+      &:hover {
         cursor: pointer;
         background: rgba(67, 159, 252, 0.1);
-        }
-      }
-      .disabled{
-        pointer-events: none;
-      }
-      .selected {
-        background: rgba(67, 159, 252, 0.2);
       }
     }
+    .disabled{
+      pointer-events: none;
+    }
+    .selected {
+      background: rgba(67, 159, 252, 0.2);
+    }
   }
-  .right-box {
-    border: 1px solide #e6e6e6;
-    height: 100%;
-    width: 100%;
-  }
+}
+.right-box {
+  border: 1px solide #e6e6e6;
+  height: 100%;
+  width: 100%;
+}
+.top-box{
+  width: 100%;
+  display: block;
+}
 .conf-box{
   height: 46%;
 }
-  .conf-h {
-    margin: 0;
-    padding: 10px;
-    display: inline-block;
-  }
+.conf-h {
+  margin: 0;
+  padding: 10px;
+  display: inline-block;
+}
 .conf-form{
   font-size: 14px;
   font-weight: 700;
@@ -343,7 +347,7 @@ input::-webkit-inner-spin-button {
 }
 .singleline-checkbox{
   width: 100%;
-  padding: 5px 10px;
+  padding: 10px 5px;
     .el-checkbox{
       width: auto;
       &:first-child{
