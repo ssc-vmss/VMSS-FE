@@ -100,8 +100,13 @@ export default {
     }
   },
   created() {
+    this.fetchVehicle()
   },
   methods: {
+    // 获取车辆信息
+    fetchVehicle() {
+      
+    },
     // 搜索框内容改变时
     handleSearchChange() {
       this.isSelected = false

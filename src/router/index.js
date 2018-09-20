@@ -128,7 +128,7 @@ export const constantRouterMap = [
       {
         path: 'warning',
         name: 'warning',
-        component: () => import('@/views/nested/menu2/index'),
+        component: () => import('@/views/warning/index'),
         meta: { title: '报警信息' }
       },
       {
