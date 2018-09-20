@@ -111,7 +111,7 @@ export default {
     },
     showInfo(thisMarker, points) {
       // 获取点的信息
-      const vehicleInfo = '车牌号码：' + points.plateNumber + '<br />' + '车辆品牌：' + points.plateBrand + '<br />' + '行驶速度：' + points.speed + '<br />' + '司机姓名：' + points.driverName + '<br />'
+      const vehicleInfo = '<div class="conf-form label-box">车牌号码：' + points.plateNumber + '<br />' + '车辆品牌：' + points.plateBrand + '<br />' + '行驶速度：' + points.speed + '<br />' + '司机姓名：' + points.driverName + '<br /><div>'
       const infoWindow = new BMap.InfoWindow(vehicleInfo)
       thisMarker.openInfoWindow(infoWindow)
     }
