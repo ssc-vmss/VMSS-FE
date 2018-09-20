@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getInfoList(params) {
   return request({
-    url: '/admin/vehicle/pageQuery',
+    url: '/admin/vehicleMapperEquipmen/pageQuery',
     method: 'get',
     params
   })
@@ -10,7 +10,7 @@ export function getInfoList(params) {
 
 export function addInfo(data) {
   return request({
-    url: '/admin/vehicle',
+    url: '/admin/vehicleMapperEquipment',
     method: 'post',
     data
   })
@@ -18,7 +18,7 @@ export function addInfo(data) {
 
 export function editInfo(data) {
   return request({
-    url: '/admin/vehicle',
+    url: '/admin/vehicleMapperEquipment',
     method: 'put',
     data
   })
@@ -26,8 +26,16 @@ export function editInfo(data) {
 
 export function delInfo(params) {
   return request({
-    url: '/admin/logoutVehicle',
+    url: '/admin/logoutVehicleMapperEquipmen',
     method: 'put',
+    params
+  })
+}
+
+export function getVehicleList(params) {
+  return request({
+    url: '/admin/vehicle/pageQuery',
+    method: 'get',
     params
   })
 }
@@ -39,3 +47,4 @@ export function getEquipmentList(params) {
     params
   })
 }
+

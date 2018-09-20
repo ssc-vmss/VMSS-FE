@@ -178,7 +178,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
+        <!-- <el-row>
           <el-col :span="12">
             <el-form-item label="车载设备型号" :label-width="formLabelWidth">
               <el-select v-model="form.equipmentModel" placeholder="请选择车辆状态">
@@ -192,7 +192,7 @@
               <el-input type="text" v-model="form.equipmentID" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
-        </el-row>
+        </el-row> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -204,7 +204,7 @@
 </template>
 
 <script>
-import { getInfoList, addInfo, editInfo, delInfo } from '@/api/vehicle'
+import { getInfoList, addInfo, editInfo, delInfo,getEquipmentList } from '@/api/vehicle'
 
 export default {
   watch: {
@@ -229,6 +229,8 @@ export default {
       editact:false,
       searchType:'',
       searchTxt:'',
+      options:[],
+      optionsLoading:false,
       form: {
         LPNO: '',
         Color: '',
@@ -274,6 +276,15 @@ export default {
     this.fetchData()
   },
   methods: {
+    getEquipment(query){
+      if(query!=''){
+        this.optionsLoading=true;
+        getEquipmentList({unitType:query}).then(response=>{
+          this.options=response.data.rows;
+          this.optionsLoading=false;
+        })
+      }
+    },
     vehicleType(type) {
       switch (type) {
         case 0:

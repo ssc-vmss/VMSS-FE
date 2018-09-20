@@ -64,6 +64,12 @@ export const constantRouterMap = [
         name: 'equipmentInfo',
         component: () => import('@/views/equipmentInfo/index'),
         meta: { title: '车载设备管理' }
+      },
+      {
+        path: 'binding',
+        name: 'binding',
+        component: () => import('@/views/binding/index'),
+        meta: { title: '设备绑定' }
       }
     ]
   },
