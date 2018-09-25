@@ -659,7 +659,7 @@ export default {
 <style>
 .driverTable .el-table__body tr.current-row>td,
 .vehicleTable .el-table__body tr.current-row>td{
-  background-color: #409eff;
+  background-color: #008080;
   color:#fff;
 }
 .dispatchDialog .el-dialog{

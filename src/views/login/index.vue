@@ -133,7 +133,7 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-$bg: #2d3a4b;
+$bg: #008080;
 $light_gray: #eee;
 
 /* reset element-ui css */
@@ -143,7 +143,7 @@ $light_gray: #eee;
 .login-container {
   text-align: center;
   height: 100%;
-  background-color: #2d3a4b;
+  background-color: $bg;
   .login-input {
     text-align: center;
     width: 330px;

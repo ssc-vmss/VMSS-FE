@@ -471,7 +471,7 @@ export default {
   border: 1px solid #ebeef5;
 }
 .vmss-tr:hover {
-  background: rgba(30, 144, 255, 0.1);
+  background: rgba(0, 128, 128, 0.1);
 }
 .vmss-th {
   color: #909399;

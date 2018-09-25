@@ -124,10 +124,10 @@ export default {
 .pagination-outline:after {
   background: linear-gradient(
     to right,
-    rgba(30, 144, 255, 0) 0%,
-    rgba(30, 144, 255, 0.3) 17%,
-    rgba(30, 144, 255, 0.3) 83%,
-    rgba(30, 144, 255, 0) 100%
+    rgba(0, 128, 128, 0) 0%,
+    rgba(0, 128, 128, 0.3) 17%,
+    rgba(0, 128, 128, 0.3) 83%,
+    rgba(0, 128, 128, 0) 100%
   );
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#00000000',GradientType=1 );
   content: '';
@@ -168,7 +168,7 @@ export default {
   margin: 0 5px;
 }
 .pagination-ul button:before {
-  background: rgba(30, 144, 255, 0.2);
+  background: rgba(0, 128, 128, 0.2);
   border-radius: 50%;
   content: '';
   cursor: pointer;
@@ -206,7 +206,7 @@ export default {
   width: 30px;
 }
 .pagination-ul .bgprimary {
-  background: rgba(30, 144, 255, 0.2);
+  background: rgba(0, 128, 128, 0.2);
   color: black;
 }
 .jumpinp input {
@@ -221,7 +221,7 @@ export default {
   outline-style: none;
 }
 .jumpinp input:focus {
-  border-color: rgba(30, 144, 255, 0.7);
+  border-color: rgba(0, 128, 128, 0.7);
 }
 .jumppoint {
   margin-left: 30px;
