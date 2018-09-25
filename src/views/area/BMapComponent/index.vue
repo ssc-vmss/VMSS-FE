@@ -4,9 +4,7 @@
       <div class="conf-form-row">
         <input type="text" class="conf-form-input" id="suggestId" placeholder="搜索地址" />
         <div id="searchResult"></div>
-        <button class="btn" :disabled="!isadd" @click="add">绘图</button>
-        <button :disabled="!isedit" class="btn" @click="edit">编辑</button>
-        <button :disabled="overlays.length==0" class="btn" @click="remove">删除</button>
+        <button :disabled="!(isadd||isedit)||overlays.length==0" class="btn" @click="remove">区域清除</button>
       </div>
     </div>
     <div id="allmap" ref="map"></div>
@@ -27,8 +25,8 @@ export default {
       map: null, // 创建Map实例
       drawingManager: null, // 实例化鼠标绘制工具
       styleOptions: {
-        strokeColor: 'rgb(48, 65, 86)', // 边线颜色。
-        fillColor: 'rgb(67, 159, 252)', // 填充颜色。当参数为空时，圆形将没有填充效果。
+        strokeColor: 'rgb(47,79,79)', // 边线颜色。
+        fillColor: 'rgb(0,128,128)', // 填充颜色。当参数为空时，圆形将没有填充效果。
         strokeWeight: 2, // 边线的宽度，以像素为单位。
         strokeOpacity: 0.5, // 边线透明度，取值范围0 - 1。
         fillOpacity: 0.2, // 填充的透明度，取值范围0 - 1。
@@ -100,9 +98,6 @@ export default {
         })
         local.search(myValue)
       }
-      // 绘制多变形
-      var polygon = []
-      var overlays = []
       // 实例化鼠标绘制工具
       this.drawingManager = new BMapLib.DrawingManager(map, {
         isOpen: false, // 是否开启绘制模式
@@ -110,36 +105,23 @@ export default {
       })
       // 添加鼠标绘制工具监听事件，用于获取绘制结果
       this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete)
-      this.$refs.map.oncontextmenu = () => {
-        this.$confirm('是否保留此区域的编辑', '提示', {
-          confirmButtonText: '保留',
-          cancelButtonText: '不保留',
-          type: 'warning'
-        }).then(() => {
-          this.polygon.disableEditing()
-          var mypoints = []
-          var allOverlay = map.getOverlays()
-          for (var i = 0; i < allOverlay.length; i++) {
-            if (allOverlay[i].toString() === '[object Polygon]') {
-              for (var j = 0; j < allOverlay[i].getPath().length; j++) {
-                mypoints[j] = allOverlay[i].getPath()[j].lng + ',' + allOverlay[i].getPath()[j].lat
-              }
-              mypoints = mypoints.join(';')
-            }
-          }
-          this.location = mypoints
-          this.$emit('handleGetLocation', this.location)
-        }).catch(() => {
-          this.map.clearOverlays()
-          this.show(this.location)
-          this.$message({
-            type: 'info',
-            message: '已取消区域编辑'
-          })
-        })
-      }
       this.map = map
-      this.polygon = polygon
+    },
+    // 保存
+    save() {
+      this.polygon.disableEditing()
+      var mypoints = []
+      var allOverlay = this.map.getOverlays()
+      for (var i = 0; i < allOverlay.length; i++) {
+        if (allOverlay[i].toString() === '[object Polygon]') {
+          for (var j = 0; j < allOverlay[i].getPath().length; j++) {
+            mypoints[j] = allOverlay[i].getPath()[j].lng + ',' + allOverlay[i].getPath()[j].lat
+          }
+          mypoints = mypoints.join(';')
+        }
+      }
+      this.location = mypoints
+      this.$emit('handleGetLocation', this.location)
     },
     // 添加
     add() {

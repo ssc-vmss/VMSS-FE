@@ -74,7 +74,7 @@ input[type="number"]{
     margin: 5px 10px;
     padding: 5px;
     overflow-y: auto;
-    height: 330px;
+    height: 270px;
     text-align: center;
     // overflow: hidden;
     @extend %section;
@@ -109,7 +109,7 @@ input[type="number"]{
   display: block;
 }
 .conf-box{
-  height: 46%;
+  // height: 55%;
 }
 .conf-h {
   margin: 0;
@@ -348,12 +348,12 @@ input[type="number"]{
 .singleline-checkbox{
   width: 100%;
   padding: 10px 5px;
-    .el-checkbox{
-      width: auto;
-      &:first-child{
-        padding-left: 0;
-      }
+  .el-checkbox{
+    width: auto;
+    &:first-child{
+      padding-left: 0;
     }
+  }
 }
 .el-time-panel{
   width: 250px;

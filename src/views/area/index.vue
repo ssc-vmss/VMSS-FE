@@ -2,7 +2,7 @@
   <div class="view">
     <div :class="{remove:!isShowLeftBox}" class="left-box">
       <div class="conf-box">
-        <h4 class="conf-h">区域限速设置</h4>
+        <h4 class="conf-h">区域设置</h4>
         <h4 v-if="isadding" class="conf-h">(新增中...)</h4>
         <h4 v-if="isediting" class="conf-h">(编辑中...)</h4>
         <div v-if="!issetapplvehicles">
@@ -35,15 +35,6 @@
             </div>
             <div class="conf-form-row">
               <div class="conf-form-label">
-                <span>最高时速</span>
-              </div>
-              <input class="conf-form-input" :disabled="isadd" v-model="list.max" type="number">
-              <span class="unit-span">km/h</span>
-              <i :class="{isdisabled:(isadd||list.max==0)}" class="el-icon-minus conf-form-icon lefticon" @click="list.max--"></i>
-              <i :class="{isdisabled:isadd}" class="el-icon-plus conf-form-icon righticon" @click="list.max++"></i>
-            </div>
-            <div class="conf-form-row">
-              <div class="conf-form-label">
                 <span>开始时间</span>
               </div>
               <el-time-picker value-format="HH:mm:ss" :disabled="isadd" v-model="list.startTime" class="time-picker" placeholder="选择时间"></el-time-picker>
@@ -54,12 +45,30 @@
               </div>
               <el-time-picker value-format="HH:mm:ss" :disabled="isadd" v-model="list.endTime" class="time-picker" placeholder="选择时间"></el-time-picker>
             </div>
+            <div class="conf-form-row">
+              <div class="conf-form-label">
+                <span>启动报警</span>
+              </div>
+              <div :disabled="!(isadding||isediting)" class="singleline-checkbox">
+                <el-checkbox :disabled="!(isadding||isediting)" v-model="list.inWarn" true-label="1" false-label="0">驶入</el-checkbox>
+                <el-checkbox :disabled="!(isadding||isediting)" v-model="list.outWarn" true-label="1" false-label="0">驶出</el-checkbox>
+                <el-checkbox :disabled="!(isadding||isediting)" v-model="isSpeedLimit">限速</el-checkbox>
+              </div>
+            </div>
+            <div v-if="isSpeedLimit" class="conf-form-row">
+              <div class="conf-form-label">
+                <span>最高时速</span>
+              </div>
+              <input class="conf-form-input" :disabled="isadd" v-model="list.max" type="number">
+              <span class="unit-span">km/h</span>
+              <i :class="{isdisabled:(isadd||list.max==0)}" class="el-icon-minus conf-form-icon lefticon" @click="list.max--"></i>
+              <i :class="{isdisabled:isadd}" class="el-icon-plus conf-form-icon righticon" @click="list.max++"></i>
+            </div>
           </div>
           <div class="btn-padding">
             <button :disabled="!isadd" class="btn" @click="handleAdd">新增</button>
             <button :disabled="!isedit" class="btn" @click="handleEdit">编辑</button>
-            <button :disabled="!issave" class="btn" @click="handleSave">保存</button>
-            <button :disabled="!isdelete" class="btn" @click="handleDelete">删除</button>
+            <button :disabled="!(isadding||isediting)" class="btn" @click="handleSave">保存</button>
             <button :disabled="!issave" class="btn" @click="handleCancel">取消操作</button>
           </div>
         </div>
@@ -84,6 +93,7 @@
         <div v-if="!issetapplvehicles">
           <h4 class="conf-h">区域列表</h4>
           <button :disabled="isadding||isediting||areaindex == -1" class="btn" @click="handleApplVehicles">适用车辆</button>
+          <button :disabled="!isdelete" class="btn" @click="handleDelete">删除</button>
           <loader v-if="listLoading"></loader>
           <div v-else class="list">
             <ul>
@@ -135,16 +145,19 @@ export default {
         startTime: '',
         state: '',
         type: '1',
-        vehicleId: ''
+        vehicleId: '',
+        inWarn: 0,
+        outWarn: 0
       },
       listLoading: false, // 列表加载状态
-      isShowLeftBox: true,
+      isSpeedLimit: false, // 是否限速
+      isShowLeftBox: true, // 是否显示左边栏
       isadd: true,
-      isadding: false,
+      isadding: false, // 是否正在新增
       isedit: false,
-      isediting: false,
-      issave: false,
-      isdelete: false,
+      isediting: false, // 是否正在编辑
+      issave: false, // 是否保存
+      isdelete: false, // 是否删除
       isshowmenu: false,
       issetapplvehicles: false,
       arealist: null,
@@ -172,13 +185,8 @@ export default {
       // 未加载时显示加载动画
       this.listLoading = true
       getAreaList().then(response => {
-        let resData;
         if (response.data) {
-          resData = response.data.rows.map(item => {
-            let { createTime, creator, description, endTime, id, isDelete, location, max, name, orgId, startTime, state, type, vehicleId } = item;
-            return { createTime, creator, description, endTime, id, isDelete, location, max, name, orgId, startTime, state, type, vehicleId }
-          })
-          this.arealist = resData
+          this.arealist = response.data.rows
           this.total = response.data.total
         }
         this.listLoading = false
@@ -201,14 +209,27 @@ export default {
     },
     // 点击区域列表
     handleSelectArea(index) {
-      this.isadd = true
-      this.isedit = true
-      this.issave = false
-      this.isdelete = true
-      this.areaindex = index
-      this.list = JSON.parse(JSON.stringify(this.arealist[this.areaindex]))
-      if (this.list.location) {
-        this.$refs.map.show(this.list.location)
+      if (index === this.areaindex) {
+        this.areaindex = -1
+        this.isedit = false
+        this.isdelete = false
+        this.isSpeedLimit = false
+        this.handleClear()
+        this.$refs.map.remove()
+      } else {
+        this.isadd = true
+        this.isedit = true
+        this.issave = false
+        this.isdelete = true
+        this.areaindex = index
+        this.isSpeedLimit = false
+        this.list = JSON.parse(JSON.stringify(this.arealist[this.areaindex]))
+        if (this.list.max > 0) {
+          this.isSpeedLimit = true
+        }
+        if (this.list.location) {
+          this.$refs.map.show(this.list.location)
+        }
       }
     },
     // 清空表单
@@ -227,9 +248,12 @@ export default {
       this.list.state = ''
       // this.list.type = '1'
       // this.list.vehicleId = ''
+      this.list.inWarn = 0
+      this.list.outWarn = 0
     },
     // 新增
     handleAdd() {
+      this.$refs.map.remove()
       this.handleClear()
       this.isadd = false
       this.isadding = true
@@ -237,7 +261,8 @@ export default {
       this.issave = true
       this.isdelete = false
       this.areaindex = -1
-      this.$refs.map.remove()
+      this.isSpeedLimit = false
+      this.$refs.map.add()
     },
     // 编辑
     handleEdit() {
@@ -246,43 +271,46 @@ export default {
       this.isediting = true
       this.issave = true
       this.isdelete = false
+      this.$refs.map.edit()
     },
     // 保存
     handleSave() {
       if (this.isediting) {
+        this.$refs.map.save()
         editArea(this.list).then(response => {
           if (response.status === 200) {
-            this.$message({
-              message: response.message,
-              type: 'success'
-            })
             this.isadd = true
             this.isedit = true
             this.isediting = false
             this.issave = false
             this.isdelete = true
             this.fetchData()
-          }
-        })
-      } else {
-        console.log(this.list)
-        delete this.list.id
-        addArea(this.list).then(response => {
-          if (response.status === 200) {
             this.$message({
               message: response.message,
               type: 'success'
             })
+          }
+        })
+      } else {
+        delete this.list.id
+        addArea(this.list).then(response => {
+          if (response.status === 200) {
             this.isadd = true
             this.isadding = false
             this.isedit = true
             this.issave = false
             this.isdelete = true
             this.areaindex = -1
+            this.isSpeedLimit = false
             this.handleClear()
             this.fetchData()
+            this.$message({
+              message: response.message,
+              type: 'success'
+            })
           }
         })
+        this.handleSelectArea(0)
       }
     },
     // 删除区域
@@ -301,6 +329,7 @@ export default {
           this.isedit = false
           this.isdelete = false
           this.areaindex = -1
+          this.isSpeedLimit = false
           this.handleClear()
           this.fetchData()
           this.$refs.map.remove()
@@ -322,6 +351,8 @@ export default {
       this.issave = false
       this.isdelete = false
       this.areaindex = -1
+      this.isSpeedLimit = 0
+      this.$refs.map.remove()
     },
     // 点击适用车辆
     handleApplVehicles() {
