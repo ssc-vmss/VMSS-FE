@@ -40,8 +40,8 @@ input[type="number"]{
   outline-style: none;
   cursor: pointer;
   &:hover {
-    border: 1px solid #3498db;
-    color: #3498db;
+    border: 1px solid #008080;
+    color: #008080;
     font-weight: 700;
     border-radius: 5px;
     transition: all 0.3s;
@@ -157,11 +157,11 @@ input[type="number"]{
         height: 36px;
         padding: 5px 10px;
         &:hover{
-          border-color:#3498db;
+          border-color:#008080;
           transition: all 0.3s;
           transition: all 0.3s;
           transform: scale(1.05);
-          color:#3498db;
+          color:#008080;
         }
         &:disabled{
           cursor: not-allowed;
@@ -188,7 +188,7 @@ input[type="number"]{
         width: 31px;
         transition: none;
         &:hover{
-          color: #3498db;
+          color: #008080;
           transition: all 0.3s;
         }
       }
@@ -200,11 +200,11 @@ input[type="number"]{
         height: 36px;
         padding: 5px 10px;
         &:hover{
-          border-color:#3498db;
+          border-color:#008080;
           transition: all 0.3s;
           transition: all 0.3s;
           transform: scale(1.05);
-          color:#3498db;
+          color:#008080;
         }
         &:disabled{
           cursor: not-allowed;
@@ -231,7 +231,7 @@ input[type="number"]{
         width: 31px;
         transition: none;
         &:hover{
-          color: #3498db;
+          color: #008080;
           transition: all 0.3s;
         }
       }
@@ -249,11 +249,11 @@ input[type="number"]{
         color: #bfcbd9;
       }
       &:hover{
-        border-color:#3498db;
+        border-color:#008080;
         transition: all 0.3s;
         transition: all 0.3s;
         transform: scale(1.05);
-        color:#3498db;
+        color:#008080;
       }
       &:disabled{
         cursor: not-allowed;
@@ -271,7 +271,7 @@ input[type="number"]{
       border-left: 1px solid #bfcbd9;
       cursor: pointer;
       &:hover{
-        color: #3498db;
+        color: #008080;
         transition: all 0.3s;
         font-weight: 700;
       }
@@ -316,7 +316,7 @@ input[type="number"]{
         &:hover{
           color: #fff;
           transition: all 0.3s;
-          background: rgba(30, 144, 255,.5);
+          background: rgba(0, 128, 128,.5);
         }
       }
     }
@@ -339,7 +339,7 @@ input[type="number"]{
       transition: all 0.3s;
       transition: all 0.3s;
       transform: scale(1.05);
-      color:#3498db;
+      color:#008080;
     }
 }
 .el-checkbox+.el-checkbox{
@@ -362,7 +362,7 @@ input[type="number"]{
   .cancel,
   .confirm{
     &:hover {
-      color: #3498db;
+      color: #008080;
       font-weight: 700;
       transition: all 0.3s;
       transform: scale(1.1)
@@ -380,7 +380,7 @@ input[type="number"]{
   .cancel,
   .confirm{
     &:hover {
-      color: #3498db;
+      color: #008080;
       font-weight: 700;
       transition: all 0.3s;
       transform: scale(1.1)
@@ -393,11 +393,11 @@ input[type="number"]{
   .el-input__inner{
     border-color: #bfcbd9;
     &:hover{
-    border-color:#3498db;
+    border-color:#008080;
     transition: all 0.3s;
     transition: all 0.3s;
     transform: scale(1.05);
-    color:#3498db;
+    color:#008080;
     }
   }
 }
@@ -411,7 +411,7 @@ input[type="number"]{
   position: relative;
   float: left;
   &:hover{
-    background: rgba(30, 144, 255,.1);
+    background: rgba(0, 128, 128,.1);
   }
 }
 .el-table th{
@@ -458,4 +458,10 @@ input[type="number"]{
   .label-row{
     padding: 5px;
   }
+}
+.el-checkbox__label{
+  color: #008080;
+}
+.el-loading-mask{
+  z-index: 998;
 }
