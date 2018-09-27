@@ -6,7 +6,7 @@
           <li v-show="current_page>1" class="jump" @click="current_page--">
             <button>上页</button>
           </li>
-          <li v-show="current_page>4" class="jump" @click="jumpPage(1)">
+          <li v-show="current_page>4&&pages>7" class="jump" @click="jumpPage(1)">
             <button>1</button>
           </li>
           <li v-show="efont" class="ellipsis">
@@ -15,13 +15,13 @@
           <li v-for="num in indexs" :key="num" class="jump" @click="jumpPage(num)">
             <button :class="{bgprimary:current_page==num}">{{ num }}</button>
           </li>
-          <li v-show="current_page<totalpages-3" class="ellipsis">
+          <li v-show="current_page<pages-3&&pages>7" class="ellipsis">
             <button>...</button>
           </li>
-          <li v-show="current_page<totalpages-3" class="jump" @click="jumpPage(totalpages)">
-            <button>{{ totalpages }}</button>
+          <li v-show="current_page<pages-3&&pages>7" class="jump" @click="jumpPage(pages)">
+            <button>{{ pages }}</button>
           </li>
-          <li class="jump" @click="current_page++">
+          <li v-show="current_page<pages" class="jump" @click="current_page++">
             <button>下页</button>
           </li>
           <li class="jumppoint">
@@ -42,28 +42,32 @@
 <script>
 export default {
   props: {
-    pages: Number
+    pageSize: Number,
+    currentPage: Number,
+    total: Number
   },
   data() {
     return {
-      current_page: 1, // 当前页
-      totalpages: this.pages, // 总页数
+      page_size: this.pageSize, // 每页条数
+      current_page: this.currentPage, // 当前页
+      pages: 0, // 根据每页条数和总页数算出的页数
+      totalNumber: this.total, // 总条数
       changePage: '' // 跳转页
     }
   },
   computed: {
     // 只有一页时不显示分页
     show() {
-      return this.totalpages && this.totalpages !== 1
+      return this.pages && this.pages !== 1
     },
     efont() {
-      if (this.totalpages <= 6) return false
+      if (this.pages <= 7) return false
       return this.current_page > 4
     },
     indexs() {
-      let left = 1, right = this.totalpages, ar = []
-      if (this.totalpages >= 5) {
-        if (this.current_page > 4 && this.current_page < this.totalpages - 3) {
+      let left = 1, right = this.pages, ar = []
+      if (this.pages >= 8) {
+        if (this.current_page > 4 && this.current_page < this.pages - 3) {
           left = Number(this.current_page) - 2
           right = Number(this.current_page) + 2
         } else {
@@ -71,9 +75,8 @@ export default {
             left = 1
             right = 5
           } else {
-            right = this.totalpages
-
-            left = this.totalpages - 5
+            right = this.pages
+            left = this.pages - 5
           }
         }
       }
@@ -87,12 +90,12 @@ export default {
   created() {
     this.getPages()
   },
-
   methods: {
     getPages() {
-      if (this.pages === undefined) {
-        this.totalpages = 1
+      if (this.total === undefined) {
+        this.pages = 1
       }
+      this.pages = this.totalNumber % this.page_size === 0 ? this.totalNumber / this.page_size : Math.floor(this.totalNumber / this.page_size) + 1
     },
     jumpPage(id) {
       this.current_page = id
@@ -113,12 +116,12 @@ export default {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=1 );
   height: 40px;
   left: 50%;
-  position: absolute;
+  position: relative;
   text-align: center;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   width: 100%;
-  bottom: 0;
+  top: 20px;
 }
 .pagination-outline:before,
 .pagination-outline:after {

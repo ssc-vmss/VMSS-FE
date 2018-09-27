@@ -115,12 +115,6 @@ export const constantRouterMap = [
         meta: { title: '轨迹分析' }
       },
       {
-        path: 'location',
-        name: 'location',
-        component: () => import('@/views/location/index'),
-        meta: { title: '信息查询' }
-      },
-      {
         path: 'area',
         name: 'area',
         component: () => import('@/views/area/index'),

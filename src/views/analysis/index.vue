@@ -10,7 +10,7 @@
                 <span>车牌号</span>
               </div>
               <div class="search-vehicle">
-                <el-autocomplete valueKey="number" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" v-model="vehicle.number" placeholder="输入车牌号搜索"></el-autocomplete>
+                <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" trigger-on-focus v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete>
               </div>
             </div>
             <div class="conf-form-row">
@@ -48,6 +48,7 @@
 <script>
 import Loader from '@/components/loader'
 import BMapComponent from './BMapComponent'
+import { getInfoList } from '@/api/vehicle'
 import { getPointList } from '@/api/points'
 
 export default {
@@ -56,11 +57,10 @@ export default {
   },
   data() {
     return {
-      vehicle: { id: '', number: '' },
       plateNumber: '',
       startTime: '',
       endTime: '',
-      searchVehicle: { id: '', number: '' },
+      searchVehicle: '',
       isSelected: false,
       isChecked: false,
       list: {
@@ -95,41 +95,46 @@ export default {
       vehicleIds: []
     }
   },
-  watch: {
-    'searchVehicle': {
-      handler(newVal) {
-        this.handleSearchChange()
-      },
-      deep: true,
-      immediate: true
-    }
-  },
   created() {
+    this.fetchVehicle()
   },
   methods: {
+    // 获取车辆信息
+    fetchVehicle() {
+      getInfoList({ pageNo: 1, pageSize: 1000 }).then(response => {
+        this.vehiclearray = response.data.rows
+        this.total = response.data.total
+      })
+    },
     // 查询
     handleQuery() {
       let isExistence = false
-      this.vehiclearray.map(vehicle => {
-        if (this.vehicle.number === vehicle.number) {
+      this.vehiclearray.forEach(vehicle => {
+        if (this.searchVehicle === vehicle.plateNumber) {
           isExistence = true
         }
       })
       if (!isExistence) {
-        this.vehicle = { id: '', number: '' }
+        this.searchVehicle = ''
         this.$message({
           type: 'warning',
           message: '车牌号不存在'
         })
       } else {
-        getPointList({ vehicleId: this.vehicle.id }).then(response => {
-          let resData
+        if (this.startTime > this.endTime) {
+          this.$message({
+            type: 'warning',
+            message: '开始时间不能大于结束时间'
+          })
+          return
+        }
+        console.log(this.startTime)
+        console.log(this.endTime)
+        console.log(typeof this.startTime)
+        getPointList({ vehicleId: this.searchVehicle }).then(response => {
           if (response.data) {
-            resData = response.data.rows.map(item => {
-              const { id, speed, state, driverId, driverName, posTime, vehicleId, plateNumber, plateType, plateBrand, volume, orgId, createTime, location, lng, lat } = item
-              return { id, speed, state, driverId, driverName, posTime, vehicleId, plateNumber, plateType, plateBrand, volume, orgId, createTime, location, lng, lat }
-            })
-            this.pointsList = resData
+            this.pointsList = response.data.rows
+            console.log(this.pointsList)
             this.$refs.map.list = this.pointsList
             this.$refs.map.ready()
           }
@@ -143,24 +148,13 @@ export default {
       this.startTime = ''
       this.endTime = ''
     },
-    // 搜索框内容改变时
-    handleSearchChange() {
-      this.isSelected = false
-      this.isChecked = false
-      this.vehiclearray.map((vehicle, index) => {
-        if (vehicle.number === this.searchVehicle.number) {
-          this.isSelected = true
-          if (this.vehicleIds.indexOf(vehicle.id) > -1) {
-            this.isChecked = true
-          }
-        }
-      })
-    },
     // 输入车牌号时获取相似车牌号提供输入建议
     handleFetchNumber(querystring, callback) {
-      const results = this.vehiclearray.filter(vehicle => {
-        if (vehicle.number.toLowerCase().indexOf(querystring.toLowerCase()) === 0) {
-          return vehicle
+      const results = []
+      this.vehiclearray.forEach(vehicle => {
+        const reg = new RegExp(querystring.toLowerCase())
+        if (vehicle.plateNumber.toLowerCase().match(reg) !== null) {
+          results.push(vehicle)
         }
       })
       callback(results)

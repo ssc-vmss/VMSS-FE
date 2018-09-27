@@ -140,7 +140,9 @@ export default {
   z-index: 99;
 }
 .loading-window .text {
+  color: #008080;
   font-size: 16px;
+  font-weight: 700;
   position: absolute;
   width: auto;
   top: 75%;
