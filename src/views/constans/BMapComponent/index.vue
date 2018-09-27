@@ -1,9 +1,5 @@
 <template>
   <div class="map-view">
-    <div class="conf-form">
-      <div class="conf-form-row">
-      </div>
-    </div>
     <div id="allmap" ref="map"></div>
   </div>
 </template>
@@ -27,7 +23,7 @@ export default {
       const map = new BMap.Map("allmap", { enableMapClick: false }) // 创建Map实例
       const point = new BMap.Point(104.085145, 30.642301)
       map.centerAndZoom(point, 15) // 初始化地图,设置中心点坐标和地图级别
-      map.enableScrollWheelZoom() //启用鼠标滚动对地图放大缩小
+      map.enableScrollWheelZoom() // 启用鼠标滚动对地图放大缩小
       map.addControl(new BMap.ScaleControl())
       map.addControl(new BMap.NavigationControl())
       this.map = map
@@ -87,7 +83,7 @@ export default {
       for (let i = 0; i < list.length; i++) {
         const nowPoint = new BMap.Point(list[i].lng, list[i].lat)
         if (list[i].state === '0') {
-          this.imgPath = '0.png' // 图片路径
+          this.imgPath = 'src/assets/images/0.png' // 图片路径
         } else if (list[i].state === '1') {
           this.imgPath = 'src/assets/images/1.png'
         } else {
@@ -111,7 +107,19 @@ export default {
     },
     showInfo(thisMarker, points) {
       // 获取点的信息
-      const vehicleInfo = '<div class="conf-form label-box">车牌号码：' + points.plateNumber + '<br />' + '车辆品牌：' + points.plateBrand + '<br />' + '行驶速度：' + points.speed + '<br />' + '司机姓名：' + points.driverName + '<br /><div>'
+      if (points.plateNumber == null) {
+        points.plateNumber = ''
+      }
+      if (points.plateBrand == null) {
+        points.plateBrand = ''
+      }
+      if (points.speed == null) {
+        points.speed = ''
+      }
+      if (points.driverName == null) {
+        points.driverName = ''
+      }
+      const vehicleInfo = `<div class="conf-form label-box">车牌号码${points.plateNumber}<br />车辆品牌${points.plateBrand}<br />行驶速度${points.speed}<br />司机姓名${points.driverName}<br /><div>`
       const infoWindow = new BMap.InfoWindow(vehicleInfo)
       thisMarker.openInfoWindow(infoWindow)
     }
@@ -119,26 +127,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.conf-form {
-  .conf-form-row {
-    width: 400px;
-    margin: 0 auto;
-    z-index: 999;
-    height: 40px;
-    min-width: 40px;
-    .conf-form-label {
-      width: 70px;
-    }
-    .conf-form-input {
-      width: 200px;
-      margin: 5px 0;
-    }
-  }
-}
-#searchResult {
-  border: 1px solid #c0c0c0;
-  width: 150px;
-  height: auto;
-  display: none;
+#allmap{
+  margin-top: 0px;
 }
 </style>

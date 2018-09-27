@@ -140,7 +140,9 @@ export default {
   z-index: 99;
 }
 .loading-window .text {
+  color: #008080;
   font-size: 16px;
+  font-weight: 700;
   position: absolute;
   width: auto;
   top: 75%;
@@ -167,7 +169,7 @@ export default {
   position: absolute;
   width: 11px;
   height: 1px;
-  background: rgba(30, 144, 255, 0.7);
+  background: rgba(0, 128, 128, 0.7);
   animation: strikes 0.2s linear infinite;
 }
 .car .strike2 {
@@ -189,7 +191,7 @@ export default {
 .car-detail {
   position: absolute;
   display: block;
-  background: rgba(30, 144, 255, 0.7);
+  background: rgba(0, 128, 128, 0.7);
   animation: speed 0.5s linear infinite;
 }
 .car-detail.spoiler {
@@ -198,8 +200,8 @@ export default {
   top: 7px;
   background: none;
   border: 20px solid transparent;
-  border-bottom: 8px solid rgba(30, 144, 255, 0.7);
-  border-left: 20px solid rgba(30, 144, 255, 0.7);
+  border-bottom: 8px solid rgba(0, 128, 128, 0.7);
+  border-left: 20px solid rgba(0, 128, 128, 0.7);
 }
 .car-detail.back {
   height: 20px;
@@ -213,7 +215,7 @@ export default {
   left: 12px;
   border-top-left-radius: 30px;
   border-top-right-radius: 45px 40px;
-  border: 4px solid rgba(30, 144, 255, 0.7);
+  border: 4px solid rgba(0, 128, 128, 0.7);
   background: none;
   box-sizing: border-box;
 }
@@ -241,36 +243,36 @@ export default {
   background: linear-gradient(
       45deg,
       transparent 45%,
-      rgba(30, 144, 255, 0.7) 46%,
-      rgba(30, 144, 255, 0.7) 54%,
+      rgba(0, 128, 128, 0.7) 46%,
+      rgba(0, 128, 128, 0.7) 54%,
       transparent 55%
     ),
     linear-gradient(
       -45deg,
       transparent 45%,
-      rgba(30, 144, 255, 0.7) 46%,
-      rgba(30, 144, 255, 0.7) 54%,
+      rgba(0, 128, 128, 0.7) 46%,
+      rgba(0, 128, 128, 0.7) 54%,
       transparent 55%
     ),
     linear-gradient(
       90deg,
       transparent 45%,
-      rgba(30, 144, 255, 0.7) 46%,
-      rgba(30, 144, 255, 0.7) 54%,
+      rgba(0, 128, 128, 0.7) 46%,
+      rgba(0, 128, 128, 0.7) 54%,
       transparent 55%
     ),
     linear-gradient(
       0deg,
       transparent 45%,
-      rgba(30, 144, 255, 0.7) 46%,
-      rgba(30, 144, 255, 0.7) 54%,
+      rgba(0, 128, 128, 0.7) 46%,
+      rgba(0, 128, 128, 0.7) 54%,
       transparent 55%
     ),
     radial-gradient(
-      rgba(30, 144, 255, 0.7) 29%,
+      rgba(0, 128, 128, 0.7) 29%,
       transparent 30%,
       transparent 50%,
-      rgba(30, 144, 255, 0.7) 51%
+      rgba(0, 128, 128, 0.7) 51%
     ),
     #333;
   animation-name: spin;

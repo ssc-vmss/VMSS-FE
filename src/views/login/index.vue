@@ -133,7 +133,7 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-$bg: #2d3a4b;
+$bg: #008080;
 $light_gray: #eee;
 
 /* reset element-ui css */
@@ -143,20 +143,20 @@ $light_gray: #eee;
 .login-container {
   text-align: center;
   height: 100%;
-  background-color: #2d3a4b;
+  background-color: $bg;
   .login-input {
     text-align: center;
     width: 330px;
     margin: 15px auto;
     padding: 15px;
     background: rgba(0, 0, 0, 0.2);
-    color: #fff;
+    color: #F5FFFA;
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     letter-spacing: 3px;
     &:-webkit-autofill {
       -webkit-box-shadow: 0 0 0px 1000px $bg inset !important;
-      -webkit-text-fill-color: #fff !important;
+      -webkit-text-fill-color: #F5FFFA !important;
     }
   }
   .login-particle {
@@ -176,7 +176,7 @@ $light_gray: #eee;
     height: 100%;
     width: 100%;
     font-family: Helvetica;
-    color: #fff;
+    color: #F5FFFA;
     background: rgba(0, 0, 0, 0.13);
     padding: 30px 0px;
   }
@@ -200,7 +200,7 @@ $light_gray: #eee;
     background: rgba(46, 204, 113, 0.7);
     border: none;
     border-radius: 10px;
-    color: #fff;
+    color: #F5FFFA;
     padding: 10px;
     font-size: 20px;
     width: 330px;
@@ -223,7 +223,7 @@ $light_gray: #eee;
   }
   .box p span {
     cursor: pointer;
-    color: #666;
+    color: #F5FFFA;
   }
   .box p span:hover {
     color: rgba(46, 204, 113, 0.7);
@@ -286,7 +286,7 @@ $light_gray: #eee;
   height: 30px;
   margin: auto;
   position: relative;
-  background-color: #fff;
+  background-color: #F5FFFA;
   border-top-left-radius: 45px 10px;
   border-top-right-radius: 45px 10px;
 }
@@ -406,7 +406,7 @@ $light_gray: #eee;
   height: 16px;
   margin-top: -8px;
   border-radius: 50%;
-  background-color: #fff;
+  background-color: #F5FFFA;
   border: 1px solid #777;
 }
 .car .lights:before {
@@ -420,7 +420,7 @@ $light_gray: #eee;
   left: 50%;
   width: 50%;
   height: 1px;
-  background: #fff;
+  background: #F5FFFA;
   position: absolute;
   transform: translateX(-50%);
 }
@@ -460,7 +460,7 @@ $light_gray: #eee;
 .car .bumper .middle:before {
   top: 50%;
   left: 50%;
-  color: #fff;
+  color: #F5FFFA;
   height: 12px;
   font-size: 8px;
   padding: 1px 4px;
@@ -540,7 +540,7 @@ $light_gray: #eee;
   margin: auto;
   margin-top: 30px;
   margin-bottom: 30px;
-  background-color: #fff;
+  background-color: #F5FFFA;
   animation: lane 5s linear infinite;
 }
 .road-wrap .lane > div:nth-child(1) {

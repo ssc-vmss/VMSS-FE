@@ -3,6 +3,7 @@
 @import './transition.scss';
 @import './element-ui.scss';
 @import './sidebar.scss';
+@import './navmenu.scss';
 
 body {
   height: 100%;
@@ -70,7 +71,8 @@ a:hover {
 
 //main-container全局样式
 .app-main{
-  min-height: 100%
+  min-height: 100%;
+  margin-left: 40px;
 }
 
 .app-container {

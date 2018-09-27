@@ -1,7 +1,9 @@
 <template>
   <div class="app-container">
-    <el-row class="toptools"  type="flex" justify="space-between">
-      <el-col :span="6"><el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button></el-col>
+    <el-row class="toptools" type="flex" justify="space-between">
+      <el-col :span="6">
+        <el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
+      </el-col>
       <div>
         <!-- <el-input  placeholder="请输入内容" prefix-icon="el-icon-search" size="medium" style="width:200px" v-model="searchTxt" /><el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button> -->
         <!-- <el-input v-model="searchTxt">
@@ -155,7 +157,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆购置时间" :label-width="formLabelWidth">
-             <el-date-picker  v-model="form.buyTimes" type="date" placeholder="选择日期" value-format="yyyy-MM-dd"></el-date-picker>
+              <el-date-picker v-model="form.buyTimes" type="date" placeholder="选择日期" value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -234,7 +236,7 @@ export default {
           LPNOReg=new RegExp(reg);
       if(!LPNOReg.test(value)){
         callback('请输入正确的车牌号');
-      }else{
+      } else {
         callback();
       }
     }
@@ -270,11 +272,11 @@ export default {
           // { type: 'string', min: 7, max: 8, message: '长度在 7 到 8 个字符', trigger: 'blur' },
           { validator: validataLPNO, trigger: 'blur' }
         ],
-        Type:[
+        Type: [
           { required: true, message: '请选择车辆类型', trigger: 'change' },
         ],
-        EngineNO:[
-          { type:'string',required: true, message: '请输入发动机号', trigger: 'blur' },
+        EngineNO: [
+          { type: 'string', required: true, message: '请输入发动机号', trigger: 'blur' },
         ],
         engineId: [
           { type: 'string', required: true, message: '请输入发动机识别号', trigger: 'blur' },
@@ -427,7 +429,7 @@ export default {
           return {id,LPNO,Color,Type,EngineNO,engineId,Status,EnterpriseNO,Emission,buyTimes,plateBrand}
         })
         this.list = resData;
-        this.total=response.data.total;
+        this.total = response.data.total;
 
         this.listLoading = false
       })
@@ -442,19 +444,19 @@ export default {
         }
       });
     },
-    toEdit(data){
-      data.Type=data.Type+'';
-      data.Status=data.Status+'';
-      this.form=data;
-      this.dialogFormVisible=true;
-      this.editact=true;
+    toEdit(data) {
+      data.Type = data.Type + '';
+      data.Status = data.Status + '';
+      this.form = data;
+      this.dialogFormVisible = true;
+      this.editact = true;
     },
-    saveData(){
-      let{id,LPNO:plateNumber,Color:plateColour,Type:plateType,plateBrand,engineId,EngineNO:engineNumber,buyTimes,Status:type,EnterpriseNO:enterpriseNumber,Emission:emissionStandard}=this.form;
-      let data={id,plateNumber,plateColour,plateType,plateBrand,engineId,engineNumber,buyTimes,type,enterpriseNumber,emissionStandard};
-      if(this.editact){
-        editInfo(data).then(response=>{
-          this.dialogFormVisible=false;
+    saveData() {
+      let { id, LPNO: plateNumber, Color: plateColour, Type: plateType, plateBrand, engineId, EngineNO: engineNumber, buyTimes, Status: type, EnterpriseNO: enterpriseNumber, Emission: emissionStandard } = this.form;
+      let data = { id, plateNumber, plateColour, plateType, plateBrand, engineId, engineNumber, buyTimes, type, enterpriseNumber, emissionStandard };
+      if (this.editact) {
+        editInfo(data).then(response => {
+          this.dialogFormVisible = false;
           this.$message({
             message: response.message,
             type: 'success'

@@ -23,7 +23,6 @@ import Layout from '../views/layout/Layout'
 export const constantRouterMap = [
   { path: '/login', component: () => import('@/views/login/index'), hidden: true },
   { path: '/404', component: () => import('@/views/404'), hidden: true },
-
   {
     path: '/',
     component: Layout,
@@ -33,14 +32,12 @@ export const constantRouterMap = [
     children: [{
       path: 'dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '首页', icon: 'home' }
+      meta: { title: '首页' }
     }]
   },
-
   {
     path: '/baseinfo',
     component: Layout,
-    // redirect: '/application/appcar',
     name: 'baseInfo',
     meta: {
       title: '基本信息管理',
@@ -70,7 +67,6 @@ export const constantRouterMap = [
   {
     path: '/order',
     component: Layout,
-    // redirect: '/application/appcar',
     name: 'order',
     meta: {
       title: '调度管理',
@@ -80,7 +76,7 @@ export const constantRouterMap = [
       {
         path: 'toorder',
         component: () => import('@/views/vehicleorder/index'),
-        name: 'toOrder',
+        name: 'toorder',
         meta: { title: '车辆调度' }
       },
       {
@@ -100,7 +96,6 @@ export const constantRouterMap = [
   {
     path: '/monitor',
     component: Layout,
-    // redirect: '/application/appcar',
     name: 'monitor',
     meta: {
       title: '监控中心',
@@ -120,48 +115,10 @@ export const constantRouterMap = [
         meta: { title: '轨迹分析' }
       },
       {
-        path: 'location',
-        name: 'location',
-        component: () => import('@/views/location/index'),
-        meta: { title: '信息查询' }
-      },
-      {
-        path: 'warning',
-        name: 'warning',
-        component: () => import('@/views/warning/index'),
-        meta: { title: '报警信息' }
-      },
-      {
         path: 'area',
         name: 'area',
         component: () => import('@/views/area/index'),
-        meta: { title: '区域管理' },
-        children: [
-          {
-            path: 'forbidden',
-            name: 'forbidden',
-            component: () => import('@/views/area/nogoarea'),
-            meta: { title: '禁区管理' }
-          },
-          {
-            path: 'electronicfence',
-            name: 'electronicFence',
-            component: () => import('@/views/area/electricfence'),
-            meta: { title: '电子围栏' }
-          },
-          {
-            path: 'speedlimit',
-            name: 'speedLimit',
-            component: () => import('@/views/area/speedlimit'),
-            meta: { title: '区域限速' }
-          }
-        ]
-      },
-      {
-        path: 'notice',
-        name: 'notice',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: '通知公告' }
+        meta: { title: '区域管理' }
       }
     ]
   },
@@ -176,9 +133,9 @@ export const constantRouterMap = [
     },
     children: [
       {
-        path: 'Account',
+        path: 'account',
         component: () => import('@/views/accountmanage/index'),
-        name: 'Account',
+        name: 'account',
         meta: { title: '账号管理' }
       },
       {
@@ -195,12 +152,22 @@ export const constantRouterMap = [
       }
     ]
   },
-
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/warning',
+    name: 'warning',
+    children: [{
+      path: 'warning',
+      component: () => import('@/views/warning/index'),
+      meta: { title: '报警信息' }
+    }]
+  },
   { path: '*', redirect: '/404', hidden: true }
 ]
 
 export default new Router({
-  // mode: 'history', //后端支持可开
+  // mode: 'history', // 后端支持可开
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
