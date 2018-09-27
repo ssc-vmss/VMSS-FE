@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getNewPointList(params) {
   return request({
-    url: '/points/findNewList',
+    url: '/gis/points/findNewList',
     method: 'get',
     params
   })
@@ -10,7 +10,7 @@ export function getNewPointList(params) {
 
 export function getPointList(params) {
   return request({
-    url: '/points/findList',
+    url: '/gis/points/findList',
     method: 'get',
     params
   })
@@ -18,7 +18,7 @@ export function getPointList(params) {
 
 export function getPageQuery(params) {
   return request({
-    url: '/points/pageQuery',
+    url: '/gis/points/pageQuery',
     method: 'get',
     params
   })
@@ -26,7 +26,7 @@ export function getPageQuery(params) {
 
 export function getById(params) {
   return request({
-    url: `/points/${params}`,
+    url: `/gis/points/${params}`,
     method: 'get',
     params
   })
@@ -34,7 +34,7 @@ export function getById(params) {
 
 export function addPoint(data) {
   return request({
-    url: '/points/add',
+    url: '/gis/points/add',
     method: 'post',
     data
   })

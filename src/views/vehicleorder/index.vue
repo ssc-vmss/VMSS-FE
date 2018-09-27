@@ -7,14 +7,26 @@
         <el-row class="toptools"  type="flex" justify="end">
           <!-- <el-col :span="6"><el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="openDispatchDialog">添加</el-button></el-col> -->
           <div>
-            <el-input v-model="applySearchTxt">
+            <!-- <el-input v-model="applySearchTxt">
               <el-select slot="prepend" v-model="applySearchType" style="width:120px">
-                <el-option label="申请单号" value="1"></el-option>
-                <el-option label="用车人" value="2"></el-option>
-                <el-option label="申请人" value="3"></el-option>
+                <el-option label="用车人" value="1"></el-option>
+                <el-option label="申请人" value="2"></el-option>
+                <el-option label="调度状态" value="3"></el-option>
               </el-select>
               <el-button type="primary" slot="append" icon="el-icon-search" @click="fetchData">查询</el-button>
-            </el-input>
+            </el-input> -->
+            <el-select v-model="applySearchType" style="width:120px">
+              <el-option label="用车人" value="1"></el-option>
+              <el-option label="申请人" value="2"></el-option>
+              <el-option label="调度状态" value="3"></el-option>
+              <el-option label="申请单号" value="4"></el-option>
+            </el-select>
+            <el-select v-if="applySearchType==3" v-model="dispatchSearchType" style="width:180px">
+              <el-option label="未派单" value="1"></el-option>
+              <el-option label="已派单" value="2"></el-option>
+            </el-select>
+            <el-input v-else v-model="applySearchTxt" placeholder="请输入内容" style="width:180px"></el-input>
+            <el-button type="primary" slot="append" icon="el-icon-search" @click="fetchData">查询</el-button>
           </div>
         </el-row>
         <el-table
@@ -22,40 +34,46 @@
           :data="listData"
           element-loading-text="Loading"
           border
-          fit>
-          <el-table-column prop="ddid" align="center" label="申请单号" width="95">
+          fit
+          highlight-current-row>
+          <el-table-column label="调度状态" align="center">
+            <template slot-scope="scope">
+              {{ isDispatchFormat(scope.row.isDispatch) }}
+            </template>
           </el-table-column>
-          <el-table-column prop="staffName" label="申请人" width="110" align="center">
+          <el-table-column prop="caruser" label="用车人" align="center">
           </el-table-column>
-          <el-table-column prop="caruser" label="用车人" width="110" align="center">
+          <el-table-column prop="useDate" label="用车时间" width="160" align="center">
           </el-table-column>
-          <el-table-column prop="department" label="用车人单位" align="center">
-          </el-table-column>
-          <el-table-column prop="useDate" label="用车时间" align="center">
-          </el-table-column>
-          <el-table-column prop="returnDate" label="预计返回时间" align="center">
-          </el-table-column>
-          <el-table-column prop="carDetail" label="用车明细" align="center">
+          <el-table-column prop="returnDate" label="预计返回时间" width="160" align="center">
           </el-table-column>
           <el-table-column prop="origin" label="始发地" align="center">
           </el-table-column>
           <el-table-column prop="destination" label="目的地" align="center">
           </el-table-column>
+          <el-table-column prop="carDetail" label="用车明细" min-width="150" align="center">
+            <template slot-scope="scope">
+              <!-- {{scope.row.carDetail}} -->
+              <div v-html="carDetailFormat(scope.row.carDetail)"></div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="staffName" label="申请人" align="center">
+          </el-table-column>
+          <el-table-column prop="department" label="用车人单位"  min-width="110" align="center">
+          </el-table-column>
           <el-table-column prop="reason" label="用车事由" align="center">
           </el-table-column>
-          <el-table-column label="审批状态" width="110" align="center">
+          <!-- <el-table-column label="审批状态"  width="110" align="center">
             <template slot-scope="scope">
               {{ approvalStatus(scope.row.result) }}
             </template>
-          </el-table-column>
-          <el-table-column label="调度状态">
-            <template slot-scope="scope">
-              {{ isDispatchFormat(scope.row.isDispatch) }}
-            </template>
+          </el-table-column> -->
+          <el-table-column prop="ddid" align="center" label="申请单号">
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="100" align="center">
             <template slot-scope="scope" v-if="scope.row.isDispatch==1">
               <el-button type="text" size="small" @click="openDispatchDialog(scope.row)">调度</el-button>
+              <el-button type="text" size="small" @click="rejected(scope.row)">驳回</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -63,13 +81,13 @@
       <!-- 派遣单信息 -->
       <el-tab-pane label="派遣单" name="second">
         <el-row class="toptools"  type="flex" justify="end">
-          <!-- <el-col :span="6"><el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="openDispatchDialog">添加</el-button></el-col> -->
           <div>
             <el-input v-model="sendSearchTxt">
               <el-select slot="prepend" v-model="sendSearchType" style="width:120px">
-                <el-option label="派遣单号" value="1"></el-option>
+                <!-- <el-option label="用车人" value="1"></el-option> -->
                 <el-option label="车牌号" value="2"></el-option>
                 <el-option label="驾驶员" value="3"></el-option>
+                <el-option label="申请单号" value="4"></el-option>
               </el-select>
               <el-button type="primary" slot="append" icon="el-icon-search" @click="fetchData">查询</el-button>
             </el-input>
@@ -81,9 +99,19 @@
           element-loading-text="Loading"
           border
           fit>
-          <el-table-column align="center" label="派遣单号" width="95">
+          <!-- <el-table-column align="center" label="派遣单号" width="95">
             <template slot-scope="scope">
               {{ scope.row.LPNO }}
+            </template>
+          </el-table-column> -->
+          <el-table-column label="调度状态" width="110" align="center">
+            <template slot-scope="scope">
+              {{ dispatchStatusFormat(scope.row.dispatchStatus) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="执行状态" width="120" align="center">
+            <template slot-scope="scope">
+              <span>{{ doStatusFormat(scope.row.doStatus) }}</span>
             </template>
           </el-table-column>
           <el-table-column label="车牌号" width="110" align="center">
@@ -91,22 +119,18 @@
               {{ scope.row.vehiclePlateNumber }}
             </template>
           </el-table-column>
-          <el-table-column label="驾驶员" width="110" align="center">
+          <el-table-column label="驾驶员" align="center">
             <template slot-scope="scope">
               {{ scope.row.driverName }}
             </template>
           </el-table-column>
-          <el-table-column label="用车申请单号" width="110" align="center">
-            <template slot-scope="scope">
-              {{ scope.row.applyId }}
-            </template>
-          </el-table-column>
+
           <el-table-column label="用车人" width="110" align="center">
             <template slot-scope="scope">
               {{ scope.row.useName }}
             </template>
           </el-table-column>
-          <el-table-column label="用车人单位" align="center">
+          <el-table-column label="用车人单位" min-width="110" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.Type }}</span>
             </template>
@@ -121,22 +145,22 @@
               <span>{{ scope.row.createTime }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="调度状态" width="110" align="center">
+
+          <el-table-column label="用车申请单号" width="110" align="center">
             <template slot-scope="scope">
-              {{ dispatchStatusFormat(scope.row.dispatchStatus) }}
+              {{ scope.row.applyId }}
             </template>
           </el-table-column>
-          <el-table-column label="执行状态" width="120" align="center">
+          <el-table-column label="备注" align="center">
             <template slot-scope="scope">
-              <span>{{ doStatusFormat(scope.row.doStatus) }}</span>
+              {{ scope.row.demo }}
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="100" align="center">
-            <template slot-scope="scope" v-if="scope.row.dispatchStatus==1">
-              <!-- <el-button type="text" size="small">修改</el-button> -->
-              <el-button  type="text" size="small" @click="toEdit(scope.row.id)" >执行</el-button>
-              <el-button type="text" size="small" @click="toInvalidDispatch(scope.row.id)">作废</el-button>
-              <!-- <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button> -->
+            <template slot-scope="scope" v-if="(scope.row.doStatus!=2)&&(scope.row.doStatus!=3)&&(scope.row.doStatus!=5)">
+              <!-- <el-button  type="text" size="small" @click="toEdit(scope.row.id,6)" >提醒</el-button> -->
+              <el-button v-if="scope.row.doStatus!=6"  type="text" size="small" @click="toInvalidDispatch(scope.row.id,6,'取消')" >取消</el-button>
+              <el-button type="text" size="small" @click="toInvalidDispatch(scope.row.id,5,'作废')">作废</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -145,7 +169,7 @@
     <!-- 分页 -->
     <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="pageCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
     <!-- add dispatch dialog -->
-    <el-dialog class="dispatchDialog" title="添加车辆调度信息" :visible.sync="dialogFormVisible" width="900px" :fullscreen="false">
+    <el-dialog class="dispatchDialog" title="添加车辆调度信息" :visible.sync="dialogFormVisible" width="900px" :fullscreen="false" :before-close="closeDialog">
       <!-- <div style="display:none">
         <el-form :model="form">
           <el-row>
@@ -194,11 +218,23 @@
         </div>
       </div> -->
       <div>
+        <el-row :gutter="50" style="margin-bottom:10px">
+          <el-col :span="12">
+            <div><b>用车申请明细</b>：{{applyVehicleDetails.join('，')}}</div>
+          </el-col>
+          <el-col :span="12">
+            <div style="text-align:right">
+              <el-button type="success" size="mini" @click="groupData">组合</el-button>
+              <el-button type="primary" size="mini" :loading="dispatchloading" :disabled="!this.selectData.length>0" @click="addNewDispath">派遣</el-button>
+              <el-button type="warning" size="mini">驳回</el-button>
+            </div>
+          </el-col>
+        </el-row>
         <el-row :gutter="50">
           <el-col :span="12">
-            <div>
-              <el-input v-model="vform.plateNumber" style="width:120px" placeholder="车牌"></el-input>
-              <el-select v-model="vform.plateType" clearable placeholder="车辆类型" style="width:120px">
+            <div style="margin-bottom:5px">
+              <el-input v-model="vform.plateNumber" style="width:120px" placeholder="车牌" size="small"></el-input>
+              <el-select v-model="vform.plateType" clearable placeholder="车辆类型" style="width:120px" size="small">
                 <el-option label="大型汽车" value="0"></el-option>
                 <el-option label="小型汽车" value="1"></el-option>
                 <el-option label="摩托车" value="2"></el-option>
@@ -206,11 +242,11 @@
                 <el-option label="挂车" value="4"></el-option>
                 <el-option label="新能源大型汽车" value="5"></el-option>
               </el-select>
-              <el-button @click="getVehicleDataFilter">查询</el-button>
+              <el-button @click="getVehicleDataFilter" size="small">查询</el-button>
             </div>
-            <el-table height="200" class="vehicleTable" border ref="vehicleTable" :data="vform.vehicleData" highlight-current-row @current-change="vehicleCurrentChange">
-              <el-table-column label="车牌号" prop="plateNumber"></el-table-column>
-              <el-table-column label="车辆类型" prop="plateType">
+            <el-table height="200" class="vehicleTable" border ref="vehicleTable" :data="vform.vehicleData" highlight-current-row @current-change="vehicleCurrentChange" @row-dblclick="groupData">
+              <el-table-column label="车牌号" prop="plateNumber" align="center"></el-table-column>
+              <el-table-column label="车辆类型" prop="plateType" align="center">
                 <template slot-scope="scope">
                   {{vehicleType(scope.row.plateType)}}
                 </template>
@@ -219,9 +255,9 @@
             <el-pagination background layout="prev, pager, next" :page-size="vform.pageSize" :total="vform.total" @current-change="vPageCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
           </el-col>
           <el-col :span="12">
-            <div>
-              <el-input v-model="dform.userName" style="width:120px" placeholder="姓名"></el-input>
-              <el-select v-model="dform.driverLicenseType" clearable placeholder="准驾类型" style="width:120px">
+            <div style="margin-bottom:5px">
+              <el-input v-model="dform.userName" style="width:120px" placeholder="姓名" size="small"></el-input>
+              <el-select v-model="dform.driverLicenseType" clearable placeholder="准驾类型" style="width:120px" size="small">
                 <el-option label="A1" value="A1"></el-option>
                 <el-option label="A2" value="A2"></el-option>
                 <el-option label="A3" value="A3"></el-option>
@@ -232,31 +268,30 @@
                 <el-option label="C3" value="C3"></el-option>
                 <el-option label="C4" value="C4"></el-option>
               </el-select>
-              <el-button @click="getDriverDataFilter">查询</el-button>
+              <el-button @click="getDriverDataFilter" size="small">查询</el-button>
             </div>
-            <el-table height="200" class="driverTable" border ref="driverTable" :data="dform.driverData" highlight-current-row @current-change="driverCurrentChange">
-              <el-table-column label="驾驶员姓名" prop="userName"></el-table-column>
-              <el-table-column label="性别" prop="sex"></el-table-column>
-              <el-table-column label="准驾车型" prop="driverLicenseType"></el-table-column>
+            <el-table height="200" class="driverTable" border ref="driverTable" :data="dform.driverData" highlight-current-row @current-change="driverCurrentChange" @row-dblclick="groupData">
+              <el-table-column label="驾驶员姓名" prop="userName" align="center"></el-table-column>
+              <el-table-column label="性别" prop="sex" align="center"></el-table-column>
+              <el-table-column label="准驾车型"  align="center" prop="driverLicenseType"></el-table-column>
             </el-table>
             <el-pagination background layout="prev, pager, next" :page-size="dform.pageSize" :total="dform.total" @current-change="dPageCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
           </el-col>
         </el-row>
-        <div class="groupbox"><el-button type="primary" @click="groupData">组合</el-button></div>
+        <!-- <div class="groupbox"><el-button type="primary" @click="groupData">组合</el-button></div> -->
         <!-- 组合数据 -->
         <el-table border :data="selectData">
-          <el-table-column label="车牌号" prop="plateNumber"></el-table-column>
-          <el-table-column label="驾驶员" prop="userName"></el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="车牌号" prop="plateNumber" align="center"></el-table-column>
+          <el-table-column label="驾驶员" prop="userName" align="center"></el-table-column>
+          <el-table-column label="操作" width="100" align="center">
             <template slot-scope="scope">
               <el-button type="text" @click="delGroupData(scope.$index)">取消</el-button>
             </template>
           </el-table-column>
         </el-table>
-        <div style="text-align:center;margin:20px auto"><el-checkbox v-model="dispatchChecked">立即执行</el-checkbox><el-checkbox v-model="useFilterRules">启用过滤规则</el-checkbox></div>
         <div slot="footer" class="dialog-footer" style="text-align:center">
-          <el-button @click="dialogFormVisible = false">取消</el-button>
-          <el-button type="primary" :disabled="!this.selectData.length>0" @click="addNewDispath">确 定</el-button>
+          <!-- <el-button @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary" :disabled="!this.selectData.length>0" @click="addNewDispath">确 定</el-button> -->
         </div>
       </div>
     </el-dialog>
@@ -275,7 +310,8 @@ export default {
       dialogFormVisible:false,
       applySearchType:'1',
       applySearchTxt:'',
-      sendSearchType:'1',
+      dispatchSearchType:'1',
+      sendSearchType:'2',
       sendSearchTxt:'',
       searchTxt:'',
       activeName:'first',
@@ -315,6 +351,7 @@ export default {
       pageSize:10,
       total:0,
 
+      dispatchloading:false,
       dispatchInfo:{
         applyId:'',
         applyerId:'',
@@ -322,10 +359,9 @@ export default {
         driverId:'',
         vehicleId:'',
       },
+      applyVehicleDetails:[],
       selectData:[],
-      selectTempData:{},
-      dispatchChecked:false,
-      useFilterRules:false
+      selectTempData:{}
     }
   },
   watch:{
@@ -343,6 +379,19 @@ export default {
     this.fetchData(this.activeName)
   },
   methods: {
+    closeDialog(done){
+      this.vform.vehicleData=[];
+      this.dform.driverData=[];
+      this.selectData=[];
+      done();
+    },
+    carDetailFormat(value){
+      let html='';
+      value&&JSON.parse(value).map(item=>{
+        html+=`<div>${item.carType}：${item.carNum}辆</div>`
+      })
+      return html
+    },
     tabhandleClick(tab){//tab click
       this.activeName=tab.name;
       this.applySearchTxt='';
@@ -412,16 +461,19 @@ export default {
         case 5:
           return '任务作废'
           break;
+        case 6:
+          return '任务取消'
+          break;
         default:
           break;
       }
     },
-    toEdit(id){
-      let data={id,dispatchStatus:2}
+    toEdit(id,val){
+      let data={id,doStatus:val}
       editDispatch(data).then(response=>{
         this.$message({
           type: 'success',
-          message: '执行成功!'
+          message: '操作成功!'
         });
         this.fetchData();
       })
@@ -439,6 +491,31 @@ export default {
         }).catch(() => {
         });
     },
+    rejected(id){//驳回申请
+      let data={id}
+      this.$prompt(`请输入 驳回 原因`,'',{
+        inputValidator:(txt)=>{
+          if(!txt||!(txt.trim()).length){
+            return '输入内容不能为空'
+          }
+          data.demo=txt
+        },
+        beforeClose:(action, instance, done)=>{
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true;
+            // editDispatch(data).then(response=>{
+            //   this.fetchData();
+              instance.confirmButtonLoading = false;
+              done();
+            // })
+          } else {
+            done();
+          }
+        }
+      }).then(({value})=>{
+
+      }).catch()
+    },
     openDispatchDialog(row){
       this.dispatchInfo.applyId=row.ddid;
       this.dispatchInfo.applyerId =row.staffid;
@@ -447,46 +524,55 @@ export default {
       this.dispatchInfo.taskDoStartTimes =row.useDate;
       this.dispatchInfo.taskDoEndTimes =row.returnDate;
 
+      this.applyVehicleDetails=row.carDetail&&JSON.parse(row.carDetail);
+      this.applyVehicleDetails=this.applyVehicleDetails.map(item=>{
+        return `${item.carType}：${item.carNum}辆`
+      })
+
       this.dialogFormVisible = true
       this.getVehicleDataFilter()
       this.getDriverDataFilter()
     },
     fetchData() {//获取申请单和派遣单数据
       this.listLoading = true;
-      let params={pageNo:this.page,pageSize:this.pageSize},
-          applySearchType,applySearchTxt,sendSearchType,sendSearchTxt;
+      let params={pageNo:this.page,pageSize:this.pageSize};
 
       if(this.activeName=='first'){
-        if(this.applySearchTxt.trim()){
-          applySearchType=this.applySearchType;
-          applySearchTxt=this.applySearchTxt;
+
+          let applySearchType=this.applySearchType,
+              applySearchTxt=this.applySearchTxt,
+              dispatchSearchType=this.dispatchSearchType;
 
           switch (applySearchType) {
             case '1':
-              params.ddid=applySearchTxt;
-              break;
-            case '2':
               params.caruser=applySearchTxt;
               break;
-            case '3':
+            case '2':
               params.staffName=applySearchTxt;
+              break;
+            case '3':
+              params.dispatchStatus=dispatchSearchType;
+              break;
+            case '4':
+              params.ddid=applySearchTxt;
               break;
             default:
               break;
           }
-        }
+
         getApplyList(params).then(response=>{
           this.listData = response.data.rows
           this.total=response.data.total;
           this.listLoading = false
         })
       }else{
-        if(this.sendSearchTxt.trim()){
-          sendSearchType=this.sendSearchType;
+
+          let sendSearchType=this.sendSearchType,
           sendSearchTxt=this.sendSearchTxt;
+
           switch (sendSearchType) {
             case '1':
-
+              params.useName=sendSearchTxt;
               break;
             case '2':
               params.vehiclePlateNumber=sendSearchTxt;
@@ -494,10 +580,12 @@ export default {
             case '3':
               params.driverName=sendSearchTxt;
               break;
+            case '4':
+              params.applyId=sendSearchTxt;
+              break;
             default:
               break;
           }
-        }
 
         getDispatchList(params).then(response=>{
           this.listData = response.data.rows
@@ -518,14 +606,14 @@ export default {
     getVehicleDataFilter(){//获取可用车辆数据
       let {plateNumber,plateType,page:pageNo,pageSize}=this.vform;
 
-      VehicleDataFilter({type:0,plateType,plateNumber,pageNo,pageSize}).then(response=>{
+      VehicleDataFilter({applicationId:this.dispatchInfo.applyId,plateType,plateNumber,pageNo,pageSize}).then(response=>{
         this.vform.vehicleData=response.data.rows;
         this.vform.total=response.data.total;
       })
     },
     getDriverDataFilter(){//获取可用驾驶员数据
       let {userName,driverLicenseType,page:pageNo,pageSize}=this.dform;
-      DriverDataFilter({type:0,userName,driverLicenseType,pageNo,pageSize}).then(response=>{
+      DriverDataFilter({applicationId:this.dispatchInfo.applyId,userName,driverLicenseType,pageNo,pageSize}).then(response=>{
         this.dform.driverData=response.data.rows;
         this.dform.total=response.data.total;
       })
@@ -605,27 +693,28 @@ export default {
       this.dispatchInfo.vehicleId=vehicleId.join();
       this.dispatchInfo.vehiclePlateNumber=vehiclePlateNumber.join();
 
-      if(this.dispatchChecked){
-        this.dispatchInfo.dispatchStatus=2;
-      }
 
       let data=this.dispatchInfo;
+      this.dispatchloading=true;
       addDispatch(data).then(response=>{
+        this.dispatchloading=false;
         this.dialogFormVisible = false;
         this.tabhandleClick({name:'second'})
       })
     },
-    toInvalidDispatch(id){//废除调度
-      this.$prompt('请输入作废原因','',{
-        // inputValidator:(txt)=>{
-        //   if(!txt||!(txt.trim()).length){
-        //     return '输入内容不能为空'
-        //   }
-        // },
+    toInvalidDispatch(id,val,opt){//取消、废除调度
+      let data={id,doStatus:val,msg_send_status:0}
+      this.$prompt(`请输入 ${opt} 原因`,'',{
+        inputValidator:(txt)=>{
+          if(!txt||!(txt.trim()).length){
+            return '输入内容不能为空'
+          }
+          data.demo=txt
+        },
         beforeClose:(action, instance, done)=>{
           if (action === 'confirm') {
             instance.confirmButtonLoading = true;
-            invalidDispatch({id}).then(response=>{
+            editDispatch(data).then(response=>{
               this.fetchData();
               instance.confirmButtonLoading = false;
               done();
@@ -663,7 +752,16 @@ export default {
   color:#fff;
 }
 .dispatchDialog .el-dialog{
-  margin-top: 0!important;
+  margin-top: 10px!important;
+}
+.dispatchDialog .el-dialog__body{
+  padding-top: 10px;
+}
+.dispatchDialog .el-dialog__header{
+      border-bottom: 1px solid #d1dbe5;
+}
+.dispatchDialog .el-table td{
+  padding: 8px;
 }
 </style>
 

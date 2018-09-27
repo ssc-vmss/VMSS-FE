@@ -18,7 +18,7 @@ export function getDispatchList(params) {
 
 export function VehicleDataFilter(params) {
   return request({
-    url: '/admin/vehicle/pageQuery',
+    url: '/admin/driver/getVechileInfoByApplicationId',
     method: 'get',
     params
   })
@@ -26,7 +26,7 @@ export function VehicleDataFilter(params) {
 
 export function DriverDataFilter(params) {
   return request({
-    url: '/admin/driver/pageQuery',
+    url: '/admin/driver/getDriverInfoByApplicationId',
     method: 'get',
     params
   })

@@ -4,18 +4,33 @@
       <el-col :span="6"><el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button></el-col>
       <div>
         <!-- <el-input  placeholder="请输入内容" prefix-icon="el-icon-search" size="medium" style="width:200px" v-model="searchTxt" /><el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button> -->
-        <el-input v-model="searchTxt">
+        <!-- <el-input v-model="searchTxt">
           <el-select slot="prepend" v-model="searchType" style="width:120px">
             <el-option label="车牌号" value="1"></el-option>
             <el-option label="车辆类型" value="2"></el-option>
             <el-option label="车辆品牌" value="3"></el-option>
           </el-select>
           <el-button type="primary" slot="append" icon="el-icon-search" @click="fetchData">查询</el-button>
-        </el-input>
+        </el-input> -->
+        <el-select v-model="searchType" style="width:120px">
+          <el-option label="车牌号" value="1"></el-option>
+          <el-option label="车辆类型" value="2"></el-option>
+          <el-option label="车辆品牌" value="3"></el-option>
+        </el-select>
+        <el-select v-if="searchType==2" v-model="vehicleSearchType" multiple collapse-tags style="width:180px">
+          <el-option label="大型汽车" value="0"></el-option>
+          <el-option label="小型汽车" value="1"></el-option>
+          <el-option label="摩托车" value="2"></el-option>
+          <el-option label="拖拉机" value="3"></el-option>
+          <el-option label="挂车" value="4"></el-option>
+          <el-option label="新能源大型汽车" value="5"></el-option>
+        </el-select>
+        <el-input v-else v-model="searchTxt" placeholder="请输入内容" style="width:180px"></el-input>
+        <el-button type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
       </div>
     </el-row>
     <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit>
-      <el-table-column align="center" label="车牌号" width="95">
+      <el-table-column align="center" label="车牌号" width="110">
         <template slot-scope="scope">
           {{ scope.row.LPNO }}
         </template>
@@ -35,38 +50,38 @@
           {{ scope.row.plateBrand }}
         </template>
       </el-table-column>
-      <el-table-column label="发动机号" width="110" align="center">
+      <el-table-column label="发动机号" min-width="110" align="center">
         <template slot-scope="scope">
           {{ scope.row.EngineNO }}
         </template>
       </el-table-column>
-      <el-table-column label="发动机识别号">
+      <el-table-column label="发动机识别号" min-width="110" align="center">
         <template slot-scope="scope">
           {{ scope.row.engineId }}
         </template>
       </el-table-column>
-      <el-table-column label="车辆购置时间" width="120" align="center">
+      <el-table-column label="车辆购置时间" min-width="120" align="center">
         <template slot-scope="scope">
-          <i class="el-icon-time"/>
+          <!-- <i class="el-icon-time"/> -->
           <span>{{ scope.row.buyTimes }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆状态">
+      <el-table-column label="车辆状态" align="center">
         <template slot-scope="scope">
           {{ vehicleStatus(scope.row.Status) }}
         </template>
       </el-table-column>
-      <el-table-column label="企业编号">
+      <el-table-column label="企业编号" min-width="110" align="center">
         <template slot-scope="scope">
           {{ scope.row.EnterpriseNO }}
         </template>
       </el-table-column>
-      <el-table-column label="车辆编号">
+      <!-- <el-table-column label="车辆编号">
         <template slot-scope="scope">
           {{ scope.row.VehicleNO }}
         </template>
-      </el-table-column>
-      <el-table-column label="排放标准">
+      </el-table-column> -->
+      <el-table-column label="排放标准" align="center">
         <template slot-scope="scope">
           {{ scope.row.Emission }}
         </template>
@@ -81,7 +96,7 @@
           {{ scope.row.equipmentID }}
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="100">
+      <el-table-column fixed="right" label="操作" width="100" align="center">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="toEdit(scope.row)">修改</el-button>
           <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button>
@@ -167,11 +182,11 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="12">
+          <!-- <el-col :span="12">
             <el-form-item label="车辆编号" :label-width="formLabelWidth">
               <el-input v-model.trim="form.VehicleNO" auto-complete="off"></el-input>
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :span="12">
             <el-form-item label="排放标准" :label-width="formLabelWidth">
               <el-input type="text" v-model="form.Emission" auto-complete="off"></el-input>
@@ -214,7 +229,8 @@ export default {
   },
   data() {
     let validataLPNO=(rule,value,callback)=>{
-      let reg="^(([\u4e00-\u9fa5]{1}[A-Z]{1})[-]?|([wW][Jj][\u4e00-\u9fa5]{1}[-]?)|([a-zA-Z]{2}))([A-Za-z0-9]{5}|[DdFf][A-HJ-NP-Za-hj-np-z0-9][0-9]{4}|[0-9]{5}[DdFf])$",
+      // let reg="^(([\u4e00-\u9fa5]{1}[A-Z]{1})[-]?|([wW][Jj][\u4e00-\u9fa5]{1}[-]?)|([a-zA-Z]{2}))([A-Za-z0-9]{5}|[DdFf][A-HJ-NP-Za-hj-np-z0-9][0-9]{4}|[0-9]{5}[DdFf])$",
+      let reg="^(([\u4e00-\u9fa5]{1}[A-Z]{1})[-]?|([wW][Jj][\u4e00-\u9fa5]{1}[-]?)|([a-zA-Z]{2}))([A-Za-z0-9]{5}|[DdFf][A-Za-z0-9]{5}|[A-Za-z0-9]{5}[DdFf])$",
           LPNOReg=new RegExp(reg);
       if(!LPNOReg.test(value)){
         callback('请输入正确的车牌号');
@@ -227,7 +243,8 @@ export default {
       listLoading: true,
       dialogFormVisible:false,
       editact:false,
-      searchType:'',
+      searchType:'1',
+      vehicleSearchType:['0'],
       searchTxt:'',
       options:[],
       optionsLoading:false,
@@ -240,9 +257,9 @@ export default {
         engineId: '',
         Load: '',
         buyTimes: '',
-        Status: '',
+        Status: '0',
         EnterpriseNO: '',
-        VehicleNO: '',
+        // VehicleNO: '',
         Emission: '',
         equipmentModel: '',
         equipmentID: ''
@@ -371,9 +388,9 @@ export default {
         engineId: '',
         Load: '',
         buyTimes: '',
-        Status: '',
+        Status: '0',
         EnterpriseNO: '',
-        VehicleNO: '',
+        // VehicleNO: '',
         Emission: '',
         equipmentModel: '',
         equipmentID: ''
@@ -386,28 +403,27 @@ export default {
       this.listLoading = true
       let params={pageNo:this.page,pageSize:this.pageSize},
           searchType=this.searchType,
+          vehicleSearchType=this.vehicleSearchType,
           searchTxt=this.searchTxt;
 
-          if(searchTxt.trim()){
-            switch (searchType) {
-              case '1':
-                params.plateNumber=searchTxt
-                break;
-              case '2':
-                params.plateType=searchTxt
-                break;
-              case '3':
-                params.plateBrand=searchTxt
-                break;
-              default:
-                break;
-            }
+          switch (searchType) {
+            case '1':
+              params.plateNumber=searchTxt
+              break;
+            case '2':
+              params.Type=vehicleSearchType.join()
+              break;
+            case '3':
+              params.plateBrand=searchTxt
+              break;
+            default:
+              break;
           }
 
       getInfoList(params).then(response => {
         let resData;
         resData=response.data.rows&&response.data.rows.map(item=>{
-          let{id,plateNumber:LPNO,plateColour:Color,plateType:Type,engineId:EngineNO,engineId,engineNumber,type:Status,enterpriseNumber:EnterpriseNO,emissionStandard:Emission,buyTimes,plateBrand,}=item;
+          let{id,plateNumber:LPNO,plateColour:Color,plateType:Type,engineNumber:EngineNO,engineId,type:Status,enterpriseNumber:EnterpriseNO,emissionStandard:Emission,buyTimes,plateBrand,}=item;
           return {id,LPNO,Color,Type,EngineNO,engineId,Status,EnterpriseNO,Emission,buyTimes,plateBrand}
         })
         this.list = resData;

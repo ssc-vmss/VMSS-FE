@@ -4,13 +4,30 @@
       <el-col :span="6"><el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button></el-col>
       <div>
         <!-- <el-input  placeholder="请输入内容" prefix-icon="el-icon-search" size="medium" style="width:200px" /><el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button> -->
-        <el-input v-model="searchTxt">
+        <!-- <el-input v-model="searchTxt">
           <el-select slot="prepend" v-model="searchType" style="width:120px">
             <el-option label="姓名" value="1"></el-option>
             <el-option label="准驾车型" value="2"></el-option>
           </el-select>
           <el-button type="primary" slot="append" icon="el-icon-search" @click="fetchData">查询</el-button>
-        </el-input>
+        </el-input> -->
+        <el-select v-model="searchType" style="width:120px">
+          <el-option label="姓名" value="1"></el-option>
+          <el-option label="准驾车型" value="2"></el-option>
+        </el-select>
+        <el-select v-if="searchType==2" v-model="driverSearchType" multiple collapse-tags style="width:180px">
+          <el-option label="A1" value="A1"></el-option>
+          <el-option label="A2" value="A2"></el-option>
+          <el-option label="A3" value="A3"></el-option>
+          <el-option label="B1" value="B1"></el-option>
+          <el-option label="B2" value="B2"></el-option>
+          <el-option label="C1" value="C1"></el-option>
+          <el-option label="C2" value="C2"></el-option>
+          <el-option label="C3" value="C3"></el-option>
+          <el-option label="C4" value="C4"></el-option>
+        </el-select>
+        <el-input v-else v-model="searchTxt" placeholder="请输入内容" style="width:180px"></el-input>
+        <el-button type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
       </div>
     </el-row>
     <el-table
@@ -23,39 +40,39 @@
         <template slot-scope="scope">
         </template>
       </el-table-column>
-      <el-table-column align="center" label="姓名" width="95">
+      <el-table-column align="center" label="姓名">
         <template slot-scope="scope">
           {{ scope.row.userName }}
         </template>
       </el-table-column>
-      <el-table-column label="性别" width="110" align="center">
+      <el-table-column label="性别" width="80" align="center">
         <template slot-scope="scope">
           {{ scope.row.sex }}
         </template>
       </el-table-column>
-      <el-table-column label="身份证号" align="center">
+      <el-table-column label="身份证号"  min-width="180" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.idCard }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="手机号" width="110" align="center">
+      <el-table-column label="手机号"  align="center">
         <template slot-scope="scope">
           {{ scope.row.mobile }}
         </template>
       </el-table-column>
-      <el-table-column label="准驾车型">
+      <el-table-column label="准驾车型" width="80"  align="center">
         <template slot-scope="scope">
           {{ scope.row.driverLicenseType }}
         </template>
       </el-table-column>
-      <el-table-column label="入职时间" width="120" align="center">
+      <el-table-column label="入职时间" align="center">
         <template slot-scope="scope">
-          <i class="el-icon-time"/>
+          <!-- <i class="el-icon-time"/> -->
           <span>{{ scope.row.startTime }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column fixed="right" label="操作" width="100">
+      <el-table-column fixed="right" label="操作" width="100"  align="center">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="toEdit(scope.row)">修改</el-button>
           <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button>
@@ -69,14 +86,14 @@
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="姓名" prop="userName" :label-width="formLabelWidth">
+            <el-form-item label="姓名" prop="userId" :label-width="formLabelWidth">
               <!-- <el-input v-model="form.userName" auto-complete="off"></el-input> -->
-              <el-select v-model="form.userName" clearable filterable remote :remote-method="searchUser" :loading="optionsLoading" placeholder="请输入关键词">
+              <el-select v-model="form.userId" clearable filterable remote :remote-method="searchUser" :loading="optionsLoading" @change="setUser" @clear="clearUser" placeholder="请输入关键词">
                 <el-option
                   v-for="item in options"
                   :key="item.id"
                   :label="item.name"
-                  :value="item.name">
+                  :value="item.id">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -98,7 +115,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="手机号" prop="mobile" :label-width="formLabelWidth">
-              <el-input v-model="form.mobile" auto-complete="off"></el-input>
+              <el-input v-model="form.mobile" :disabled="true" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -159,7 +176,7 @@ export default {
       }
     };
     let validateMobile=(rule,value,callback)=>{
-      if(!/^1[34578]\d{9}$/.test(value)){
+      if(!/^1\d{10}$/.test(value)){
         callback(new Error('请输入正确手机号'));
       }else{
         callback();
@@ -169,7 +186,8 @@ export default {
       list: null,
       listLoading: true,
       searchTxt:'',
-      searchType:'',
+      searchType:'1',
+      driverSearchType:['A1'],
       dialogFormVisible:false,
       editact:false,
       options:[],
@@ -184,7 +202,7 @@ export default {
         startTime: ''
       },
       rules:{
-        userName:[
+        userId:[
           { required: true, message: '请输入姓名', trigger: 'change' },
         ],
         idCard:[
@@ -225,6 +243,7 @@ export default {
     resetForm(){
       this.form= {
         userName: '',
+        userId:'',
         sex: '',
         idCard: '',
         mobile: '',
@@ -245,6 +264,18 @@ export default {
         })
       }
     },
+    setUser(val){
+      if(!val)return;
+      let user=this.options.find(item=>{
+        return item.id==val
+      })
+      this.form.userName=user.name;
+      this.form.mobile=user.mobile;
+    },
+    clearUser(){
+      this.form.userName='';
+      this.form.mobile='';
+    },
     toDel(id){
       this.$confirm('您确定要删除该记录?', '提示', {
           confirmButtonText: '确定',
@@ -263,30 +294,31 @@ export default {
     },
     closeDialog(formName){
       this.editact=false;
+      this.resetForm();
       // this.$refs[formName].resetFields();
     },
     handleCreate(){
-      this.resetForm();
+      // this.resetForm();
       this.dialogFormVisible = true
     },
     fetchData() {
       this.listLoading = true
       let params={pageNo:this.page,pageSize:this.pageSize},
           searchType=this.searchType,
+          driverSearchType=this.driverSearchType,
           searchTxt=this.searchTxt;
 
-          if(searchTxt.trim()){
-            switch (searchType) {
-              case '1':
-                params.userName=searchTxt
-                break;
-              case '2':
-                params.driverLicenseType=searchTxt
-                break;
-              default:
-                break;
-            }
+          switch (searchType) {
+            case '1':
+              params.userName=searchTxt
+              break;
+            case '2':
+              params.driverLicenseType=driverSearchType.join();
+              break;
+            default:
+              break;
           }
+
 
       getInfoList(params).then(response => {
         this.list = response.data.rows
@@ -305,6 +337,8 @@ export default {
       });
     },
     toEdit(data){
+      console.log('data:',data)
+      this.options=[{id:data.id,name:data.name}]
       this.form=data;
       this.dialogFormVisible=true;
       this.editact=true;
