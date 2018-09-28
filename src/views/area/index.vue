@@ -24,8 +24,8 @@
                   <div class="conf-form-label">
                     <span>是否启用</span>
                   </div>
-                  <input :disabled="isadd" v-model="list.state?'是':'否'" class="conf-form-input" type="text" @click="isshowmenu = !isshowmenu" placeholder="请选择" readonly/>
-                  <i :class="{isdisabled:isadd}" class="el-icon-caret-bottom conf-form-icon righticon" @click="isshowmenu = !isshowmenu"></i>
+                  <input @blur="handleCloseMenu" :disabled="isadd" v-model="list.state==1?'是':'否'" class="conf-form-input" type="text" @click="handleShowMenu" placeholder="请选择" readonly/>
+                  <i :class="{isdisabled:isadd}" class="el-icon-caret-bottom conf-form-icon righticon" @click="handleShowMenu"></i>
                   <div v-show="isshowmenu" class="dropdown-menu">
                     <ul @click="handleSetState">
                       <li value="0">否</li>
@@ -124,7 +124,7 @@
           <i :class="[isShowLeftBox?'el-icon-d-arrow-left':'el-icon-d-arrow-right']"></i>
         </div>
         <div class="right-box">
-          <b-map-component ref="map" @handleGetLocation="handleGetLocation" :isadd="isadding" :isedit="isediting"></b-map-component>
+          <b-map-component ref="map" @handleGetLocation="handleGetLocation" @handleRemove="handleRemove" :isadd="isadding" :isedit="isediting"></b-map-component>
         </div>
       </div>
 </template>
@@ -145,7 +145,7 @@ export default {
       list: {
         description: '',
         endTime: '',
-        location: null,
+        location: '',
         max: 0,
         name: '',
         startTime: '',
@@ -185,7 +185,8 @@ export default {
       isUnSelectedCheckedAll: false,
       isSelectedCheckedAll: false,
       vehicleslist: ['车辆一', '车辆二'],
-      vehicleindex: -1
+      vehicleindex: -1,
+      hasRemove: false
     }
   },
   created() {
@@ -233,6 +234,13 @@ export default {
       this.list.state = e.target.value
       this.isshowmenu = false
     },
+    handleShowMenu() {
+      this.isshowmenu = !this.isshowmenu
+    },
+    // 鼠标移出时隐藏下拉菜单
+    handleCloseMenu() {
+      // this.isshowmenu = false
+    },
     // 点击隐藏或显示左边菜单栏
     handleIsShowLeftBox() {
       if (this.isShowLeftBox) {
@@ -262,16 +270,14 @@ export default {
         if (this.list.max > 0) {
           this.isSpeedLimit = true
         }
-        if (this.list.location) {
-          this.$refs.map.show(this.list.location)
-        }
+        this.$refs.map.show(this.list.location)
       }
     },
     // 清空表单
     handleClear() {
       this.list.description = ''
       this.list.endTime = ''
-      this.list.location = null
+      this.list.location = ''
       this.list.max = 0
       this.list.name = ''
       this.list.startTime = ''
@@ -303,6 +309,20 @@ export default {
     },
     // 保存
     handleSave() {
+      if (this.list.location === '') {
+        this.$message({
+          type: 'warning',
+          message: '名称不能为空'
+        })
+        return
+      }
+      if (this.list.name === '') {
+        this.$message({
+          type: 'warning',
+          message: '区域不能为空,请绘制区域'
+        })
+        return
+      }
       if (this.list.startTime > this.list.endTime) {
         this.$message({
           type: 'warning',
@@ -311,7 +331,9 @@ export default {
         return
       }
       if (this.isediting) {
-        this.$refs.map.save()
+        if (!this.hasRemove) {
+          this.$refs.map.save()
+        }
         editArea(this.list).then(response => {
           if (response.status === 200) {
             this.isadd = true
@@ -480,9 +502,21 @@ export default {
     // 获取点位信息
     handleGetLocation(location) {
       this.list.location = location
+    },
+    // 是否已清空过区域
+    handleRemove() {
+      console.log(155555555555555555555555555)
+      this.hasRemove = true
     }
   }
 }
 </script>
 <style lang="scss" scoped>
+.dropdown-box {
+  border: 1px solid red;
+  width: 100%;
+  .conf-form-input {
+    margin-left: 0;
+  }
+}
 </style>

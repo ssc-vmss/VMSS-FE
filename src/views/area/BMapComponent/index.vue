@@ -112,6 +112,7 @@ export default {
       this.polygon.disableEditing()
       var mypoints = []
       var allOverlay = this.map.getOverlays()
+      console.log('allOverlay', allOverlay)
       for (var i = 0; i < allOverlay.length; i++) {
         if (allOverlay[i].toString() === '[object Polygon]') {
           for (var j = 0; j < allOverlay[i].getPath().length; j++) {
@@ -125,17 +126,13 @@ export default {
     },
     // 添加
     add() {
+      console.log('add')
       if (this.overlays.length > 0) {
-        if (confirm('此操作会清空已有的区域,是否继续')) {
-          this.map.clearOverlays()
-          this.overlays = []
-          this.drawingManager.open()// 开启地图的绘制模式
-          this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON)// 绘制多边形
-        }
-      } else {
-        this.drawingManager.open()// 开启地图的绘制模式
-        this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON)// 绘制多边形
+        this.map.clearOverlays()
+        this.overlays = []
       }
+      this.drawingManager.open()// 开启地图的绘制模式
+      this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON)// 绘制多边形
     },
 
     // 展示
@@ -159,10 +156,16 @@ export default {
     },
     // 清除覆盖物
     remove() {
-      this.map.clearOverlays()
       this.overlays = []
+      this.map.clearOverlays()
+      if (this.isadd || this.isedit) {
+        console.log(1)
+        this.$emit('handleRemove')
+        this.add()
+      }
     },
     overlaycomplete(e) {
+      console.log('overlaycomplete')
       var path = e.overlay.getPath()// Array<Point> 返回多边型的点数组
       if (path.length > 2) {
         this.overlays.push(path)
