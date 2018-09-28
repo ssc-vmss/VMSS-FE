@@ -413,7 +413,7 @@ export default {
               params.plateNumber=searchTxt
               break;
             case '2':
-              params.Type=vehicleSearchType.join()
+              params.plateType=vehicleSearchType.join()
               break;
             case '3':
               params.plateBrand=searchTxt

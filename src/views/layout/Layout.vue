@@ -5,8 +5,9 @@
         <li v-for="(item,index) in itemMenu" v-if="item.path!=='warning'" :key="index" :class="{active:itemMenuIndex == index}" @click="handleClickItemMenu(index)" @mouseover="showInfoIndex = index" @mouseout="showInfoIndex = -1">
           <router-link :to="resolvePath(menuPath+'/'+item.path)">
             <img :src="'src/assets/icons/'+item.name+'.png'" :title="item.meta.title" />
-          </router-link>
             <div v-if="showInfoIndex == index" class="img-info">{{ item.meta.title }}</div>
+          </router-link>
+          <!-- <div v-if="showInfoIndex == index" class="img-info">{{ item.meta.title }}</div> -->
         </li>
         <li class="warning-box" @mouseover="showWarningInfo = true" @mouseout="showWarningInfo = false">
           <router-link :to="resolvePath('/warning')">

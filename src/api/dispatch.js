@@ -8,6 +8,14 @@ export function getApplyList(params) {
   })
 }
 
+export function editApplyStatus(params) {
+  return request({
+    url: '/admin/vehicleApplication/updatStatus',
+    method: 'put',
+    params
+  })
+}
+
 export function getDispatchList(params) {
   return request({
     url: '/admin/dispatch/pageQuery',
