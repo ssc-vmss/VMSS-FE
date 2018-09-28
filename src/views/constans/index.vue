@@ -16,6 +16,7 @@
                 </el-checkbox-group>
               </div>
               <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" trigger-on-focus v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete>
+              <button :disabled="!unMonitorIds.length&&tabIndex=='0'" class="btn" @click="handleMonitor">监控</button>
             </el-tab-pane>
             <el-tab-pane label="按车辆状态">
               <div class="conf-form-row">
@@ -26,11 +27,11 @@
                   <el-checkbox label="0">离线</el-checkbox>
                 </el-checkbox-group>
               </div>
+              <div class="btn-padding">
+                <button :disabled="!states.length&&tabIndex=='1'" class="btn" @click="handleMonitor">监控</button>
+              </div>
             </el-tab-pane>
           </el-tabs>
-          <div class="btn-padding">
-            <button :disabled="(!unMonitorIds.length&&tabIndex=='0')||(!states.length&&tabIndex=='1')" class="btn" @click="handleMonitor">监控</button>
-          </div>
         </div>
       </div>
       <div class="list-box">
@@ -183,7 +184,6 @@ export default {
     },
     // 将已监控车辆id已选的数组刷新点位
     getMonitoredPoint() {
-      console.log('this.monitorList', this.monitorList)
       let paramString = ''
       let param = null
       this.monitorList.forEach((vehicle, index) => {
@@ -224,25 +224,24 @@ export default {
       this.searchVehicle = data.plateNumber
     },
     // 点击监控
-    handleMonitor() {
+    handleMonitor(index) {
       let paramString = ''
       if (this.tabIndex === '1') {
         this.states.map((state, index) => {
           if (index === this.states.length - 1) {
-            console.log(1)
             paramString += state
           } else {
-            console.log(2)
             paramString += `${state},`
           }
         })
         const param = { state: paramString }
+        console.log(param)
         // if (this.isMapView) {
         console.log(3)
         this.getNewPoint(param)
         // } else {
-        console.log(4)
-        this.getPage(param)
+        // console.log(4)
+        // this.getPage(param)
         // }
       } else {
         this.unMonitorIds.forEach(id => {
@@ -253,11 +252,11 @@ export default {
             }
           })
         })
-        this.monitorIds.map((id, index) => {
-          if (index === this.monitorIds.length - 1) {
-            paramString += id
+        this.monitorList.map((vehicle, index) => {
+          if (index === this.monitorList.length - 1) {
+            paramString += vehicle.id
           } else {
-            paramString += `${id},`
+            paramString += `${vehicle.id},`
           }
         })
         const param = { vehicleId: paramString }
@@ -265,9 +264,10 @@ export default {
         console.log(9)
         this.getNewPoint(param)
         // } else {
-        console.log(10)
-        this.getPage(param)
+        // console.log(10)
+        // this.getPage(param)
         // }
+        this.monitorIds = []
       }
     },
     // 获取定位信息列表
@@ -327,6 +327,8 @@ export default {
       } else {
         this.$refs.map.map.clearOverlays()
       }
+      this.unMonitorIds = []
+      this.monitorIds = []
     },
     // 点击隐藏或显示左边菜单栏
     handleIsShowLeftBox() {
@@ -389,5 +391,8 @@ export default {
     height: 40px;
     margin-left: 10px;
   }
+}
+.el-autocomplete {
+  width: 80%;
 }
 </style>

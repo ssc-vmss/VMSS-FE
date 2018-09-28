@@ -75,11 +75,11 @@
             <div v-else>
               <h4 class="conf-h">已选车辆</h4>
               <div v-if="!vehiclearray.length" class="empty-box">
-                无未监控车辆
+                暂无车辆
               </div>
               <div v-else class="checkbox">
-                <el-checkbox :indeterminate="isindeterminate" v-model="isCheckedAll" @change="handleCheckedAllChange">全选</el-checkbox>
-                <el-checkbox-group class="scrollBox" v-model="unSelectedIds" @change="handleVehicleChange">
+                <el-checkbox :indeterminate="isUnSelectedIndeterminate" v-model="isUnSelectedCheckedAll" @change="unSelectedCheckAllChange">全选</el-checkbox>
+                <el-checkbox-group class="scrollBox" v-model="unSelectedIds" @change="unSelectedVehicleChange">
                   <el-checkbox :class="{search:vehicle.plateNumber == searchVehicle}" v-for="(vehicle,index) in unSelectedList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
                 </el-checkbox-group>
               </div>
@@ -107,19 +107,14 @@
             </div>
             <div v-else>
               <h4 class="conf-h">车辆</h4>
-              <!-- <div class="list">
-                <ul>
-                  <li v-for="(vehicle,index) in vehicleslist" :class="{selected:vehicleindex == index}" :key="index" @click="handleSelectVehicle($event,index)">{{ vehicle }}</li>
-                </ul>
-              </div> -->
-              <button :disabled="!monitorIds.length" class="btn" @click="ohandleDeleteVehicle">删除车辆</button>
-              <div v-if="!monitorList.length" class="empty-box">
-                无监控车辆
+              <button :disabled="!selectedIds.length" class="btn" @click="handleDeleteVehicle">删除车辆</button>
+              <div v-if="!selectedList.length" class="empty-box">
+                未选车辆
               </div>
               <div v-else class="checkbox">
-                <el-checkbox v-if="monitorList.length" :indeterminate="isMonitorindeterminate" v-model="isMonitorCheckedAll" @change="monitorCheckAllChange">全选</el-checkbox>
-                <el-checkbox-group v-model="monitorIds" @change="monitorVehicleChange">
-                  <el-checkbox v-for="(vehicle,index) in monitorList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
+                <el-checkbox v-if="selectedList.length" :indeterminate="isSelectedIndeterminate" v-model="isSelectedCheckedAll" @change="selectedCheckAllChange">全选</el-checkbox>
+                <el-checkbox-group v-model="selectedIds" @change="selectedVehicleChange">
+                  <el-checkbox v-for="(vehicle,index) in selectedList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
                 </el-checkbox-group>
               </div>
             </div>
@@ -185,6 +180,10 @@ export default {
       selectedIds: [],
       unSelectedList: [],
       selectedList: [],
+      isUnSelectedIndeterminate: true,
+      isSelectedIndeterminate: true,
+      isUnSelectedCheckedAll: false,
+      isSelectedCheckedAll: false,
       vehicleslist: ['车辆一', '车辆二'],
       vehicleindex: -1
     }
@@ -402,7 +401,7 @@ export default {
       // 获取车辆信息
       getInfoList({ pageNo: 1, pageSize: 1000 }).then(response => {
         this.vehiclearray = response.data.rows
-        this.unSelected = this.vehiclearray
+        this.unSelectedList = this.vehiclearray
         this.total = response.data.total
       })
     },
@@ -414,7 +413,6 @@ export default {
     },
     // 添加车辆
     handleAddVehicles() {
-      console.log(this.unSelectedIds)
       if (!this.unSelectedIds.length) {
         this.$message({
           type: 'warning',
@@ -436,40 +434,48 @@ export default {
       }
     },
     // 删除车辆
-    ohandleDeleteVehicle() {
-      this.$confirm('是否删除该车辆？', '提示', {
-        confirmButtonText: '',
-        cancleButtonText: '',
-        type: 'warning'
-      }).then(() => {
-        this.vehicleslist.splice(this.vehicleindex, 1)
-        this.vehicleindex = -1
-        this.$message({
-          type: 'success',
-          message: '删除成功'
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
+    handleDeleteVehicle() {
+      this.selectedIds.forEach(id => {
+        this.selectedList.forEach((vehicle, index) => {
+          if (id === vehicle.id) {
+            this.selectedList.splice(index, 1)
+            this.unSelectedList.push(vehicle)
+          }
         })
       })
+      this.unSelectedIds = []
     },
     // 点击选择车辆
     handleSelectVehicle(e, index) {
       this.vehicleindex = index
     },
-    // 点击全选
-    handleCheckedAllChange() {
-      this.unSelectedIds = this.isCheckedAll ? this.vehiclearray.map(item => {
+    // 点击全选所有车辆
+    unSelectedCheckAllChange() {
+      this.unSelectedIds = this.isUnSelectedCheckedAll ? this.unSelectedList.map(item => {
         return item.id
       }) : []
-      this.isindeterminate = false
+      this.isUnSelectedIndeterminate = false
     },
-    // 选中车辆列表改变时全选的状态
-    handleVehicleChange(value) {
-      this.isCheckedAll = value.length === this.vehiclearray.length
-      this.isindeterminate = value.length > 0 && value.length < this.vehiclearray.length
+    // 点击全选
+    selectedCheckAllChange() {
+      this.selectedIds = this.isSelectedCheckedAll ? this.selectedList.map(item => {
+        return item.id
+      }) : []
+      this.isSelectedIndeterminate = false
+    },
+    // 选中所有车辆列表改变时全选的状态
+    unSelectedVehicleChange(value) {
+      if (value) {
+        this.isSelectedCheckedAll = value.length === this.unSelectedList.length
+        this.isUnSelectedIndeterminate = value.length > 0 && value.length < this.unSelectedList.length
+      }
+    },
+    // 选中选中车辆列表改变时全选的状态
+    selectedVehicleChange(value) {
+      if (value) {
+        this.isSelectedCheckedAll = value.length === this.selectedList.length
+        this.isSelectedIndeterminate = value.length > 0 && value.length < this.selectedList.length
+      }
     },
     // 获取点位信息
     handleGetLocation(location) {
