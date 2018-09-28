@@ -143,12 +143,6 @@ export const constantRouterMap = [
         name: 'filteringRules',
         component: () => import('@/views/nested/menu2/index'),
         meta: { title: '系统过滤规则' }
-      },
-      {
-        path: 'Mytable',
-        name: 'Mytable',
-        component: () => import('@/components/Mytable/index'),
-        meta: { title: '测试页' }
       }
     ]
   },

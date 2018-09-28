@@ -4,7 +4,7 @@
       <ul>
         <li v-for="(item,index) in itemMenu" v-if="item.path!=='warning'" :key="index" :class="{active:itemMenuIndex == index}" @click="handleClickItemMenu(index)" @mouseover="showInfoIndex = index" @mouseout="showInfoIndex = -1">
           <router-link :to="resolvePath(menuPath+'/'+item.path)">
-            <img :src="'src/assets/icons/'+item.name+'.png'" :title="item.meta.title" />
+            <img :src="require('@/assets/icons/'+item.name+'.png')" :title="item.meta.title" />
             <div v-if="showInfoIndex == index" class="img-info">{{ item.meta.title }}</div>
           </router-link>
           <!-- <div v-if="showInfoIndex == index" class="img-info">{{ item.meta.title }}</div> -->
@@ -90,6 +90,9 @@ export default {
       return this.$router.options.routes
     }
   },
+  created() {
+    // console.log(this.routes)
+  },
   mounted() {
     this.getSessionStorage()
   },
@@ -118,14 +121,19 @@ export default {
     },
     // 点击菜单
     handleClickMenu(item, index) {
+      window.clearInterval()
       this.menuIndex = index
       this.itemMenuIndex = 0
       this.itemMenu = item.children
+      this.itemMenu.forEach(item => {
+        item.name = item.name.toLowerCase()
+      })
       this.menuPath = item.path
       this.setSessionStorage()
     },
     // 点击子菜单
     handleClickItemMenu(index) {
+      window.clearInterval()
       this.itemMenuIndex = index
       this.setSessionStorage()
     },
