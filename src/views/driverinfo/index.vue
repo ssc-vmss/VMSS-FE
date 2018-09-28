@@ -143,7 +143,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="驾驶员编号" prop="driverLicenseNumber" :label-width="formLabelWidth">
+            <el-form-item label="驾驶证编号" prop="driverLicenseNumber" :label-width="formLabelWidth">
               <el-input v-model="form.driverLicenseNumber" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
@@ -256,7 +256,7 @@ export default {
       this.page = val;
     },
     searchUser(query){//获取用户
-      if(query!=''){
+      if(query){
         this.optionsLoading=true;
         getUserList({name:query}).then(response=>{
           this.options=response.data.rows;
@@ -294,11 +294,13 @@ export default {
     },
     closeDialog(formName){
       this.editact=false;
-      this.resetForm();
+      // this.resetForm();
+
       // this.$refs[formName].resetFields();
     },
     handleCreate(){
-      // this.resetForm();
+      this.clearUser();
+      this.resetForm();
       this.dialogFormVisible = true
     },
     fetchData() {
@@ -338,10 +340,18 @@ export default {
     },
     toEdit(data){
       console.log('data:',data)
-      this.options=[{id:data.id,name:data.name}]
-      this.form=data;
-      this.dialogFormVisible=true;
-      this.editact=true;
+      // this.form=data;
+      // this.form.userId=data.userName;
+      // this.options=[{id:data.userId,name:data.userName}]
+      // this.dialogFormVisible=true;
+      // this.editact=true;
+
+      this.$nextTick(function () {
+        this.form=data;
+        this.options=[{id:data.userId,name:data.userName}]
+        this.dialogFormVisible=true;
+        this.editact=true;
+      })
     },
     saveData(){
       let data=this.form;

@@ -70,10 +70,15 @@
           </el-table-column> -->
           <el-table-column prop="ddid" align="center" label="申请单号">
           </el-table-column>
+          <el-table-column label="备注" min-width="100" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.demo }}
+            </template>
+          </el-table-column>
           <el-table-column fixed="right" label="操作" width="100" align="center">
             <template slot-scope="scope" v-if="scope.row.isDispatch==1">
               <el-button type="text" size="small" @click="openDispatchDialog(scope.row)">调度</el-button>
-              <el-button type="text" size="small" @click="rejected(scope.row)">驳回</el-button>
+              <el-button type="text" size="small" @click="rejected(scope.row.ddid)">驳回</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -226,7 +231,7 @@
             <div style="text-align:right">
               <el-button type="success" size="mini" @click="groupData">组合</el-button>
               <el-button type="primary" size="mini" :loading="dispatchloading" :disabled="!this.selectData.length>0" @click="addNewDispath">派遣</el-button>
-              <el-button type="warning" size="mini">驳回</el-button>
+              <el-button type="warning" size="mini" @click="rejected(dispatchInfo.applyId)">驳回</el-button>
             </div>
           </el-col>
         </el-row>
@@ -300,7 +305,7 @@
 </template>
 
 <script>
-import { getApplyList,getDispatchList,VehicleDataFilter,DriverDataFilter,addDispatch,editDispatch,delDispatch,invalidDispatch } from '@/api/dispatch'
+import { getApplyList,editApplyStatus,getDispatchList,VehicleDataFilter,DriverDataFilter,addDispatch,editDispatch,delDispatch,invalidDispatch } from '@/api/dispatch'
 
 export default {
   data() {
@@ -425,6 +430,9 @@ export default {
         case 2:
           return '已派单'
           break;
+        case 3:
+          return '驳回'
+          break;
         default:
           break;
       }
@@ -491,8 +499,8 @@ export default {
         }).catch(() => {
         });
     },
-    rejected(id){//驳回申请
-      let data={id}
+    rejected(ddid){//驳回申请
+      let data={ddids:ddid,isDispatch:3}
       this.$prompt(`请输入 驳回 原因`,'',{
         inputValidator:(txt)=>{
           if(!txt||!(txt.trim()).length){
@@ -503,11 +511,14 @@ export default {
         beforeClose:(action, instance, done)=>{
           if (action === 'confirm') {
             instance.confirmButtonLoading = true;
-            // editDispatch(data).then(response=>{
-            //   this.fetchData();
+            editApplyStatus(data).then(response=>{
+              this.fetchData();
               instance.confirmButtonLoading = false;
+              this.dialogFormVisible=false;//调度对话框驳回
               done();
-            // })
+            }).catch(error=>{
+              instance.confirmButtonLoading = false;
+            })
           } else {
             done();
           }

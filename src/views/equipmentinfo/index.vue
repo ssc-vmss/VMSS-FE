@@ -18,10 +18,10 @@
       element-loading-text="Loading"
       border
       fit>
-      <el-table-column align="center" label="设备类型" width="95">
+      <!-- <el-table-column align="center" label="设备类型" width="95">
         <template slot-scope="scope">
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="设备型号" align="center">
         <template slot-scope="scope">
           {{ scope.row.unitType }}
