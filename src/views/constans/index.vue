@@ -136,7 +136,9 @@ export default {
       locationList: [],
       states: [], // 车辆状态
       total: 0, // 总页数
-      monitoredIdsArray: [] // 已监控车辆id数组
+      monitoredIdsArray: [], // 已监控车辆id数组
+      count: 0,
+      interval: null // 定时器
     }
   },
   created() {
@@ -199,6 +201,10 @@ export default {
         param = { vehicleId: paramString }
       }
       this.getNewPoint(param)
+      this.interval = window.setInterval(() => {
+        console.log('this.count', this.count++)
+        this.getNewPoint(param)
+      }, 3000)
     },
     // 输入车牌号时获取相似车牌号提供输入建议
     handleFetchNumber(querystring, callback) {
@@ -225,6 +231,8 @@ export default {
     },
     // 点击监控
     handleMonitor(index) {
+      window.clearInterval(this.interval)
+      let param = {}
       let paramString = ''
       if (this.tabIndex === '1') {
         this.states.map((state, index) => {
@@ -234,11 +242,10 @@ export default {
             paramString += `${state},`
           }
         })
-        const param = { state: paramString }
-        console.log(param)
+        param = { state: paramString }
         // if (this.isMapView) {
         console.log(3)
-        this.getNewPoint(param)
+        // this.getNewPoint(param)
         // } else {
         // console.log(4)
         // this.getPage(param)
@@ -259,14 +266,19 @@ export default {
             paramString += `${vehicle.id},`
           }
         })
-        const param = { vehicleId: paramString }
+        param = { vehicleId: paramString }
         // if (this.isMapView) {
         console.log(9)
-        this.getNewPoint(param)
+
         // } else {
         // console.log(10)
         // this.getPage(param)
         // }
+        this.getNewPoint(param)
+        this.interval = window.setInterval(() => {
+          console.log('this.count', this.count++)
+          this.getNewPoint(param)
+        }, 3000)
         this.monitorIds = []
       }
     },
@@ -300,6 +312,7 @@ export default {
     },
     // 点击结束
     handleFinish() {
+      window.clearInterval(this.interval)
       this.monitorIds.forEach(id => {
         this.monitorList.forEach((vehicle, index) => {
           if (id === vehicle.id) {
@@ -308,9 +321,9 @@ export default {
           }
         })
       })
+      let param = {}
       if (this.monitorList.length) {
         let paramString = ''
-        let param = null
         this.monitorList.forEach((vehicle, index) => {
           if (index === this.monitorList.length - 1) {
             paramString += vehicle.id
@@ -325,8 +338,14 @@ export default {
         }
         this.getNewPoint(param)
       } else {
+        param = { vehicleId: 'NA' }
         this.$refs.map.map.clearOverlays()
       }
+      this.getNewPoint(param)
+      this.interval = window.setInterval(() => {
+        console.log('this.count', this.count++)
+        this.getNewPoint(param)
+      }, 3000)
       this.unMonitorIds = []
       this.monitorIds = []
     },

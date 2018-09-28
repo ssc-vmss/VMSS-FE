@@ -41,9 +41,9 @@ export default {
       list: [], // 数据接收点
       car: '', // 汽车图标
       centerPoint: '',
-      imgPath: 'src/assets/images/1.png',
-      startImg: 'src/assets/images/start.png',
-      endImg: 'src/assets/images/end.png',
+      imgPath: require('@/assets/images/1.png'),
+      startImg: require('@/assets/images/start.png'),
+      endImg: require('@/assets/images/end.png'),
       timer: '', // 定时器
       index: 0, // 记录播放到第几个point
       speed: 1000, // 默认一秒钟(后期与接口频率调整一致)

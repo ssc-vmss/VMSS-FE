@@ -6,13 +6,13 @@
           <router-link :to="resolvePath(menuPath+'/'+item.path)">
             <img :src="'src/assets/icons/'+item.name+'.png'" :title="item.meta.title" />
           </router-link>
-          <div v-if="showInfoIndex == index" class="img-info">{{ item.meta.title }}</div>
+            <div v-if="showInfoIndex == index" class="img-info">{{ item.meta.title }}</div>
         </li>
         <li class="warning-box" @mouseover="showWarningInfo = true" @mouseout="showWarningInfo = false">
           <router-link :to="resolvePath('/warning')">
-            <img src="src/assets/icons/warning.png" title="报警信息" />
+            <img :src="require('@/assets/icons/warning.png')" title="报警信息" />
           </router-link>
-          <div v-if="showWarningInfo" class="img-info">报警信息</div>
+            <div v-if="showWarningInfo" class="img-info">报警信息</div>
         </li>
       </ul>
     </div>
@@ -20,7 +20,7 @@
       <el-menu class="navbar-container" mode="horizontal">
         <div class="logo" @click="handleClicLogo">
           <router-link :to="resolvePath('dashboard')">
-            <img class="logo-img" :src="'src/assets/icons/logo.png'" title="首页" />
+            <img class="logo-img" :src="require('@/assets/icons/logo.png')" title="首页" />
             <span class="logo-span">车辆调度管理系统</span>
           </router-link>
         </div>
@@ -42,7 +42,7 @@
         </div>
       </el-menu>
       <!-- <breadcrumb @handleClicLogo="handleClicLogo"/> -->
-      <app-main/>
+      <app-main />
       <el-footer style="height:20px">Copyright © 2018 VMSS.</el-footer>
     </div>
   </div>

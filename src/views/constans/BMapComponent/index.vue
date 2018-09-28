@@ -84,11 +84,11 @@ export default {
       for (let i = 0; i < list.length; i++) {
         const nowPoint = new BMap.Point(list[i].lng, list[i].lat)
         if (list[i].state === '0') {
-          this.imgPath = 'src/assets/images/0.png' // 图片路径
+          this.imgPath = require('@/assets/images/0.png') // 图片路径
         } else if (list[i].state === '1') {
-          this.imgPath = 'src/assets/images/1.png'
+          this.imgPath = require('@/assets/images/1.png')
         } else {
-          this.imgPath = 'src/assets/images/2.png'
+          this.imgPath = require('@/assets/images/2.png')
         }
         const myIcon = new BMap.Icon(this.imgPath, new BMap.Size(52, 26), {
           anchor: new BMap.Size(25, 15)
