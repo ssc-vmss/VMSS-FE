@@ -10,7 +10,7 @@
                 <span>车牌号</span>
               </div>
               <div class="search-vehicle">
-                <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" trigger-on-focus v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete>
+                <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" trigger-on-focus v-model="searchPlateNumber" placeholder="输入车牌号搜索"></el-autocomplete>
               </div>
             </div>
             <div class="conf-form-row">
@@ -60,7 +60,8 @@ export default {
       plateNumber: '',
       startTime: '',
       endTime: '',
-      searchVehicle: '',
+      searchPlateNumber: '',
+      searchId: '',
       isSelected: false,
       isChecked: false,
       list: {
@@ -110,17 +111,19 @@ export default {
     handleQuery() {
       let isExistence = false
       this.vehiclearray.forEach(vehicle => {
-        if (this.searchVehicle === vehicle.plateNumber) {
+        if (this.searchPlateNumber === vehicle.plateNumber) {
+          this.searchId = vehicle.id
           isExistence = true
         }
       })
       if (!isExistence) {
-        this.searchVehicle = ''
+        this.searchPlateNumber = ''
         this.$message({
           type: 'warning',
           message: '车牌号不存在'
         })
       } else {
+        // 判断开始时间是否大于结束时间
         if (this.startTime > this.endTime) {
           this.$message({
             type: 'warning',
@@ -128,10 +131,22 @@ export default {
           })
           return
         }
+        // 将日期时间字符串格式化成日期时间格式
+        const startTime = new Date(this.startTime)
+        const endTime = new Date(this.endTime)
         console.log(this.startTime)
-        console.log(this.endTime)
         console.log(typeof this.startTime)
-        getPointList({ vehicleId: this.searchVehicle }).then(response => {
+        // 计算开始时间和结束时间之间的间隔，以天为单位
+        const timeInterval = parseInt((endTime - startTime) / 1000 / (24 * 60 * 60))
+        // 判断开始时间和结束时间之间的间隔是否大于十天
+        if (timeInterval > 10) {
+          this.$message({
+            type: 'warning',
+            message: '开始时间与结束时间之间的间隔不能超过十天'
+          })
+          return
+        }
+        getPointList({ vehicleId: this.searchId, startTime: this.startTime, endTime: this.endTime }).then(response => {
           if (response.data) {
             this.pointsList = response.data.rows
             console.log(this.pointsList)
@@ -143,10 +158,10 @@ export default {
     },
     // 清空
     handleClear() {
-      this.vehicle = { id: '', number: '' }
-      this.plateNumber = ''
+      this.searchPlateNumber = ''
       this.startTime = ''
       this.endTime = ''
+      this.$refs.map.map.clearOverlays()
     },
     // 输入车牌号时获取相似车牌号提供输入建议
     handleFetchNumber(querystring, callback) {

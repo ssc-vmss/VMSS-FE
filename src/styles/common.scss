@@ -77,7 +77,7 @@ input[type="number"]{
     margin: 5px 10px;
     padding: 5px;
     overflow-y: auto;
-    height: 270px;
+    height: 260px;
     text-align: center;
     // overflow: hidden;
     @extend %section;
@@ -102,7 +102,7 @@ input[type="number"]{
     }
   }
   .el-checkbox-group{
-    height: 240px;
+    height: 220px;
   }
 }
 .right-box {
@@ -118,7 +118,7 @@ input[type="number"]{
 .conf-box{
   height: 55%;
   .scrollBox{
-    height: 160px;
+    height: 200px;
     .search{
       background-color: rgba(0, 128, 128,.1)
     }
@@ -169,6 +169,9 @@ input[type="number"]{
       input{
         height: 36px;
         padding: 5px 10px;
+        &::-webkit-input-placeholder{
+          color: #696969;
+        }
         &:hover{
           border-color:#008080;
           transition: all 0.3s;
@@ -181,7 +184,7 @@ input[type="number"]{
           background-color: #fff;
           border-color: #bfcbd9;
           transform: scale(1);
-          color:#bfcbd9;
+          color:#696969;
         }
       }
       span{
@@ -208,10 +211,14 @@ input[type="number"]{
     }
     .datetime-picker{
       width: 100%;
+      
       input{
         border-color: #bfcbd9;
         height: 36px;
         padding: 5px 10px;
+        &::-webkit-input-placeholder{
+          color: #696969;
+        }
         &:hover{
           border-color:#008080;
           transition: all 0.3s;
@@ -224,7 +231,7 @@ input[type="number"]{
           background-color: #fff;
           border-color: #bfcbd9;
           transform: scale(1);
-          color:#bfcbd9;
+          color:#696969;
         }
       }
       span{
@@ -259,7 +266,7 @@ input[type="number"]{
       margin: 0 5px 0 10px;
       width: 100%;
       &::-webkit-input-placeholder{
-        color: #bfcbd9;
+        color: #696969;
       }
       &:hover{
         border-color:#008080;
@@ -273,7 +280,7 @@ input[type="number"]{
         background-color: #fff;
         border-color: #bfcbd9;
         transform: scale(1);
-        color:#bfcbd9;
+        color:#696969;
       }
     }
     .conf-form-icon{
@@ -290,7 +297,6 @@ input[type="number"]{
       }
       &:disabled{
         cursor: not-allowed;
-        color: red;
       }
     }
     .isdisabled{
@@ -371,7 +377,7 @@ input[type="number"]{
     width: auto;
     &:first-child{
       padding-left: 0;
-    }
+    }  
   }
 }
 .el-time-panel{
@@ -412,6 +418,9 @@ input[type="number"]{
   padding: 0 5px;
   .el-input__inner{
     border-color: #bfcbd9;
+    &::-webkit-input-placeholder{
+      color: #696969;
+    }
     &:hover{
     border-color:#008080;
     transition: all 0.3s;
@@ -535,8 +544,13 @@ input[type="number"]{
   margin: 0;
 }
 .empty-box{
-  height: 200px;
+  height: 250px;
   padding: 100px;
   text-align: center;
   color: #606266;
+  font-size: 16px;
+  font-weight: 400;
+}
+.el-checkbox__input is-disabled is-checked{
+  color: red;
 }

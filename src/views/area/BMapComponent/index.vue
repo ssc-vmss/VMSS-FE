@@ -198,7 +198,7 @@ export default {
     }
     .conf-form-input {
       width: 200px;
-      margin: 5px 0;
+      margin: 5px;
     }
   }
 }

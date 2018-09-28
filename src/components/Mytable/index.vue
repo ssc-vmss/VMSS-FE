@@ -91,7 +91,6 @@ export default {
       this.dialogFormVisible = true
     },
     fetchData() {
-      console.log(this.tableList)
       this.listLoading = true
       setTimeout(() => {
         if (this.header === undefined) {
