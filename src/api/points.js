@@ -31,11 +31,3 @@ export function getById(params) {
     params
   })
 }
-
-export function addPoint(data) {
-  return request({
-    url: '/gis/points/add',
-    method: 'post',
-    data
-  })
-}

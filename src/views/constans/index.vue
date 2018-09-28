@@ -7,10 +7,10 @@
           <el-tabs v-model="tabIndex">
             <el-tab-pane label="按车牌号码">
               <div v-if="!unMonitorList.length" class="empty-box">
-                暂无车辆
+                无未监控车辆
               </div>
               <div v-else class="checkbox">
-                <el-checkbox v-if="unMonitorList.length" :indeterminate="isUnMonitorindeterminate" v-model="isUnMonitorCheckedAll" @change="unMonitorCheckAllChange">全选</el-checkbox>
+                <el-checkbox :indeterminate="isUnMonitorindeterminate" v-model="isUnMonitorCheckedAll" @change="unMonitorCheckAllChange">全选</el-checkbox>
                 <el-checkbox-group class="scrollBox" v-model="unMonitorIds" @change="unMonitorVehicleChange">
                   <el-checkbox :class="{search:vehicle.plateNumber == searchVehicle}" v-for="(vehicle,index) in unMonitorList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
                 </el-checkbox-group>
@@ -35,9 +35,11 @@
       </div>
       <div class="list-box">
         <h4 class="conf-h">当前监控车辆</h4>
-        <button :disabled="!monitorIds.length" class="btn" @click="handlePause">暂停</button>
         <button :disabled="!monitorIds.length" class="btn" @click="handleFinish">结束</button>
-        <div class="checkbox">
+        <div v-if="!monitorList.length" class="empty-box">
+          无监控车辆
+        </div>
+        <div v-else class="checkbox">
           <el-checkbox v-if="monitorList.length" :indeterminate="isMonitorindeterminate" v-model="isMonitorCheckedAll" @change="monitorCheckAllChange">全选</el-checkbox>
           <el-checkbox-group v-model="monitorIds" @change="monitorVehicleChange">
             <el-checkbox v-for="(vehicle,index) in monitorList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
@@ -70,7 +72,7 @@ import Pagination from '@/components/pagination'
 import BMapComponent from './BMapComponent'
 import { getInfoList } from '@/api/vehicle'
 import { getRecordList } from '@/api/record'
-import { getPageQuery, getNewPointList, addPoint } from '@/api/points'
+import { getPageQuery, getNewPointList } from '@/api/points'
 
 export default {
   components: {
@@ -109,21 +111,21 @@ export default {
       isUnMonitorCheckedAll: false,
       isMonitorCheckedAll: false,
       vehiclearray: [
-        { id: 'f9b99a7954324a389009631801ef5042', plateNumber: '川A22222' },
-        { id: '681af98e12ed4fa2b95b81d252032a55', plateNumber: '川A11111' },
-        { id: '1db6ccad42a5467f94d8da5d188866c7', plateNumber: '川A11v12' },
-        { id: 'f9b99a7954324a38r409631801ef5042', plateNumber: '川A2z222' },
-        { id: '6c4af98e12ed4fa2b95b81d252032a55', plateNumber: '川A111u1' },
-        { id: '1db6ccad17a5m97f94d8da5d188866c7', plateNumber: '川Artr22' },
-        { id: 'f9b99a79o5324a389009631801ef5042', plateNumber: '川A2but2' },
-        { id: '681af98e12ed4j9a2b95b81d52032a55', plateNumber: '川Aasvv1' },
-        { id: '1ds6ccad17a5467f94d8da5d188866c7', plateNumber: '川Avd122' },
-        { id: 'f9b99a7954324a3890096vbgbggf5042', plateNumber: '川A2hc22' },
-        { id: '681aegtyn2ed4fa2b95b81d252032a55', plateNumber: '川A1m7w1' },
-        { id: '1db6ccad17a54myfdsay665d188866c7', plateNumber: '川Aaxw22' },
-        { id: 'f9b9fsebdbfdbyijnyhyuk8i01ef5042', plateNumber: '川Amiyg2' },
-        { id: '681affsd52ed4km888j681d252032a55', plateNumber: '川Afew11' },
-        { id: '1db6ccdef4fby7j76nbtda5d188866c7', plateNumber: '川Aask22' }
+        // { id: 'f9b99a7954324a389009631801ef5042', plateNumber: '川A22222' },
+        // { id: '681af98e12ed4fa2b95b81d252032a55', plateNumber: '川A11111' },
+        // { id: '1db6ccad42a5467f94d8da5d188866c7', plateNumber: '川A11v12' },
+        // { id: 'f9b99a7954324a38r409631801ef5042', plateNumber: '川A2z222' },
+        // { id: '6c4af98e12ed4fa2b95b81d252032a55', plateNumber: '川A111u1' },
+        // { id: '1db6ccad17a5m97f94d8da5d188866c7', plateNumber: '川Artr22' },
+        // { id: 'f9b99a79o5324a389009631801ef5042', plateNumber: '川A2but2' },
+        // { id: '681af98e12ed4j9a2b95b81d52032a55', plateNumber: '川Aasvv1' },
+        // { id: '1ds6ccad17a5467f94d8da5d188866c7', plateNumber: '川Avd122' },
+        // { id: 'f9b99a7954324a3890096vbgbggf5042', plateNumber: '川A2hc22' },
+        // { id: '681aegtyn2ed4fa2b95b81d252032a55', plateNumber: '川A1m7w1' },
+        // { id: '1db6ccad17a54myfdsay665d188866c7', plateNumber: '川Aaxw22' },
+        // { id: 'f9b9fsebdbfdbyijnyhyuk8i01ef5042', plateNumber: '川Amiyg2' },
+        // { id: '681affsd52ed4km888j681d252032a55', plateNumber: '川Afew11' },
+        // { id: '1db6ccdef4fby7j76nbtda5d188866c7', plateNumber: '川Aask22' }
       ],
       unMonitorIds: [],
       monitorIds: [],
@@ -132,27 +134,71 @@ export default {
       headerList: ['id', '速度', '状态', '驾驶员id', '驾驶员姓名', 'posTime', '车辆id', '车牌号', '车牌类型', 'plateBrand', 'volume', '组织id', '创建时间', '点位', '起点', '终点', '设备号'],
       locationList: [],
       states: [], // 车辆状态
-      total: 0 // 总页数
+      total: 0, // 总页数
+      monitoredIdsArray: [] // 已监控车辆id数组
     }
   },
   created() {
     this.fetchVehicle()
   },
   methods: {
-
     fetchVehicle() {
       // 获取车辆信息
       getInfoList({ pageNo: 1, pageSize: 1000 }).then(response => {
         this.vehiclearray = response.data.rows
-        this.unMonitorList = this.vehiclearray
         this.total = response.data.total
       })
       // 获取已监控车辆列表
-      // getRecordList().then(response => {
-      //   console.log(response)
-      //   this.monitorList = response.data.rows
-      // })
-      // this.unMonitorList = this.vehiclearray
+      setTimeout(() => {
+        getRecordList().then(response => {
+          if (!response.data.rows.length) {
+            this.unMonitorList = this.vehiclearray
+            return
+          }
+          // 将所有已监控车辆Id字符串用逗号隔开变成数组
+          this.monitoredIdsArray = response.data.rows[0].vehicleId.split(',')
+          // 遍历所有车辆列表
+          this.vehiclearray.forEach(vehicle => {
+            // 遍历已监控车辆Id数组
+            this.monitoredIdsArray.forEach(id => {
+              // 通过已监控id获取车辆信息
+              if (id === vehicle.id) {
+                // 添加到已监控列表
+                this.monitorList.push(vehicle)
+              }
+            })
+          })
+        })
+        setTimeout(() => {
+          if (this.monitorList.length) {
+            this.getMonitoredPoint()
+          }
+          this.unMonitorList = this.vehiclearray.filter(vehicle =>
+            !this.monitorList.some(
+              monitor => monitor.id === vehicle.id
+            )
+          )
+        }, 100)
+      }, 100)
+    },
+    // 将已监控车辆id已选的数组刷新点位
+    getMonitoredPoint() {
+      console.log('this.monitorList', this.monitorList)
+      let paramString = ''
+      let param = null
+      this.monitorList.forEach((vehicle, index) => {
+        if (index === this.monitorList.length - 1) {
+          paramString += vehicle.id
+        } else {
+          paramString += `${vehicle.id},`
+        }
+      })
+      if (this.tabIndex === '1') {
+        param = { state: paramString }
+      } else {
+        param = { vehicleId: paramString }
+      }
+      this.getNewPoint(param)
     },
     // 输入车牌号时获取相似车牌号提供输入建议
     handleFetchNumber(querystring, callback) {
@@ -167,7 +213,6 @@ export default {
     },
     // 点击建议项里的车牌号
     handleSelectNumber(data) {
-      const scrollBoxHeight = document.getElementsByClassName('scrollBox')[0].offsetHeight
       let searchVehicleIndex = -1
       this.unMonitorList.forEach((vehicle, index) => {
         if (data.plateNumber === vehicle.plateNumber) {
@@ -180,12 +225,8 @@ export default {
     },
     // 点击监控
     handleMonitor() {
-      // if (this.) {
-
-      // }
       let paramString = ''
       if (this.tabIndex === '1') {
-        console.log(0)
         this.states.map((state, index) => {
           if (index === this.states.length - 1) {
             console.log(1)
@@ -204,22 +245,18 @@ export default {
         this.getPage(param)
         // }
       } else {
-        console.log(5)
         this.unMonitorIds.forEach(id => {
           this.unMonitorList.forEach((vehicle, index) => {
             if (id === vehicle.id) {
-              console.log(6)
               this.monitorList.push(vehicle)
               this.unMonitorList.splice(index, 1)
             }
           })
         })
-        this.unMonitorIds.map((id, index) => {
-          if (index === this.unMonitorIds.length - 1) {
-            console.log(7)
+        this.monitorIds.map((id, index) => {
+          if (index === this.monitorIds.length - 1) {
             paramString += id
           } else {
-            console.log(8)
             paramString += `${id},`
           }
         })
@@ -228,7 +265,7 @@ export default {
         console.log(9)
         this.getNewPoint(param)
         // } else {
-        console.log(1)
+        console.log(10)
         this.getPage(param)
         // }
       }
@@ -236,35 +273,30 @@ export default {
     // 获取定位信息列表
     getPage(param) {
       getPageQuery(param).then(response => {
-        console.log('reaponse', response)
         this.locationList = response.data.rows
         this.locationList.forEach((location, index) => {
           location.id = index + 1
         })
-        console.log('this.locationList', this.locationList)
         this.total = response.data.total
       })
     },
     // 获取最新点位列表
     getNewPoint(param) {
+      // 清空地图上的覆盖物
       this.$refs.map.map.clearOverlays()
       getNewPointList(param).then(response => {
-        if (response.status === 200) {
-          this.$message({
-            type: 'success',
-            message: response.message
-          })
-        }
+        // if (response.status === 200) {
+        //   this.$message({
+        //     type: 'success',
+        //     message: response.message
+        //   })
+        // }
         this.newPointsList = response.data.rows
+        // 设置地图的中心点
         this.$refs.map.setZoom(this.newPointsList)
+        // 添加覆盖物到地图
         this.$refs.map.addMarker(this.newPointsList)
       })
-      this.isMonitorCheckedAll = true
-      this.monitorCheckAllChange()
-    },
-    // 点击暂停
-    handlePause() {
-      console.log('点击暂停')
     },
     // 点击结束
     handleFinish() {
@@ -276,21 +308,25 @@ export default {
           }
         })
       })
-      let paramString = ''
-      let param = null
-      this.monitorList.forEach((vehicle, index) => {
-        if (index === this.monitorList.length - 1) {
-          paramString += vehicle.id
+      if (this.monitorList.length) {
+        let paramString = ''
+        let param = null
+        this.monitorList.forEach((vehicle, index) => {
+          if (index === this.monitorList.length - 1) {
+            paramString += vehicle.id
+          } else {
+            paramString += `${vehicle.id},`
+          }
+        })
+        if (this.tabIndex === '1') {
+          param = { state: paramString }
         } else {
-          paramString += `${vehicle.id},`
+          param = { vehicleId: paramString }
         }
-      })
-      if (this.tabIndex === '1') {
-        param = { state: paramString }
+        this.getNewPoint(param)
       } else {
-        param = { vehicleId: paramString }
+        this.$refs.map.map.clearOverlays()
       }
-      this.getNewPoint(param)
     },
     // 点击隐藏或显示左边菜单栏
     handleIsShowLeftBox() {

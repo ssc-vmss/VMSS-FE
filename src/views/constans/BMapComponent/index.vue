@@ -1,5 +1,6 @@
 <template>
   <div class="map-view">
+    <!-- <div class="conf-form label-box">车牌号码<br />车辆品牌<br />行驶速度<br />司机姓名<br /></div> -->
     <div id="allmap" ref="map"></div>
   </div>
 </template>
@@ -119,7 +120,7 @@ export default {
       if (points.driverName == null) {
         points.driverName = ''
       }
-      const vehicleInfo = `<div class="conf-form label-box">车牌号码${points.plateNumber}<br />车辆品牌${points.plateBrand}<br />行驶速度${points.speed}<br />司机姓名${points.driverName}<br /><div>`
+      const vehicleInfo = `<div class="conf-form label-box">车牌号码${points.plateNumber}<br />车辆品牌${points.plateBrand}<br />行驶速度${points.speed}<br />司机姓名${points.driverName}<br /></div>`
       const infoWindow = new BMap.InfoWindow(vehicleInfo)
       thisMarker.openInfoWindow(infoWindow)
     }

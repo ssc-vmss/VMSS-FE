@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getRecordList(params) {
   return request({
-    url: '/record/findList',
+    url: '/gis/record/findList',
     method: 'get',
     params
   })
