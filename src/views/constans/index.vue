@@ -144,6 +144,9 @@ export default {
   created() {
     this.fetchVehicle()
   },
+  destroyed() {
+    clearInterval(this.interval)
+  },
   methods: {
     fetchVehicle() {
       // 获取车辆信息
@@ -201,10 +204,10 @@ export default {
         param = { vehicleId: paramString }
       }
       this.getNewPoint(param)
-      this.interval = window.setInterval(() => {
-        console.log('this.count', this.count++)
+      // this.interval = setInterval(() => {
+      //   console.log('this.count', this.count++)
         this.getNewPoint(param)
-      }, 3000)
+      // }, 3000)
     },
     // 输入车牌号时获取相似车牌号提供输入建议
     handleFetchNumber(querystring, callback) {
@@ -231,7 +234,7 @@ export default {
     },
     // 点击监控
     handleMonitor(index) {
-      window.clearInterval(this.interval)
+      clearInterval(this.interval)
       let param = {}
       let paramString = ''
       if (this.tabIndex === '1') {
@@ -275,7 +278,7 @@ export default {
         // this.getPage(param)
         // }
         this.getNewPoint(param)
-        this.interval = window.setInterval(() => {
+        this.interval = setInterval(() => {
           console.log('this.count', this.count++)
           this.getNewPoint(param)
         }, 3000)
@@ -312,7 +315,7 @@ export default {
     },
     // 点击结束
     handleFinish() {
-      window.clearInterval(this.interval)
+      clearInterval(this.interval)
       this.monitorIds.forEach(id => {
         this.monitorList.forEach((vehicle, index) => {
           if (id === vehicle.id) {
@@ -342,7 +345,7 @@ export default {
         this.$refs.map.map.clearOverlays()
       }
       this.getNewPoint(param)
-      this.interval = window.setInterval(() => {
+      this.interval = setInterval(() => {
         console.log('this.count', this.count++)
         this.getNewPoint(param)
       }, 3000)

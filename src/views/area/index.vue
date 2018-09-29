@@ -284,6 +284,7 @@ export default {
       this.list.state = 0
       this.list.inWarn = 0
       this.list.outWarn = 0
+      this.list.vehicleId = ''
     },
     // 新增
     handleAdd() {
@@ -417,6 +418,7 @@ export default {
     handleApplVehicles() {
       this.issetapplvehicles = true
       this.fetchVehicle()
+      console.log(this.list)
     },
     // 获取车辆信息
     fetchVehicle() {
@@ -425,6 +427,15 @@ export default {
         this.vehiclearray = response.data.rows
         this.unSelectedList = this.vehiclearray
         this.total = response.data.total
+        const ids = this.list.vehicleId.split(',')
+        ids.forEach(id => {
+          this.unSelectedList.forEach((vehicle, index) => {
+            if (id === vehicle.id) {
+              this.selectedList.push(vehicle)
+              this.unSelectedList.splice(index, 1)
+            }
+          })
+        })
       })
     },
     // 退出适用车辆界面，返回设置适用规则界面
@@ -432,6 +443,7 @@ export default {
       this.issetapplvehicles = false
       this.vehicle = ''
       this.vehicleindex = -1
+      this.selectedList = []
     },
     // 添加车辆
     handleAddVehicles() {
@@ -449,10 +461,8 @@ export default {
             }
           })
         })
-        this.$message({
-          type: 'success',
-          message: '添加成功'
-        })
+        this.changeApplVehicle()
+        this.selectedIds = []
       }
     },
     // 删除车辆
@@ -465,7 +475,29 @@ export default {
           }
         })
       })
+      this.changeApplVehicle()
       this.unSelectedIds = []
+    },
+    // 添加或删除适用车辆
+    changeApplVehicle() {
+      let idsString = ''
+      this.selectedList.map((vehicle, index) => {
+        if (index === this.selectedList.length - 1) {
+          idsString += vehicle.id
+        } else {
+          idsString += `${vehicle.id},`
+        }
+      })
+      this.list.vehicleId = idsString
+      editArea(this.list).then(response => {
+        if (response.status === 200) {
+          this.fetchData()
+          this.$message({
+            message: response.message,
+            type: 'success'
+          })
+        }
+      })
     },
     // 点击选择车辆
     handleSelectVehicle(e, index) {
