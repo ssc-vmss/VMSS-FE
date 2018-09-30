@@ -338,6 +338,9 @@ input[type="number"]{
           background: rgba(0, 128, 128,.5);
         }
       }
+      &:focus{
+        color: red;
+      }
     }
   }
 }
@@ -482,6 +485,12 @@ input[type="number"]{
     }
   }
 }
+.label-left-box{
+  margin: 10px;
+  padding: 10px;
+  background-color: rgba(255,255,255,0.8);
+  border-bottom-left-radius: 10px;
+}
 .label-box{
   margin: 10px;
   padding: 10px;
@@ -495,6 +504,7 @@ input[type="number"]{
     }
   }
 }
+
 .el-loading-mask{
   z-index: 998;
 }
@@ -552,6 +562,6 @@ input[type="number"]{
   font-size: 16px;
   font-weight: 400;
 }
-.el-checkbox__input is-disabled is-checked{
-  color: red;
+.el-input-number{
+  width: 200px;
 }

@@ -5,6 +5,7 @@
         <input type="text" class="conf-form-input" id="suggestId" placeholder="搜索地址" />
         <div id="searchResult"></div>
         <button :disabled="!(isadd||isedit)||overlays.length==0" class="btn" @click="remove">区域清除</button>
+        <!-- <button class="btn" @click="remove">区域清除</button> -->
       </div>
     </div>
     <div id="allmap" ref="map"></div>
@@ -82,6 +83,7 @@ export default {
         setPlace()
       })
       function setPlace() {
+        // debugger
         var allOverlay = map.getOverlays()
         for (var i = 0; i < allOverlay.length; i++) {
           if (allOverlay[i].toString() == '[object Marker]') {
@@ -99,12 +101,12 @@ export default {
         local.search(myValue)
       }
       // 实例化鼠标绘制工具
-      this.drawingManager = new BMapLib.DrawingManager(map, {
-        isOpen: false, // 是否开启绘制模式
-        polygonOptions: this.styleOptions, // 多边形的样式
-      })
+      // this.drawingManager = new BMapLib.DrawingManager(map, {
+      //   isOpen: false, // 是否开启绘制模式
+      //   polygonOptions: this.styleOptions, // 多边形的样式
+      // })
       // 添加鼠标绘制工具监听事件，用于获取绘制结果
-      this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete)
+      // this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete)
       this.map = map
     },
     // 保存
@@ -126,12 +128,17 @@ export default {
     },
     // 添加
     add() {
-      console.log('add')
+      // 实例化鼠标绘制工具
+      this.drawingManager = new BMapLib.DrawingManager(this.map, {
+        isOpen: true, // 是否开启绘制模式
+        polygonOptions: this.styleOptions // 多边形的样式
+      })
+      this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete)
       if (this.overlays.length > 0) {
         this.map.clearOverlays()
         this.overlays = []
       }
-      this.drawingManager.open()// 开启地图的绘制模式
+      // this.drawingManager.open()// 开启地图的绘制模式
       this.drawingManager.setDrawingMode(BMAP_DRAWING_POLYGON)// 绘制多边形
     },
 
@@ -158,13 +165,14 @@ export default {
     remove() {
       this.overlays = []
       this.map.clearOverlays()
+      this.$emit('handleGetLocation', '')
       if (this.isadd || this.isedit) {
-        console.log(1)
         this.$emit('handleRemove')
         this.add()
       }
     },
     overlaycomplete(e) {
+  
       console.log('overlaycomplete')
       var path = e.overlay.getPath()// Array<Point> 返回多边型的点数组
       if (path.length > 2) {

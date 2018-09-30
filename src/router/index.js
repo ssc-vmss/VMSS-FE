@@ -119,6 +119,12 @@ export const constantRouterMap = [
         name: 'area',
         component: () => import('@/views/area/index'),
         meta: { title: '区域管理' }
+      },
+      {
+        path: 'threshold',
+        name: 'threshold',
+        component: () => import('@/views/threshold/index'),
+        meta: { title: '点位离线阈值配置' }
       }
     ]
   },

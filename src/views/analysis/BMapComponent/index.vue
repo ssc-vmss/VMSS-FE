@@ -13,7 +13,7 @@
       </div>
     </div>
     <div id="allmap" ref="map"></div>
-    <div v-if="list.length>0&&list[index]" class="conf-form label-box">
+    <div v-if="list.length>0&&list[index]" class="conf-form label-leftbox">
       <div class="label-row">
         <span>车牌号码：{{ list[index].plateNumber }}</span>
       </div>
@@ -70,7 +70,7 @@ export default {
           var point = new BMap.Point(this.list[i].lng, this.list[i].lat)
           this.points.push(point)
         }
-        this.map.centerAndZoom(this.points[0], 15) // 初始化地图,设置中心点坐标和地图级别
+        this.map.centerAndZoom(this.points[0], 10) // 初始化地图,设置中心点坐标和地图级别
         var start = new BMap.Point(this.list[0].lng, this.list[0].lat) // 起点
         var end = new BMap.Point(this.list[this.list.length - 1].lng, this.list[this.list.length - 1].lat) // 终点
         var myIcon = new BMap.Icon(this.imgPath, new BMap.Size(52, 26))
@@ -101,6 +101,58 @@ export default {
           // 点亮操作按钮
           that.isPlaying = false
         })
+      }
+    },
+    // 获取中心点
+    setZoom(list) {
+
+      if (list.length > 0) {
+        let maxLng = list[0].lng
+        let minLng = list[0].lng
+        let maxLat = list[0].lat
+        let minLat = list[0].lat
+        let res
+        for (let i = list.length - 1; i >= 0; i--) {
+          res = list[i]
+          if (res.lng > maxLng) {
+            maxLng = res.lng
+          }
+          if (res.lng < minLng) {
+            minLng = res.lng
+          }
+          if (res.lat > maxLat) {
+            maxLat = res.lat
+          }
+          if (res.lat < minLat) {
+            minLat = res.lat
+          }
+        }
+        const cenLng = (parseFloat(maxLng) + parseFloat(minLng)) / 2 // 缩放中心的精度
+        const cenLat = (parseFloat(maxLat) + parseFloat(minLat)) / 2 // 缩放中心的纬度
+        let zoom = this.getZoom(maxLng, minLng, maxLat, minLat) // 缩放级别
+        zoom = zoom + 1
+        this.map.centerAndZoom(new BMap.Point(cenLng, cenLat), zoom) // 中心点和缩放级别
+      } else {
+        const myFun = (result) => {
+          const cityName = result.name
+          this.map.setCenter(cityName)
+        }
+        const myCity = new BMap.LocalCity()
+        myCity.get(myFun)
+      }
+    },
+    // 获取最佳缩放级别
+    getZoom(maxLng, minLng, maxLat, minLat) {
+      const zoom = ['50', '100', '200', '500', '1000', '2000', '5000',
+        '10000', '20000', '25000', '50000', '100000', '200000',
+        '500000', '1000000', '2000000'] // 级别18到3
+      const pointA = new BMap.Point(maxLng, maxLat) // 创建点坐标A
+      const pointB = new BMap.Point(minLng, minLat) // 创建点坐标B
+      const distance = this.map.getDistance(pointA, pointB).toFixed(1) // 获取两点距离,保留小数点后两位
+      for (let i = 0, zoomLen = zoom.length; i < zoomLen; i++) {
+        if (zoom[i] - distance > 0) {
+          return 18 - i + 2 // 之所以会多2，是因为地图范围常常是比例尺距离的10倍以上。所以级别会增加2
+        }
       }
     },
     play() {

@@ -12,7 +12,7 @@
                 <span>名称</span>
                 <span class="required-span">*</span>
               </div>
-              <input class="conf-form-input" :disabled="isadd" v-model="list.name" type="text" placeholder="请输入名称">
+              <input :disabled="isadd" v-model="list.name" class="conf-form-input" type="text" placeholder="请输入名称">
             </div>
               <div class="conf-form-row">
                 <div class="conf-form-label">
@@ -26,8 +26,8 @@
                   </div>
                   <input @blur="handleCloseMenu" :disabled="isadd" v-model="list.state==1?'是':'否'" class="conf-form-input" type="text" @click="handleShowMenu" placeholder="请选择" readonly/>
                   <i :class="{isdisabled:isadd}" class="el-icon-caret-bottom conf-form-icon righticon" @click="handleShowMenu"></i>
-                  <div v-show="isshowmenu" class="dropdown-menu">
-                    <ul @click="handleSetState">
+                  <div v-show="isshowmenu" tabindex="-1" class="dropdown-menu">
+                    <ul class="dropdown-ul" @click="handleSetState">
                       <li value="0">否</li>
                       <li value="1">是</li>
                     </ul>
@@ -235,7 +235,15 @@ export default {
       this.isshowmenu = false
     },
     handleShowMenu() {
-      this.isshowmenu = !this.isshowmenu
+      if (!this.isshowmenu) {
+        this.isshowmenu = true
+        document.addEventListener('mousedown', e => {
+          if (e.target.parentElement.className !== 'dropdown-ul') {
+            this.isshowmenu = false
+            return
+          }
+        })
+      }
     },
     // 鼠标移出时隐藏下拉菜单
     handleCloseMenu() {
@@ -313,14 +321,14 @@ export default {
       if (this.list.location === '') {
         this.$message({
           type: 'warning',
-          message: '名称不能为空'
+          message: '区域不能为空,请绘制区域'
         })
         return
       }
       if (this.list.name === '') {
         this.$message({
           type: 'warning',
-          message: '区域不能为空,请绘制区域'
+          message: '名称不能为空'
         })
         return
       }
@@ -412,13 +420,13 @@ export default {
       this.isdelete = false
       this.areaindex = -1
       this.isSpeedLimit = 0
-      this.$refs.map.remove()
+      this.$refs.map.map.clearOverlays()
+      this.$refs.map.overlays = []
     },
     // 点击适用车辆
     handleApplVehicles() {
       this.issetapplvehicles = true
       this.fetchVehicle()
-      console.log(this.list)
     },
     // 获取车辆信息
     fetchVehicle() {
@@ -537,18 +545,10 @@ export default {
     },
     // 是否已清空过区域
     handleRemove() {
-      console.log(155555555555555555555555555)
       this.hasRemove = true
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-.dropdown-box {
-  border: 1px solid red;
-  width: 100%;
-  .conf-form-input {
-    margin-left: 0;
-  }
-}
 </style>

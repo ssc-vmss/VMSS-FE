@@ -149,9 +149,10 @@ export default {
         getPointList({ vehicleId: this.searchId, startTime: this.startTime, endTime: this.endTime }).then(response => {
           if (response.data) {
             this.pointsList = response.data.rows
-            console.log(this.pointsList)
+            console.log('this.pointsList', this.pointsList)
             this.$refs.map.list = this.pointsList
             this.$refs.map.ready()
+            this.$refs.map.setZoom(this.pointsList)
           }
         })
       }

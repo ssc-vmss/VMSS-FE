@@ -1,6 +1,5 @@
 <template>
   <div class="map-view">
-    <!-- <div class="conf-form label-box">车牌号码<br />车辆品牌<br />行驶速度<br />司机姓名<br /></div> -->
     <div id="allmap" ref="map"></div>
   </div>
 </template>

@@ -15,7 +15,7 @@
                   <el-checkbox :class="{search:vehicle.plateNumber == searchVehicle}" v-for="(vehicle,index) in unMonitorList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
                 </el-checkbox-group>
               </div>
-              <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" trigger-on-focus v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete>
+              <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete>
               <button :disabled="!unMonitorIds.length&&tabIndex=='0'" class="btn" @click="handleMonitor">监控</button>
             </el-tab-pane>
             <el-tab-pane label="按车辆状态">
@@ -83,8 +83,6 @@ export default {
     return {
       tabIndex: '',
       searchVehicle: '',
-      isSelected: false,
-      isChecked: false,
       list: {
         id: '',
         speed: '',
@@ -105,8 +103,8 @@ export default {
       },
       isMapView: true, // 显示方式
       isshowleftbox: true,
+      oldPointsList: null,
       newPointsList: null,
-      vehicleIndex: -1,
       isUnMonitorindeterminate: true,
       isMonitorindeterminate: true,
       isUnMonitorCheckedAll: false,
@@ -204,10 +202,42 @@ export default {
         param = { vehicleId: paramString }
       }
       this.getNewPoint(param)
-      // this.interval = setInterval(() => {
-      //   console.log('this.count', this.count++)
+      this.interval = setInterval(() => {
+        console.log('this.count', this.count++)
         this.getNewPoint(param)
-      // }, 3000)
+      }, 5000)
+    },
+    // 获取最新点位列表
+    getNewPoint(param) {
+      // 清空地图上的覆盖物
+      this.$refs.map.map.clearOverlays()
+      getNewPointList(param).then(response => {
+        this.newPointsList = response.data.rows
+        // if (this.count > 0) {
+        //   this.newPointsList.forEach((point, index) => {
+        //     point.location = point.location.split(',')
+        //     console.log(point.location[0])
+        //     point.location[0] = parseInt(point.location[0]) + this.count
+        //     console.log(point.location[0])
+        //     point.location = point.location.join(',')
+        //   })
+        // }
+        this.oldPointsList = this.newPointsList
+        this.newPointsList.forEach((point, index) => {
+          console.log(point.location)
+          console.log(this.oldPointsList[index].location)
+          if (point.location === this.oldPointsList[index].location) {
+            console.log(123)
+            this.newPointsList.splice(index, 1)
+          }
+        })
+        // console.log('this.newPointsList', this.oldPointsList)
+        // console.log('-----------------------')
+        // 设置地图的中心点
+        this.$refs.map.setZoom(this.oldPointsList)
+        // 添加覆盖物到地图
+        this.$refs.map.addMarker(this.oldPointsList)
+      })
     },
     // 输入车牌号时获取相似车牌号提供输入建议
     handleFetchNumber(querystring, callback) {
@@ -246,12 +276,6 @@ export default {
           }
         })
         param = { state: paramString }
-        // if (this.isMapView) {
-        console.log(3)
-        // this.getNewPoint(param)
-        // } else {
-        // console.log(4)
-        // this.getPage(param)
         // }
       } else {
         this.unMonitorIds.forEach(id => {
@@ -270,18 +294,11 @@ export default {
           }
         })
         param = { vehicleId: paramString }
-        // if (this.isMapView) {
-        console.log(9)
-
-        // } else {
-        // console.log(10)
-        // this.getPage(param)
-        // }
         this.getNewPoint(param)
         this.interval = setInterval(() => {
           console.log('this.count', this.count++)
           this.getNewPoint(param)
-        }, 3000)
+        }, 5000)
         this.monitorIds = []
       }
     },
@@ -293,24 +310,6 @@ export default {
           location.id = index + 1
         })
         this.total = response.data.total
-      })
-    },
-    // 获取最新点位列表
-    getNewPoint(param) {
-      // 清空地图上的覆盖物
-      this.$refs.map.map.clearOverlays()
-      getNewPointList(param).then(response => {
-        // if (response.status === 200) {
-        //   this.$message({
-        //     type: 'success',
-        //     message: response.message
-        //   })
-        // }
-        this.newPointsList = response.data.rows
-        // 设置地图的中心点
-        this.$refs.map.setZoom(this.newPointsList)
-        // 添加覆盖物到地图
-        this.$refs.map.addMarker(this.newPointsList)
       })
     },
     // 点击结束
@@ -348,7 +347,7 @@ export default {
       this.interval = setInterval(() => {
         console.log('this.count', this.count++)
         this.getNewPoint(param)
-      }, 3000)
+      }, 5000)
       this.unMonitorIds = []
       this.monitorIds = []
     },

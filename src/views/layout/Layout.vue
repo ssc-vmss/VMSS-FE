@@ -9,7 +9,7 @@
           </router-link>
           <!-- <div v-if="showInfoIndex == index" class="img-info">{{ item.meta.title }}</div> -->
         </li>
-        <li class="warning-box" @mouseover="showWarningInfo = true" @mouseout="showWarningInfo = false">
+        <li :class="{active:itemMenuIndex == itemMenu.length + 1}" class="warning-box" @click="handleClickItemMenu(itemMenu.length + 1)" @mouseover="showWarningInfo = true" @mouseout="showWarningInfo = false">
           <router-link :to="resolvePath('/warning')">
             <img :src="require('@/assets/icons/warning.png')" title="报警信息" />
           </router-link>
