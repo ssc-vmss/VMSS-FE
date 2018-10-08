@@ -11,6 +11,7 @@
             <el-input v-model="plateNumber" placeholder="输入车牌号码"></el-input>
           </el-form-item>
           <el-button type="primary" @click="query">查询</el-button>
+          <el-button @click="clear">重置</el-button>
         </el-form>
       </div>
       <div class="bottom-box">
@@ -67,6 +68,7 @@ export default {
         }
       })
     },
+    // 点击查询
     query() {
       if (this.driverName && this.plateNumber) {
         this.param = { driverName: this.driverName, plateNumber: this.plateNumber }
@@ -74,8 +76,15 @@ export default {
         this.param = { plateNumber: this.plateNumber }
       } else if (this.driverName) {
         this.param = { driverName: this.driverName }
+      } else {
+        this.param = { pageNo: this.currPage }
       }
       this.fetchData()
+    },
+    // 点击清空
+    clear() {
+      this.driverName = ''
+      this.plateNumber = ''
     },
     // 分页组件传入当前页进行分页查询
     handleJumpPage(currPage) {

@@ -125,7 +125,43 @@ export const constantRouterMap = [
         name: 'threshold',
         component: () => import('@/views/threshold/index'),
         meta: { title: '点位离线阈值配置' }
-      }
+      },
+      // {
+      //   path: 'constans1',
+      //   component: () => import('@/views/constans1/index'),
+      //   name: 'constans1',
+      //   meta: { title: '实时监控' }
+      // },
+      // {
+      //   path: 'analysis1',
+      //   name: 'analysis1',
+      //   component: () => import('@/views/analysis1/index'),
+      //   meta: { title: '轨迹分析' }
+      // },
+      // {
+      //   path: 'area1',
+      //   name: 'area1',
+      //   component: () => import('@/views/area1/index'),
+      //   meta: { title: '区域管理' }
+      // },
+      // {
+      //   path: 'threshold1',
+      //   name: 'threshold1',
+      //   component: () => import('@/views/threshold1/index'),
+      //   meta: { title: '点位离线阈值配置' }
+      // },
+      // {
+      //   path: 'area2',
+      //   name: 'area2',
+      //   component: () => import('@/views/area2/index'),
+      //   meta: { title: '区域管理' }
+      // },
+      // {
+      //   path: 'threshold2',
+      //   name: 'threshold2',
+      //   component: () => import('@/views/threshold2/index'),
+      //   meta: { title: '点位离线阈值配置' }
+      // }
     ]
   },
   {

@@ -57,7 +57,7 @@
         <button v-else class="btn" @click="handleChangeView">地图视图</button>
       </div>
       <b-map-component v-show="isMapView" ref="map" @handleGetLocation="handleGetLocation"></b-map-component>
-      <div v-show="!isMapView">
+      <div v-if="!isMapView">
         <my-table :header="headerList" :tableData="locationList"></my-table>
         <pagination :page-size='10' :current-page='1' :total='total'></pagination>
       </div>
@@ -202,41 +202,52 @@ export default {
         param = { vehicleId: paramString }
       }
       this.getNewPoint(param)
+      this.getPage(param)
       this.interval = setInterval(() => {
-        console.log('this.count', this.count++)
         this.getNewPoint(param)
+        console.log('this.count', this.count++)
       }, 5000)
     },
     // 获取最新点位列表
     getNewPoint(param) {
-      // 清空地图上的覆盖物
-      this.$refs.map.map.clearOverlays()
       getNewPointList(param).then(response => {
         this.newPointsList = response.data.rows
-        // if (this.count > 0) {
-        //   this.newPointsList.forEach((point, index) => {
-        //     point.location = point.location.split(',')
-        //     console.log(point.location[0])
-        //     point.location[0] = parseInt(point.location[0]) + this.count
-        //     console.log(point.location[0])
-        //     point.location = point.location.join(',')
-        //   })
-        // }
-        this.oldPointsList = this.newPointsList
-        this.newPointsList.forEach((point, index) => {
-          console.log(point.location)
-          console.log(this.oldPointsList[index].location)
-          if (point.location === this.oldPointsList[index].location) {
-            console.log(123)
-            this.newPointsList.splice(index, 1)
-          }
-        })
-        // console.log('this.newPointsList', this.oldPointsList)
-        // console.log('-----------------------')
         // 设置地图的中心点
-        this.$refs.map.setZoom(this.oldPointsList)
+        this.$refs.map.setZoom(this.newPointsList)
+        var allOverlay = this.$refs.map.map.getOverlays()
+        console.log(allOverlay)
+        const pointsList = JSON.parse(JSON.stringify(this.newPointsList))
+        if (this.count > 0) {
+          for (var j = 0; j < this.oldPointsList.length;) {
+            var flag = true
+            for (var k = 0; k < this.newPointsList.length; k++) {
+              // 同车同点位
+              if (this.oldPointsList[j].vehicleId === this.newPointsList[k].vehicleId) {
+                flag = false
+                if (this.oldPointsList[j].location === this.newPointsList[k].location) {
+                  this.newPointsList.splice(k, 1)
+                } else {
+                  for (var m = 0; m < allOverlay.length; m++) {
+                    if (allOverlay[m].point.lng === this.oldPointsList[j].lng &&
+                      allOverlay[m].point.lat === this.oldPointsList[j].lat) {
+                      this.map.removeOverlay(allOverlay[m])
+                    }
+                  }
+                }
+                break
+              } else {
+                flag = true
+              }
+            }
+            if (flag) {
+              this.map.removeOverlay(allOverlay[j])
+            }
+            j++
+          }
+        }
+        this.oldPointsList = pointsList
         // 添加覆盖物到地图
-        this.$refs.map.addMarker(this.oldPointsList)
+        this.$refs.map.addMarker(this.newPointsList)
       })
     },
     // 输入车牌号时获取相似车牌号提供输入建议

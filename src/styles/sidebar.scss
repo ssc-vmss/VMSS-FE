@@ -38,10 +38,11 @@
         font-size: 16px;
         position: absolute;
         top: 0;
-        left: 40px;
+        left: 50px;
         white-space: nowrap;
         border-top-right-radius: 10px; 
-        border-bottom-right-radius: 10px; 
+        border-bottom-right-radius: 10px;
+        z-index: 9999;
       }
     a{
         padding: 30px 5px;

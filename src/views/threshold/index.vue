@@ -11,7 +11,7 @@
         <my-table ref="mytable" :header="headerList" :tableData="tableData" :showOperation="true" @edit="edit" @del="del"></my-table>
         <pagination :page-size='10' @handleJumpPage="handleJumpPage" :current-page='currPage' :total='total'></pagination>
       </div>
-      <el-dialog title="新增阈值" :visible="isAdd" center width="25%">
+      <el-dialog :visible="isAdd" title="新增阈值" center width="25%" @close="clearForm">
         <el-form v-model="form">
           <el-form-item label="阈值" label-width="100px">
             <el-input-number controls-position="right" v-model="form.threshold" :max="60"></el-input-number>
@@ -28,10 +28,10 @@
           <el-button type="primary" @click="add">提交</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="修改阈值" :visible="isEdit" center width="25%">
+      <el-dialog :visible="isEdit" title="修改阈值" center width="25%" @close="clearForm">
         <el-form v-model="form">
           <el-form-item label="阈值" label-width="100px">
-            <el-input-number controls-position="right" v-model="form.threshold" :max="60"></el-input-number>
+            <el-input-number controls-position="right" v-model="form.threshold" :min="0" :max="60"></el-input-number>
           </el-form-item>
           <el-form-item label="状态" label-width="100px">
             <el-select v-model="form.state">
@@ -68,6 +68,7 @@ export default {
       isAdd: false, // 是否新增
       isEdit: false, // 是否修改
       form: {
+        id: '',
         threshold: '',
         state: ''
       },
@@ -111,7 +112,7 @@ export default {
     },
     // 点击修改提交
     update() {
-      editThreshold({ state: this.form.state, threshold: this.form.threshold }).then(response => {
+      editThreshold({ id: this.form.id, state: this.form.state, threshold: this.form.threshold }).then(response => {
         this.form = { state: '', threshold: '' }
         this.isEdit = false
         this.fetchData()
@@ -120,6 +121,7 @@ export default {
     // 点击修改
     edit(index) {
       this.isEdit = true
+      this.form.id = this.thresholdList[index].id
       this.form.threshold = this.thresholdList[index].threshold
       this.form.state = this.thresholdList[index].state
     },

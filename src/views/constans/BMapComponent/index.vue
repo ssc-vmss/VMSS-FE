@@ -103,6 +103,7 @@ export default {
           that.showInfo(this, thePoint) // 展示车辆信息
         })
       }
+      // console.log('allOverlays+++++++++++++', this.map.getOverlays())
     },
     showInfo(thisMarker, points) {
       // 获取点的信息
@@ -118,7 +119,7 @@ export default {
       if (points.driverName == null) {
         points.driverName = ''
       }
-      const vehicleInfo = `<div class="conf-form label-box"><div class="label-row"><div class="label">车牌号码</div>${points.plateNumber}</div><div class="label-row"><div class="label">车辆品牌</div>${points.plateBrand}</div><div class="label-row"><div class="label">行驶速度</div>${points.speed}</div><div class="label-row"><div class="label">司机姓名</div>${points.driverName}</div></div>`
+      const vehicleInfo = `<div class="conf-form label-box"><div class="label-row"><div class="label">车牌号码</div>${points.plateNumber}</div><div class="label-row"><div class="label">车辆状态</div>${points.plateBrand}</div><div class="label-row"><div class="label">行驶速度</div>${points.speed}</div><div class="label-row"><div class="label">司机姓名</div>${points.driverName}</div></div>`
       const infoWindow = new BMap.InfoWindow(vehicleInfo)
       thisMarker.openInfoWindow(infoWindow)
     }
@@ -126,8 +127,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-#allmap{
+#allmap {
   margin-top: 0px;
 }
-
 </style>
