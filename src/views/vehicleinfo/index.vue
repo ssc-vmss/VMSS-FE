@@ -95,7 +95,7 @@
     <el-pagination background layout="prev, pager, next" :current-page.sync="page" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
 
     <!-- add from -->
-    <el-dialog title="添加车辆信息" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
+    <el-dialog :title="dialogTitle+'车辆信息'" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
@@ -229,6 +229,7 @@ export default {
       }
     }
     return {
+      dialogTitle:'添加',
       vechileType:vechileType,
       tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
       list: [],
@@ -384,6 +385,7 @@ export default {
     closeDialog(formName) {
       this.$refs[formName].resetFields();
       this.editact = false;
+      this.dialogTitle="添加";
     },
     resetForm() {
       this.form = {
@@ -463,6 +465,7 @@ export default {
       this.form = Object.assign({},data);
       this.dialogFormVisible = true;
       this.editact = true;
+      this.dialogTitle="修改";
     },
     saveData() {
       let { id, LPNO: plateNumber, Color: plateColour, Type: plateType, plateBrand, engineId, EngineNO: engineNumber, buyTimes, Status: type, EnterpriseNO: enterpriseNumber, Emission: emissionStandard,unitType,simNo } = this.form;
