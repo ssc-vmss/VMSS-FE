@@ -61,6 +61,36 @@ export const constantRouterMap = [
         name: 'equipmentInfo',
         component: () => import('@/views/equipmentInfo/index'),
         meta: { title: '车载设备管理' }
+      },
+      {
+        path: 'maintenance',
+        name: 'maintenance',
+        component: () => import('@/views/maintenance/index'),
+        meta: { title: '维修保养' }
+      },
+      {
+        path: 'illegal',
+        name: 'illegal',
+        component: () => import('@/views/illegal/index'),
+        meta: { title: '车辆违章' }
+      },
+      {
+        path: 'accident',
+        name: 'accident',
+        component: () => import('@/views/accident/index'),
+        meta: { title: '事故信息' }
+      },
+      {
+        path: 'oilcard',
+        name: 'oilcard',
+        component: () => import('@/views/oilcard/index'),
+        meta: { title: '加油卡信息' }
+      },
+      {
+        path: 'etc',
+        name: 'etc',
+        component: () => import('@/views/etc/index'),
+        meta: { title: 'ETC卡信息' }
       }
     ]
   },
