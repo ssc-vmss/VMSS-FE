@@ -167,7 +167,7 @@ export default {
   }
   &::-webkit-scrollbar {
     height: 10px;
-    width: 8px;
+    width: 5px;
   }
   &::-webkit-scrollbar-track {
     border-radius: 20px;
@@ -183,7 +183,7 @@ export default {
     top: 0;
   }
   .sidebar-ul {
-    // @extend %section;
+    @extend %section;
   }
 }
 .drawer-bg {
