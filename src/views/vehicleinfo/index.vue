@@ -5,33 +5,25 @@
         <el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
       </el-col>
       <div>
-        <!-- <el-input  placeholder="请输入内容" prefix-icon="el-icon-search" size="medium" style="width:200px" v-model="searchTxt" /><el-button size="medium" type="primary" icon="el-icon-search">搜索</el-button> -->
-        <!-- <el-input v-model="searchTxt">
-          <el-select slot="prepend" v-model="searchType" style="width:120px">
-            <el-option label="车牌号" value="1"></el-option>
-            <el-option label="车辆类型" value="2"></el-option>
-            <el-option label="车辆品牌" value="3"></el-option>
-          </el-select>
-          <el-button type="primary" slot="append" icon="el-icon-search" @click="fetchData">查询</el-button>
-        </el-input> -->
         <el-select v-model="searchType" style="width:120px">
           <el-option label="车牌号" value="1"></el-option>
           <el-option label="车辆类型" value="2"></el-option>
           <el-option label="车辆品牌" value="3"></el-option>
         </el-select>
         <el-select v-if="searchType==2" v-model="vehicleSearchType" multiple collapse-tags style="width:180px">
-          <el-option label="大型汽车" value="0"></el-option>
+          <!-- <el-option label="大型汽车" value="0"></el-option>
           <el-option label="小型汽车" value="1"></el-option>
           <el-option label="摩托车" value="2"></el-option>
           <el-option label="拖拉机" value="3"></el-option>
           <el-option label="挂车" value="4"></el-option>
-          <el-option label="新能源大型汽车" value="5"></el-option>
+          <el-option label="新能源大型汽车" value="5"></el-option> -->
+          <el-option v-for="(item,index) in vechileType" :label="item.type" :value="item.value" :key="index"></el-option>
         </el-select>
         <el-input v-else v-model="searchTxt" placeholder="请输入内容" style="width:180px"></el-input>
-        <el-button type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="toSearch">查询</el-button>
       </div>
     </el-row>
-    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit>
+    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit :max-height="tableHeight">
       <el-table-column align="center" label="车牌号" width="110">
         <template slot-scope="scope">
           {{ scope.row.LPNO }}
@@ -64,7 +56,6 @@
       </el-table-column>
       <el-table-column label="车辆购置时间" min-width="120" align="center">
         <template slot-scope="scope">
-          <!-- <i class="el-icon-time"/> -->
           <span>{{ scope.row.buyTimes }}</span>
         </template>
       </el-table-column>
@@ -78,11 +69,6 @@
           {{ scope.row.EnterpriseNO }}
         </template>
       </el-table-column>
-      <!-- <el-table-column label="车辆编号">
-        <template slot-scope="scope">
-          {{ scope.row.VehicleNO }}
-        </template>
-      </el-table-column> -->
       <el-table-column label="排放标准" align="center">
         <template slot-scope="scope">
           {{ scope.row.Emission }}
@@ -90,12 +76,12 @@
       </el-table-column>
       <el-table-column label="车载设备型号" width="120" align="center">
         <template slot-scope="scope">
-          {{ scope.row.equipmentModel }}
+          {{ scope.row.unitType }}
         </template>
       </el-table-column>
-      <el-table-column label="车载设备编号" width="120" align="center">
+      <el-table-column label="设备SIM卡" width="120" align="center">
         <template slot-scope="scope">
-          {{ scope.row.equipmentID }}
+          {{ scope.row.simNo }}
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="100" align="center">
@@ -106,7 +92,7 @@
       </el-table-column>
     </el-table>
 
-    <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
+    <el-pagination background layout="prev, pager, next" :current-page.sync="page" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
 
     <!-- add from -->
     <el-dialog title="添加车辆信息" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
@@ -118,7 +104,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="车牌号颜色" :label-width="formLabelWidth">
+            <el-form-item label="车牌号颜色" prop="Color" :label-width="formLabelWidth">
               <el-input type="text" v-model="form.Color" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
@@ -127,17 +113,18 @@
           <el-col :span="12">
             <el-form-item label="车辆类型" prop="Type" :label-width="formLabelWidth">
               <el-select v-model="form.Type" placeholder="请选择车辆类型">
-                <el-option label="大型汽车" value="0"></el-option>
+                <!-- <el-option label="大型汽车" value="0"></el-option>
                 <el-option label="小型汽车" value="1"></el-option>
                 <el-option label="摩托车" value="2"></el-option>
                 <el-option label="拖拉机" value="3"></el-option>
                 <el-option label="挂车" value="4"></el-option>
-                <el-option label="新能源大型汽车" value="5"></el-option>
+                <el-option label="新能源大型汽车" value="5"></el-option> -->
+                <el-option v-for="(item,index) in vechileType" :label="item.type" :value="item.value" :key="index"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="车辆品牌" :label-width="formLabelWidth">
+            <el-form-item label="车辆品牌" prop="plateBrand" :label-width="formLabelWidth">
               <el-input type="text" v-model="form.plateBrand" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
@@ -156,7 +143,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="车辆购置时间" :label-width="formLabelWidth">
+            <el-form-item label="车辆购置时间" prop="buyTimes" :label-width="formLabelWidth">
               <el-date-picker v-model="form.buyTimes" type="date" placeholder="选择日期" value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
           </el-col>
@@ -178,7 +165,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="企业编号" :label-width="formLabelWidth">
+            <el-form-item label="企业编号" prop="EnterpriseNO" :label-width="formLabelWidth">
               <el-input type="text" v-model="form.EnterpriseNO" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
@@ -190,7 +177,7 @@
             </el-form-item>
           </el-col> -->
           <el-col :span="12">
-            <el-form-item label="排放标准" :label-width="formLabelWidth">
+            <el-form-item label="排放标准" prop="Emission" :label-width="formLabelWidth">
               <el-input type="text" v-model="form.Emission" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
@@ -198,7 +185,7 @@
         <!-- <el-row>
           <el-col :span="12">
             <el-form-item label="车载设备型号" :label-width="formLabelWidth">
-              <el-select v-model="form.equipmentModel" placeholder="请选择车辆状态">
+              <el-select v-model="form.unitType" placeholder="请选择车辆状态">
                 <el-option label="LLT-2018" value="1"></el-option>
                 <el-option label="LLT-2017" value="2"></el-option>
               </el-select>
@@ -206,7 +193,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="车载设备编号" :label-width="formLabelWidth">
-              <el-input type="text" v-model="form.equipmentID" auto-complete="off"></el-input>
+              <el-input type="text" v-model="form.simNo" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row> -->
@@ -222,6 +209,7 @@
 
 <script>
 import { getInfoList, addInfo, editInfo, delInfo,getEquipmentList } from '@/api/vehicle'
+import {vechileType} from '@/utils/constant'
 
 export default {
   watch: {
@@ -241,12 +229,14 @@ export default {
       }
     }
     return {
-      list: null,
+      vechileType:vechileType,
+      tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
+      list: [],
       listLoading: true,
       dialogFormVisible:false,
       editact:false,
       searchType:'1',
-      vehicleSearchType:['0'],
+      vehicleSearchType:[],
       searchTxt:'',
       options:[],
       optionsLoading:false,
@@ -263,8 +253,8 @@ export default {
         EnterpriseNO: '',
         // VehicleNO: '',
         Emission: '',
-        equipmentModel: '',
-        equipmentID: ''
+        unitType: '',
+        simNo: ''
       },
       rules: {
         LPNO: [
@@ -294,6 +284,15 @@ export default {
   created() {
     this.fetchData()
   },
+  mounted(){
+    const that=this;
+    window.onresize=function(){console.log('resize')
+      that.tableHeight=document.documentElement.clientHeight-230||document.body.clientHeight-230
+    }
+  },
+  beforeDestroy(){
+    window.onresize="";
+  },
   methods: {
     getEquipment(query){
       if(query!=''){
@@ -305,26 +304,31 @@ export default {
       }
     },
     vehicleType(type) {
-      switch (type) {
-        case 0:
-          return '大型汽车'
-          break;
-        case 2:
-          return '摩托车'
-          break;
-        case 3:
-          return '拖拉机'
-          break;
-        case 4:
-          return '挂车'
-          break;
-        case 5:
-          return '新能源大型汽车'
-          break;
-        default:
-          return '小型汽车'
-          break;
-      }
+      let selectData=this.vechileType.find(item=>{
+        return item.value==type;
+      })
+      return selectData.type;
+
+      // switch (type) {
+      //   case 0:
+      //     return '大型汽车'
+      //     break;
+      //   case 2:
+      //     return '摩托车'
+      //     break;
+      //   case 3:
+      //     return '拖拉机'
+      //     break;
+      //   case 4:
+      //     return '挂车'
+      //     break;
+      //   case 5:
+      //     return '新能源大型汽车'
+      //     break;
+      //   default:
+      //     return '小型汽车'
+      //     break;
+      // }
     },
     vehicleStatus(status) {
       switch (status) {
@@ -378,6 +382,7 @@ export default {
       this.dialogFormVisible = true
     },
     closeDialog(formName) {
+      this.$refs[formName].resetFields();
       this.editact = false;
     },
     resetForm() {
@@ -394,12 +399,19 @@ export default {
         EnterpriseNO: '',
         // VehicleNO: '',
         Emission: '',
-        equipmentModel: '',
-        equipmentID: ''
+        unitType: '',
+        simNo: ''
       }
     },
     handleCurrentChange(val) {
       this.page = val;
+    },
+    toSearch(){
+      if(this.page>1){
+        this.page=1;
+      }else{
+        this.fetchData();
+      }
     },
     fetchData() {
       this.listLoading = true
@@ -425,8 +437,8 @@ export default {
       getInfoList(params).then(response => {
         let resData;
         resData=response.data.rows&&response.data.rows.map(item=>{
-          let{id,plateNumber:LPNO,plateColour:Color,plateType:Type,engineNumber:EngineNO,engineId,type:Status,enterpriseNumber:EnterpriseNO,emissionStandard:Emission,buyTimes,plateBrand,}=item;
-          return {id,LPNO,Color,Type,EngineNO,engineId,Status,EnterpriseNO,Emission,buyTimes,plateBrand}
+          let{id,plateNumber:LPNO,plateColour:Color,plateType:Type,engineNumber:EngineNO,engineId,type:Status,enterpriseNumber:EnterpriseNO,emissionStandard:Emission,buyTimes,plateBrand,unitType,simNo}=item;
+          return {id,LPNO,Color,Type,EngineNO,engineId,Status,EnterpriseNO,Emission,buyTimes,plateBrand,unitType,simNo}
         })
         this.list = resData;
         this.total = response.data.total;
@@ -445,15 +457,16 @@ export default {
       });
     },
     toEdit(data) {
-      data.Type = data.Type + '';
+      data.Type = data.Type ;
       data.Status = data.Status + '';
-      this.form = data;
+      // this.form = data;
+      this.form = Object.assign({},data);
       this.dialogFormVisible = true;
       this.editact = true;
     },
     saveData() {
-      let { id, LPNO: plateNumber, Color: plateColour, Type: plateType, plateBrand, engineId, EngineNO: engineNumber, buyTimes, Status: type, EnterpriseNO: enterpriseNumber, Emission: emissionStandard } = this.form;
-      let data = { id, plateNumber, plateColour, plateType, plateBrand, engineId, engineNumber, buyTimes, type, enterpriseNumber, emissionStandard };
+      let { id, LPNO: plateNumber, Color: plateColour, Type: plateType, plateBrand, engineId, EngineNO: engineNumber, buyTimes, Status: type, EnterpriseNO: enterpriseNumber, Emission: emissionStandard,unitType,simNo } = this.form;
+      let data = { id, plateNumber, plateColour, plateType, plateBrand, engineId, engineNumber, buyTimes, type, enterpriseNumber, emissionStandard,unitType,simNo };
       if (this.editact) {
         editInfo(data).then(response => {
           this.dialogFormVisible = false;

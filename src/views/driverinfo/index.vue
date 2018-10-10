@@ -27,7 +27,7 @@
           <el-option label="C4" value="C4"></el-option>
         </el-select>
         <el-input v-else v-model="searchTxt" placeholder="请输入内容" style="width:180px"></el-input>
-        <el-button type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="toSearch">查询</el-button>
       </div>
     </el-row>
     <el-table
@@ -35,7 +35,8 @@
       :data="list"
       element-loading-text="Loading"
       border
-      fit>
+      fit
+      :max-height="tableHeight">
       <el-table-column type="expand">
         <template slot-scope="scope">
         </template>
@@ -99,7 +100,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="性别" :label-width="formLabelWidth">
+            <el-form-item label="性别" prop="sex" :label-width="formLabelWidth">
               <el-select v-model="form.sex" placeholder="请选择性别">
                 <el-option label="男" value="男"></el-option>
                 <el-option label="女" value="女"></el-option>
@@ -136,17 +137,17 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="入职时间" :label-width="formLabelWidth">
+            <el-form-item label="入职时间" prop="startTime" :label-width="formLabelWidth">
               <el-date-picker  v-model="form.startTime" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" style="width:180px"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="12">
+          <!-- <el-col :span="12">
             <el-form-item label="驾驶证编号" prop="driverLicenseNumber" :label-width="formLabelWidth">
               <el-input v-model="form.driverLicenseNumber" auto-complete="off"></el-input>
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <!-- <el-col :span="12">
             <el-form-item label="手机号" prop="mobile" :label-width="formLabelWidth">
               <el-input v-model="form.mobile" auto-complete="off"></el-input>
@@ -183,15 +184,17 @@ export default {
       }
     }
     return {
+      tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
       list: null,
       listLoading: true,
       searchTxt:'',
       searchType:'1',
-      driverSearchType:['A1'],
+      driverSearchType:[],
       dialogFormVisible:false,
       editact:false,
       options:[],
       optionsLoading:false,
+      editUserName:'',
       form: {
         userName: '',
         sex: '',
@@ -215,20 +218,12 @@ export default {
         ],
         driverLicenseType:[
            { required: true, message: '请选择准驾类型', trigger: 'change' },
-        ],
-        driverLicenseNumber:[
-          { required: true, message: '请输入驾驶证编号', trigger: 'blur' },
         ]
       },
       formLabelWidth: '100px',
       page:1,
       pageSize:10,
       total:0
-    }
-  },
-  computed:{
-    testData(){
-      return [{id:123}]
     }
   },
   watch: {
@@ -238,6 +233,15 @@ export default {
   },
   created() {
     this.fetchData()
+  },
+  mounted(){
+    const that=this;
+    window.onresize=function(){
+      that.tableHeight=document.documentElement.clientHeight-230||document.body.clientHeight-230
+    }
+  },
+  beforeDestroy(){
+    window.onresize="";
   },
   methods: {
     resetForm(){
@@ -295,13 +299,24 @@ export default {
     closeDialog(formName){
       this.editact=false;
       // this.resetForm();
-
-      // this.$refs[formName].resetFields();
+      this.form.userName=this.editUserName;
+      this.$refs[formName].resetFields();
     },
     handleCreate(){
-      this.clearUser();
-      this.resetForm();
+      console.log('this.form:',this.form)
+      // this.clearUser();
+      // this.resetForm();
+      this.form={};
       this.dialogFormVisible = true
+      console.log('this.form:',this.form)
+
+    },
+    toSearch(){
+      if(this.page>1){
+        this.page=1;
+      }else{
+        this.fetchData();
+      }
     },
     fetchData() {
       this.listLoading = true
@@ -345,9 +360,10 @@ export default {
       // this.options=[{id:data.userId,name:data.userName}]
       // this.dialogFormVisible=true;
       // this.editact=true;
-
+      this.editUserName=data.userName;
       this.$nextTick(function () {
-        this.form=data;
+        // this.form=data;
+        this.form=Object.assign({},data);
         this.options=[{id:data.userId,name:data.userName}]
         this.dialogFormVisible=true;
         this.editact=true;

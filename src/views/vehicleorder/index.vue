@@ -21,15 +21,17 @@
               <el-option label="调度状态" value="3"></el-option>
               <el-option label="申请单号" value="4"></el-option>
             </el-select>
-            <el-select v-if="applySearchType==3" v-model="dispatchSearchType" style="width:180px">
+            <el-select clearable v-if="applySearchType==3" v-model="dispatchSearchType" style="width:180px">
               <el-option label="未派单" value="1"></el-option>
               <el-option label="已派单" value="2"></el-option>
+              <el-option label="驳回" value="3"></el-option>
             </el-select>
             <el-input v-else v-model="applySearchTxt" placeholder="请输入内容" style="width:180px"></el-input>
             <el-button type="primary" slot="append" icon="el-icon-search" @click="fetchData">查询</el-button>
           </div>
         </el-row>
         <el-table
+          :max-height="tableHeight"
           v-loading="listLoading"
           :data="listData"
           element-loading-text="Loading"
@@ -49,7 +51,7 @@
           </el-table-column>
           <el-table-column prop="origin" label="始发地" align="center">
           </el-table-column>
-          <el-table-column prop="destination" label="目的地" align="center">
+          <el-table-column prop="destination" label="返回地" align="center">
           </el-table-column>
           <el-table-column prop="carDetail" label="用车明细" min-width="150" align="center">
             <template slot-scope="scope">
@@ -99,6 +101,7 @@
           </div>
         </el-row>
         <el-table
+          :max-height="tableHeight"
           v-loading="listLoading"
           :data="listData"
           element-loading-text="Loading"
@@ -132,12 +135,12 @@
 
           <el-table-column label="用车人" width="110" align="center">
             <template slot-scope="scope">
-              {{ scope.row.useName }}
+              {{ scope.row.caruser }}
             </template>
           </el-table-column>
           <el-table-column label="用车人单位" min-width="110" align="center">
             <template slot-scope="scope">
-              <span>{{ scope.row.Type }}</span>
+              <span>{{ scope.row.department }}</span>
             </template>
           </el-table-column>
           <el-table-column label="用车时间" width="100" align="center">
@@ -231,7 +234,7 @@
             <div style="text-align:right">
               <el-button type="success" size="mini" @click="groupData">组合</el-button>
               <el-button type="primary" size="mini" :loading="dispatchloading" :disabled="!this.selectData.length>0" @click="addNewDispath">派遣</el-button>
-              <el-button type="warning" size="mini" @click="rejected(dispatchInfo.applyId)">驳回</el-button>
+              <!-- <el-button type="warning" size="mini" @click="rejected(dispatchInfo.applyId)">驳回</el-button> -->
             </div>
           </el-col>
         </el-row>
@@ -240,12 +243,13 @@
             <div style="margin-bottom:5px">
               <el-input v-model="vform.plateNumber" style="width:120px" placeholder="车牌" size="small"></el-input>
               <el-select v-model="vform.plateType" clearable placeholder="车辆类型" style="width:120px" size="small">
-                <el-option label="大型汽车" value="0"></el-option>
+                <!-- <el-option label="大型汽车" value="0"></el-option>
                 <el-option label="小型汽车" value="1"></el-option>
                 <el-option label="摩托车" value="2"></el-option>
                 <el-option label="拖拉机" value="3"></el-option>
                 <el-option label="挂车" value="4"></el-option>
-                <el-option label="新能源大型汽车" value="5"></el-option>
+                <el-option label="新能源大型汽车" value="5"></el-option> -->
+                <el-option v-for="(item,index) in vechileType" :label="item.type" :value="item.value" :key="index"></el-option>
               </el-select>
               <el-button @click="getVehicleDataFilter" size="small">查询</el-button>
             </div>
@@ -306,11 +310,14 @@
 
 <script>
 import { getApplyList,editApplyStatus,getDispatchList,VehicleDataFilter,DriverDataFilter,addDispatch,editDispatch,delDispatch,invalidDispatch } from '@/api/dispatch'
+import {vechileType} from '@/utils/constant'
 
 export default {
   data() {
     return {
-      listData: null,
+      vechileType:vechileType,
+      tableHeight:document.documentElement.clientHeight-300||document.body.clientHeight-300,
+      listData: [],
       listLoading: false,
       dialogFormVisible:false,
       applySearchType:'1',
@@ -382,6 +389,15 @@ export default {
   },
   created() {
     this.fetchData(this.activeName)
+  },
+  mounted(){
+    const that=this;
+    window.onresize=function(){
+      that.tableHeight=document.documentElement.clientHeight-300||document.body.clientHeight-300
+    }
+  },
+  beforeDestroy(){
+    window.onresize="";
   },
   methods: {
     closeDialog(done){
@@ -562,7 +578,7 @@ export default {
               params.staffName=applySearchTxt;
               break;
             case '3':
-              params.dispatchStatus=dispatchSearchType;
+              params.isDispatch=dispatchSearchType;
               break;
             case '4':
               params.ddid=applySearchTxt;
@@ -630,26 +646,31 @@ export default {
       })
     },
     vehicleType(type){//车辆类型名称
-      switch (type) {
-        case 0:
-          return '大型汽车'
-          break;
-        case 2:
-          return '摩托车'
-          break;
-        case 3:
-          return '拖拉机'
-          break;
-        case 4:
-          return '挂车'
-          break;
-        case 5:
-          return '新能源大型汽车'
-          break;
-        default:
-          return '小型汽车'
-          break;
-      }
+      let selectData=this.vechileType.find(item=>{
+        return item.value==type;
+      })
+      return selectData.type;
+
+      // switch (type) {
+      //   case 0:
+      //     return '大型汽车'
+      //     break;
+      //   case 2:
+      //     return '摩托车'
+      //     break;
+      //   case 3:
+      //     return '拖拉机'
+      //     break;
+      //   case 4:
+      //     return '挂车'
+      //     break;
+      //   case 5:
+      //     return '新能源大型汽车'
+      //     break;
+      //   default:
+      //     return '小型汽车'
+      //     break;
+      // }
     },
     vehicleCurrentChange(row){//选择调度车辆
       this.selectTempData.vehicleId=row&&row.id;

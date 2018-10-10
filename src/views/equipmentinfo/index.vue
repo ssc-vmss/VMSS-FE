@@ -5,11 +5,11 @@
       <div>
         <el-select v-model="searchType" style="width:120px">
           <el-option label="设备型号" value="1"></el-option>
-          <el-option label="sim卡" value="2"></el-option>
+          <el-option label="SIM卡" value="2"></el-option>
           <el-option label="绑定车辆" value="3"></el-option>
         </el-select>
         <el-input v-model="searchTxt" placeholder="请输入内容" size="medium" style="width:200px" />
-        <el-button size="medium" type="primary" icon="el-icon-search" @click="fetchData">搜索</el-button>
+        <el-button size="medium" type="primary" icon="el-icon-search" @click="toSearch">搜索</el-button>
       </div>
     </el-row>
     <el-table
@@ -17,7 +17,8 @@
       :data="list"
       element-loading-text="Loading"
       border
-      fit>
+      fit
+      :max-height="tableHeight">
       <!-- <el-table-column align="center" label="设备类型" width="95">
         <template slot-scope="scope">
         </template>
@@ -37,11 +38,11 @@
           <span>{{ scope.row.simNo }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="设备状态" align="center">
+      <!-- <el-table-column label="设备状态" align="center">
         <template slot-scope="scope">
           <span>{{ typeName(scope.row.type) }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="绑定车辆" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.plateNumber }}</span>
@@ -93,7 +94,7 @@
         </el-row>
         <el-row> -->
           <el-col :span="12">
-            <el-form-item label="绑定车辆" prop="vehicleId" :label-width="formLabelWidth">
+            <el-form-item label="绑定车辆" :label-width="formLabelWidth">
               <el-select v-model="form.vehicleId" clearable filterable remote :remote-method="getVehicles" :loading="vehiclesLoading" placeholder="请输入关键词">
                 <el-option
                   v-for="item in vehicles"
@@ -123,6 +124,7 @@ import { getInfoList as getVehicleList } from '@/api/vehicle'
 export default {
   data() {
     return {
+      tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
       list: null,
       listLoading: true,
       searchType:'1',
@@ -165,6 +167,15 @@ export default {
   created() {
     this.fetchData()
   },
+  mounted(){
+    const that=this;
+    window.onresize=function(){
+      that.tableHeight=document.documentElement.clientHeight-230||document.body.clientHeight-230
+    }
+  },
+  beforeDestroy(){
+    window.onresize="";
+  },
   methods: {
     getVehicles(query){
       if(query!=''){
@@ -202,6 +213,13 @@ export default {
     },
     handleCurrentChange(val) {
       this.page = val;
+    },
+    toSearch(){
+      if(this.page>1){
+        this.page=1;
+      }else{
+        this.fetchData();
+      }
     },
     fetchData() {
       this.listLoading = true;
@@ -242,7 +260,8 @@ export default {
     toEdit(data){
       this.vehicles=[{plateNumber:data.plateNumber,id:data.vehicleId}]
       data.type=data.type+'';
-      this.form=data;
+      // this.form=data;
+      this.form=Object.assign({},data);
       this.dialogFormVisible=true;
       this.editact=true;
     },
