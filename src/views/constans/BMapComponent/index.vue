@@ -1,6 +1,5 @@
 <template>
   <div class="map-view">
-    <!-- <div class="conf-form label-box">车牌号码<br />车辆品牌<br />行驶速度<br />司机姓名<br /></div> -->
     <div id="allmap" ref="map"></div>
   </div>
 </template>
@@ -84,11 +83,11 @@ export default {
       for (let i = 0; i < list.length; i++) {
         const nowPoint = new BMap.Point(list[i].lng, list[i].lat)
         if (list[i].state === '0') {
-          this.imgPath = 'src/assets/images/0.png' // 图片路径
+          this.imgPath = require('@/assets/images/0.png') // 图片路径
         } else if (list[i].state === '1') {
-          this.imgPath = 'src/assets/images/1.png'
+          this.imgPath = require('@/assets/images/1.png')
         } else {
-          this.imgPath = 'src/assets/images/2.png'
+          this.imgPath = require('@/assets/images/2.png')
         }
         const myIcon = new BMap.Icon(this.imgPath, new BMap.Size(52, 26), {
           anchor: new BMap.Size(25, 15)
@@ -102,9 +101,9 @@ export default {
         const that = this
         marker.addEventListener('click', function () {
           that.showInfo(this, thePoint) // 展示车辆信息
-          // const q = this.map.getZoom()
         })
       }
+      // console.log('allOverlays+++++++++++++', this.map.getOverlays())
     },
     showInfo(thisMarker, points) {
       // 获取点的信息
@@ -120,7 +119,7 @@ export default {
       if (points.driverName == null) {
         points.driverName = ''
       }
-      const vehicleInfo = `<div class="conf-form label-box">车牌号码${points.plateNumber}<br />车辆品牌${points.plateBrand}<br />行驶速度${points.speed}<br />司机姓名${points.driverName}<br /></div>`
+      const vehicleInfo = `<div class="conf-form label-box"><div class="label-row"><div class="label">车牌号码：</div>${points.plateNumber}</div><div class="label-row"><div class="label">车辆状态：</div>${points.plateBrand}</div><div class="label-row"><div class="label">行驶速度：</div>${points.speed}</div><div class="label-row"><div class="label">司机姓名：</div>${points.driverName}</div></div>`
       const infoWindow = new BMap.InfoWindow(vehicleInfo)
       thisMarker.openInfoWindow(infoWindow)
     }
@@ -128,7 +127,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-#allmap{
+#allmap {
   margin-top: 0px;
 }
 </style>

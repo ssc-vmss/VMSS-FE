@@ -15,7 +15,7 @@
                   <el-checkbox :class="{search:vehicle.plateNumber == searchVehicle}" v-for="(vehicle,index) in unMonitorList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
                 </el-checkbox-group>
               </div>
-              <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" trigger-on-focus v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete>
+              <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete>
               <button :disabled="!unMonitorIds.length&&tabIndex=='0'" class="btn" @click="handleMonitor">监控</button>
             </el-tab-pane>
             <el-tab-pane label="按车辆状态">
@@ -34,8 +34,8 @@
           </el-tabs>
         </div>
       </div>
-      <div class="list-box">
-        <h4 class="conf-h">当前监控车辆</h4>
+      <div class="list-box" v-if="tabIndex == '0'">
+        <h4 class="conf-h">当前监控车辆：</h4>
         <button :disabled="!monitorIds.length" class="btn" @click="handleFinish">结束</button>
         <div v-if="!monitorList.length" class="empty-box">
           无监控车辆
@@ -57,7 +57,7 @@
         <button v-else class="btn" @click="handleChangeView">地图视图</button>
       </div>
       <b-map-component v-show="isMapView" ref="map" @handleGetLocation="handleGetLocation"></b-map-component>
-      <div v-show="!isMapView">
+      <div v-if="!isMapView">
         <my-table :header="headerList" :tableData="locationList"></my-table>
         <pagination :page-size='10' :current-page='1' :total='total'></pagination>
       </div>
@@ -83,8 +83,6 @@ export default {
     return {
       tabIndex: '',
       searchVehicle: '',
-      isSelected: false,
-      isChecked: false,
       list: {
         id: '',
         speed: '',
@@ -105,42 +103,31 @@ export default {
       },
       isMapView: true, // 显示方式
       isshowleftbox: true,
+      oldPointsList: null,
       newPointsList: null,
-      vehicleIndex: -1,
       isUnMonitorindeterminate: true,
       isMonitorindeterminate: true,
       isUnMonitorCheckedAll: false,
       isMonitorCheckedAll: false,
-      vehiclearray: [
-        // { id: 'f9b99a7954324a389009631801ef5042', plateNumber: '川A22222' },
-        // { id: '681af98e12ed4fa2b95b81d252032a55', plateNumber: '川A11111' },
-        // { id: '1db6ccad42a5467f94d8da5d188866c7', plateNumber: '川A11v12' },
-        // { id: 'f9b99a7954324a38r409631801ef5042', plateNumber: '川A2z222' },
-        // { id: '6c4af98e12ed4fa2b95b81d252032a55', plateNumber: '川A111u1' },
-        // { id: '1db6ccad17a5m97f94d8da5d188866c7', plateNumber: '川Artr22' },
-        // { id: 'f9b99a79o5324a389009631801ef5042', plateNumber: '川A2but2' },
-        // { id: '681af98e12ed4j9a2b95b81d52032a55', plateNumber: '川Aasvv1' },
-        // { id: '1ds6ccad17a5467f94d8da5d188866c7', plateNumber: '川Avd122' },
-        // { id: 'f9b99a7954324a3890096vbgbggf5042', plateNumber: '川A2hc22' },
-        // { id: '681aegtyn2ed4fa2b95b81d252032a55', plateNumber: '川A1m7w1' },
-        // { id: '1db6ccad17a54myfdsay665d188866c7', plateNumber: '川Aaxw22' },
-        // { id: 'f9b9fsebdbfdbyijnyhyuk8i01ef5042', plateNumber: '川Amiyg2' },
-        // { id: '681affsd52ed4km888j681d252032a55', plateNumber: '川Afew11' },
-        // { id: '1db6ccdef4fby7j76nbtda5d188866c7', plateNumber: '川Aask22' }
-      ],
+      vehiclearray: [],
       unMonitorIds: [],
       monitorIds: [],
       unMonitorList: [],
       monitorList: [],
-      headerList: ['id', '速度', '状态', '驾驶员id', '驾驶员姓名', 'posTime', '车辆id', '车牌号', '车牌类型', 'plateBrand', 'volume', '组织id', '创建时间', '点位', '起点', '终点', '设备号'],
+      headerList: ['序号', '速度', '状态', '驾驶员姓名', '定位时间', '车牌号', '车辆品牌', '排量', '创建时间', '点位(经度,纬度)', '设备号'],
       locationList: [],
       states: [], // 车辆状态
       total: 0, // 总页数
-      monitoredIdsArray: [] // 已监控车辆id数组
+      monitoredIdsArray: [], // 已监控车辆id数组
+      count: 0,
+      interval: null // 定时器
     }
   },
   created() {
     this.fetchVehicle()
+  },
+  destroyed() {
+    clearInterval(this.interval)
   },
   methods: {
     fetchVehicle() {
@@ -199,6 +186,55 @@ export default {
         param = { vehicleId: paramString }
       }
       this.getNewPoint(param)
+      this.getPage(param)
+      this.interval = setInterval(() => {
+        this.getNewPoint(param)
+        this.getPage(param)
+        console.log('this.count', this.count++)
+      }, 5000)
+    },
+    // 获取最新点位列表
+    getNewPoint(param) {
+      getNewPointList(param).then(response => {
+        this.newPointsList = response.data.rows
+        // debugger
+        // 设置地图的中心点
+        this.$refs.map.setZoom(this.newPointsList)
+        var allOverlay = this.$refs.map.map.getOverlays()
+        console.log(allOverlay)
+        const pointsList = JSON.parse(JSON.stringify(this.newPointsList))
+        if (this.count > 0) {
+          for (var j = 0; j < this.oldPointsList.length;) {
+            var flag = true
+            for (var k = 0; k < this.newPointsList.length; k++) {
+              // 同车同点位
+              if (this.oldPointsList[j].vehicleId === this.newPointsList[k].vehicleId) {
+                flag = false
+                if (this.oldPointsList[j].location === this.newPointsList[k].location) {
+                  this.newPointsList.splice(k, 1)
+                } else {
+                  for (var m = 0; m < allOverlay.length; m++) {
+                    if (`${allOverlay[m].point.lng}` === this.oldPointsList[j].lng &&
+                      `${allOverlay[m].point.lat}` === this.oldPointsList[j].lat) {
+                      this.$refs.map.map.removeOverlay(allOverlay[m])
+                    }
+                  }
+                }
+                break
+              } else {
+                flag = true
+              }
+            }
+            if (flag) {
+              this.$refs.map.map.removeOverlay(allOverlay[j])
+            }
+            j++
+          }
+        }
+        this.oldPointsList = pointsList
+        // 添加覆盖物到地图
+        this.$refs.map.addMarker(this.newPointsList)
+      })
     },
     // 输入车牌号时获取相似车牌号提供输入建议
     handleFetchNumber(querystring, callback) {
@@ -225,6 +261,8 @@ export default {
     },
     // 点击监控
     handleMonitor(index) {
+      clearInterval(this.interval)
+      let param = {}
       let paramString = ''
       if (this.tabIndex === '1') {
         this.states.map((state, index) => {
@@ -234,14 +272,7 @@ export default {
             paramString += `${state},`
           }
         })
-        const param = { state: paramString }
-        console.log(param)
-        // if (this.isMapView) {
-        console.log(3)
-        this.getNewPoint(param)
-        // } else {
-        // console.log(4)
-        // this.getPage(param)
+        param = { state: paramString }
         // }
       } else {
         this.unMonitorIds.forEach(id => {
@@ -259,14 +290,12 @@ export default {
             paramString += `${vehicle.id},`
           }
         })
-        const param = { vehicleId: paramString }
-        // if (this.isMapView) {
-        console.log(9)
+        param = { vehicleId: paramString }
         this.getNewPoint(param)
-        // } else {
-        // console.log(10)
-        // this.getPage(param)
-        // }
+        this.interval = setInterval(() => {
+          console.log('this.count', this.count++)
+          this.getNewPoint(param)
+        }, 5000)
         this.monitorIds = []
       }
     },
@@ -276,30 +305,41 @@ export default {
         this.locationList = response.data.rows
         this.locationList.forEach((location, index) => {
           location.id = index + 1
+          if (location.state === '0') {
+            location.state = '离线'
+          } else if (location.state === '1') {
+            location.state = '执行任务中'
+          } else if (location.state === '2') {
+            location.state = '警告'
+          } else if (location.state === '3') {
+            location.state = '空闲'
+          }
+          delete location.driverId
+          delete location.vehicleId
+          delete location.plateType
+          delete location.orgId
+          delete location.lat
+          delete location.lng
+          // if (location.plateType === '0') {
+          //   location.plateType = '大型汽车'
+          // } else if (location.plateType === '1') {
+          //   location.plateType = '小型汽车'
+          // } else if (location.plateType === '2') {
+          //   location.plateType = '摩托车'
+          // } else if (location.plateType === '3') {
+          //   location.plateType = '拖拉机'
+          // } else if (location.plateType === '4') {
+          //   location.plateType = '挂车'
+          // } else if (location.plateType === '5') {
+          //   location.plateType = '新能源大型汽车'
+          // }
         })
         this.total = response.data.total
       })
     },
-    // 获取最新点位列表
-    getNewPoint(param) {
-      // 清空地图上的覆盖物
-      this.$refs.map.map.clearOverlays()
-      getNewPointList(param).then(response => {
-        // if (response.status === 200) {
-        //   this.$message({
-        //     type: 'success',
-        //     message: response.message
-        //   })
-        // }
-        this.newPointsList = response.data.rows
-        // 设置地图的中心点
-        this.$refs.map.setZoom(this.newPointsList)
-        // 添加覆盖物到地图
-        this.$refs.map.addMarker(this.newPointsList)
-      })
-    },
     // 点击结束
     handleFinish() {
+      clearInterval(this.interval)
       this.monitorIds.forEach(id => {
         this.monitorList.forEach((vehicle, index) => {
           if (id === vehicle.id) {
@@ -308,9 +348,9 @@ export default {
           }
         })
       })
+      let param = {}
       if (this.monitorList.length) {
         let paramString = ''
-        let param = null
         this.monitorList.forEach((vehicle, index) => {
           if (index === this.monitorList.length - 1) {
             paramString += vehicle.id
@@ -325,8 +365,14 @@ export default {
         }
         this.getNewPoint(param)
       } else {
+        param = { vehicleId: 'NA' }
         this.$refs.map.map.clearOverlays()
       }
+      this.getNewPoint(param)
+      this.interval = setInterval(() => {
+        console.log('this.count', this.count++)
+        this.getNewPoint(param)
+      }, 5000)
       this.unMonitorIds = []
       this.monitorIds = []
     },

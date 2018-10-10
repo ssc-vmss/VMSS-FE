@@ -1,17 +1,20 @@
 <template>
   <div :class="classObj" class="app-wrapper">
     <div v-if="itemMenu.length>0" ref="sidebar" class="sidebar-container">
-      <ul>
+      <ul class="sidebar-ul">
         <li v-for="(item,index) in itemMenu" v-if="item.path!=='warning'" :key="index" :class="{active:itemMenuIndex == index}" @click="handleClickItemMenu(index)" @mouseover="showInfoIndex = index" @mouseout="showInfoIndex = -1">
           <router-link :to="resolvePath(menuPath+'/'+item.path)">
-            <img :src="'src/assets/icons/'+item.name+'.png'" :title="item.meta.title" />
+            <img :src="require('@/assets/icons/'+item.name+'.png')" :title="item.meta.title" />
             <div v-if="showInfoIndex == index" class="img-info">{{ item.meta.title }}</div>
+            <!-- <div class="img-info">{{ item.meta.title }}</div> -->
           </router-link>
           <!-- <div v-if="showInfoIndex == index" class="img-info">{{ item.meta.title }}</div> -->
         </li>
-        <li class="warning-box" @mouseover="showWarningInfo = true" @mouseout="showWarningInfo = false">
+      </ul>
+      <ul>
+        <li :class="{active:itemMenuIndex == itemMenu.length + 1}" class="warning-box" @click="handleClickItemMenu(itemMenu.length + 1)" @mouseover="showWarningInfo = true" @mouseout="showWarningInfo = false">
           <router-link :to="resolvePath('/warning')">
-            <img src="src/assets/icons/warning.png" title="报警信息" />
+            <img :src="require('@/assets/icons/warning.png')" title="报警信息" />
           </router-link>
           <div v-if="showWarningInfo" class="img-info">报警信息</div>
         </li>
@@ -21,7 +24,7 @@
       <el-menu class="navbar-container" mode="horizontal">
         <div class="logo" @click="handleClicLogo">
           <router-link :to="resolvePath('dashboard')">
-            <img class="logo-img" :src="'src/assets/icons/logo.png'" title="首页" />
+            <img class="logo-img" :src="require('@/assets/icons/logo.png')" title="首页" />
             <span class="logo-span">车辆调度管理系统</span>
           </router-link>
         </div>
@@ -43,7 +46,7 @@
         </div>
       </el-menu>
       <!-- <breadcrumb @handleClicLogo="handleClicLogo"/> -->
-      <app-main/>
+      <app-main />
       <el-footer style="height:20px">Copyright © 2018 VMSS.</el-footer>
     </div>
   </div>
@@ -90,6 +93,9 @@ export default {
       return this.$router.options.routes
     }
   },
+  created() {
+    // console.log(this.routes)
+  },
   mounted() {
     this.getSessionStorage()
   },
@@ -118,14 +124,19 @@ export default {
     },
     // 点击菜单
     handleClickMenu(item, index) {
+      window.clearInterval()
       this.menuIndex = index
       this.itemMenuIndex = 0
       this.itemMenu = item.children
+      this.itemMenu.forEach(item => {
+        item.name = item.name.toLowerCase()
+      })
       this.menuPath = item.path
       this.setSessionStorage()
     },
     // 点击子菜单
     handleClickItemMenu(index) {
+      window.clearInterval()
       this.itemMenuIndex = index
       this.setSessionStorage()
     },
@@ -145,6 +156,23 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import 'src/styles/mixin.scss';
+%section {
+  height: 80%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(136, 136, 136, 0.5);
+    border-radius: 20px;
+    z-index: 999;
+  }
+  &::-webkit-scrollbar {
+    height: 10px;
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    border-radius: 20px;
+  }
+}
 .app-wrapper {
   @include clearfix;
   position: relative;
@@ -154,9 +182,12 @@ export default {
     position: fixed;
     top: 0;
   }
+  .sidebar-ul {
+    // @extend %section;
+  }
 }
 .drawer-bg {
-  background: #000;
+  background-color: #000;
   opacity: 0.3;
   width: 100%;
   top: 0;

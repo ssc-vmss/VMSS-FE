@@ -1,39 +1,16 @@
 <template>
-  <div class="table-view">
-    <Carloader v-if="listLoading" />
+  <div>
+    <!-- <Carloader v-if="listLoading" />
     <div v-else>
-      <div class="padding-box">
-        <button class="btn">添加</button>
-        <button class="btn">修改</button>
-        <button class="btn">删除</button>
-      </div>
-      <div class="table-container">
-        <table class="vmss-table">
-          <thead class="vmss-thead">
-            <tr class="vmss-tr">
-              <th class="vmss-th">
-                <el-checkbox></el-checkbox>
-              </th>
-              <th v-for="(title,index) in headerList" :key="index" class="vmss-th">{{ title }}</th>
-            </tr>
-          </thead>
-          <tbody class="vmss-tbody">
-            <tr v-for="(item,index) in list" :key="index" class="vmss-tr">
-              <td class="vmss-td">
-                <el-checkbox></el-checkbox>
-              </td>
-              <td v-for="key in item" :key="key" class="vmss-td">{{ key }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <pagination :pages="25"></pagination>
-    </div>
+      <my-table ref="mytable" :header="headerList" :tableData="list"></my-table>
+      <pagination :page-size='10' @handleJumpPage="handleJumpPage" :current-page='currPage' :total='total'></pagination>
+    </div> -->
   </div>
 </template>
 
 <script>
-import { getList } from '@/api/table'
+import MyTable from '@/components/Mytable'
+import { getApplyList } from '@/api/dispatch'
 import Carloader from '@/components/loader'
 import Pagination from '@/components/pagination'
 
@@ -49,12 +26,12 @@ export default {
     }
   },
   components: {
-    Carloader, Pagination
+    Carloader, Pagination, MyTable
   },
   data() {
     return {
-      headerList: ['id', '车牌号', '车牌号颜色', '车辆类型', '车辆识别号', '发动机号', '车辆载重', '车辆购置时间', '车辆状态', '企业编号', '车辆编号', '排放标准', '车载设备型号', '车载设备编号', '车载设备编号', '车载设备编号', '车载设备编号', '车载设备编号'],
-      list: null,
+      headerList: ['序号', 'ddid', '标题', '创建时间', '结束时间', 'processInstanceid', 'staffid', 'caruserid', 'caruser', 'msgSendStatus', '原因', '', '', '', '', '', '', '', '', '', ''],
+      list: [],
       listLoading: true,
       dialogFormVisible: false,
       form: {
@@ -67,11 +44,13 @@ export default {
         resource: '',
         desc: ''
       },
-      formLabelWidth: '120px'
+      formLabelWidth: '120px',
+      total: 1,
+      currPage: 1
     }
   },
   created() {
-    this.fetchData()
+    // this.fetchData()
   },
   methods: {
     toDel(id) {
@@ -93,393 +72,21 @@ export default {
     },
     fetchData() {
       this.listLoading = true
-      setTimeout(() => {
-        this.list = [
-          {
-            id: 1,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332211'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          },
-          {
-            id: 2,
-            LPNO: '川A 88888',
-            Color: '红色',
-            Type: '小汽车',
-            VehicleID: 'LSGJR1122334455678',
-            EngineNO: '2464766K',
-            Load: '5T',
-            BuyTime: '2018-01-01',
-            Status: '运行',
-            EnterpriseNO: 'szf',
-            VehicleNO: 'szf-001',
-            Emission: '国IV',
-            equipmentModel: 'LLT-2018',
-            equipmentID: 'LLT2018x332212'
-          }
-        ]
-        this.listLoading = false
-      }, 1500)
-      return getList(this.listQuery).then(response => {
-        this.list = response.data.items
+      getApplyList({ pageNo: this.currPage }).then(response => {
+        this.list = response.data.rows
+        this.total = response.data.total
         this.listLoading = false
       })
+    },
+    // 分页组件传入当前页进行分页查询
+    handleJumpPage(currPage) {
+      this.currPage = currPage
+      this.fetchData()
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-%section {
-  height: 100%;
-  overflow-y: scroll;
-  overflow-x: scroll;
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(136, 136, 136, 0.5);
-    border-radius: 20px;
-    z-index: 999;
-  }
-  &::-webkit-scrollbar {
-    height: 10px;
-    width: 8px;
-  }
-  &::-webkit-scrollbar-track {
-    border-radius: 20px;
-  }
-}
-.table-view {
-  height: calc(100vh - 50px);
-}
-.search {
-  outline-style: none;
-  &:hover {
-  }
-}
-.table-container {
-  position: relative;
-  margin: 0 10px;
-  height: calc(100vh - 170px);
-  @extend %section;
-}
-.vmss-table {
-  border-collapse: collapse;
-  font-size: 14px;
-  text-align: center;
-}
-.vmss-table,
-.vmss-th,
-.vmss-td {
-  white-space: nowrap;
-  border: 1px solid #ebeef5;
-}
-.vmss-tr:hover {
-  background: rgba(0, 128, 128, 0.1);
-}
-.vmss-th {
-  color: #909399;
-  background: rgb(232, 244, 255);
-  padding: 15px;
-}
-.vmss-td {
-  padding: 15px;
-}
 </style>
 

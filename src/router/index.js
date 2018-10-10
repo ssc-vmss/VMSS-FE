@@ -149,13 +149,18 @@ export const constantRouterMap = [
         name: 'area',
         component: () => import('@/views/area/index'),
         meta: { title: '区域管理' }
+      },
+      {
+        path: 'threshold',
+        name: 'threshold',
+        component: () => import('@/views/threshold/index'),
+        meta: { title: '点位离线阈值配置' }
       }
     ]
   },
   {
     path: '/system',
     component: Layout,
-    // redirect: '/application/appcar',
     name: 'system',
     meta: {
       title: '系统配置管理',
@@ -173,12 +178,6 @@ export const constantRouterMap = [
         name: 'filteringRules',
         component: () => import('@/views/nested/menu2/index'),
         meta: { title: '系统过滤规则' }
-      },
-      {
-        path: 'Mytable',
-        name: 'Mytable',
-        component: () => import('@/components/Mytable/index'),
-        meta: { title: '测试页' }
       }
     ]
   },

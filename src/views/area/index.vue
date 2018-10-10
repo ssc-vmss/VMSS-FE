@@ -12,7 +12,7 @@
                 <span>名称</span>
                 <span class="required-span">*</span>
               </div>
-              <input class="conf-form-input" :disabled="isadd" v-model="list.name" type="text" placeholder="请输入名称">
+              <input :disabled="isadd" v-model="list.name" class="conf-form-input" type="text" placeholder="请输入名称">
             </div>
               <div class="conf-form-row">
                 <div class="conf-form-label">
@@ -24,10 +24,10 @@
                   <div class="conf-form-label">
                     <span>是否启用</span>
                   </div>
-                  <input :disabled="isadd" v-model="list.state?'是':'否'" class="conf-form-input" type="text" @click="isshowmenu = !isshowmenu" placeholder="请选择" readonly/>
-                  <i :class="{isdisabled:isadd}" class="el-icon-caret-bottom conf-form-icon righticon" @click="isshowmenu = !isshowmenu"></i>
-                  <div v-show="isshowmenu" class="dropdown-menu">
-                    <ul @click="handleSetState">
+                  <input @blur="handleCloseMenu" :disabled="isadd" v-model="list.state==1?'是':'否'" class="conf-form-input" type="text" @click="handleShowMenu" placeholder="请选择" readonly/>
+                  <i :class="{isdisabled:isadd}" class="el-icon-caret-bottom conf-form-icon righticon" @click="handleShowMenu"></i>
+                  <div v-show="isshowmenu" tabindex="-1" class="dropdown-menu">
+                    <ul class="dropdown-ul" @click="handleSetState">
                       <li value="0">否</li>
                       <li value="1">是</li>
                     </ul>
@@ -124,7 +124,7 @@
           <i :class="[isShowLeftBox?'el-icon-d-arrow-left':'el-icon-d-arrow-right']"></i>
         </div>
         <div class="right-box">
-          <b-map-component ref="map" @handleGetLocation="handleGetLocation" :isadd="isadding" :isedit="isediting"></b-map-component>
+          <b-map-component ref="map" @handleGetLocation="handleGetLocation" @handleRemove="handleRemove" :isadd="isadding" :isedit="isediting"></b-map-component>
         </div>
       </div>
 </template>
@@ -145,7 +145,7 @@ export default {
       list: {
         description: '',
         endTime: '',
-        location: null,
+        location: '',
         max: 0,
         name: '',
         startTime: '',
@@ -185,7 +185,8 @@ export default {
       isUnSelectedCheckedAll: false,
       isSelectedCheckedAll: false,
       vehicleslist: ['车辆一', '车辆二'],
-      vehicleindex: -1
+      vehicleindex: -1,
+      hasRemove: false
     }
   },
   created() {
@@ -233,6 +234,21 @@ export default {
       this.list.state = e.target.value
       this.isshowmenu = false
     },
+    handleShowMenu() {
+      if (!this.isshowmenu) {
+        this.isshowmenu = true
+        document.addEventListener('mousedown', e => {
+          if (e.target.parentElement.className !== 'dropdown-ul') {
+            this.isshowmenu = false
+            return
+          }
+        })
+      }
+    },
+    // 鼠标移出时隐藏下拉菜单
+    handleCloseMenu() {
+      // this.isshowmenu = false
+    },
     // 点击隐藏或显示左边菜单栏
     handleIsShowLeftBox() {
       if (this.isShowLeftBox) {
@@ -262,22 +278,21 @@ export default {
         if (this.list.max > 0) {
           this.isSpeedLimit = true
         }
-        if (this.list.location) {
-          this.$refs.map.show(this.list.location)
-        }
+        this.$refs.map.show(this.list.location)
       }
     },
     // 清空表单
     handleClear() {
       this.list.description = ''
       this.list.endTime = ''
-      this.list.location = null
+      this.list.location = ''
       this.list.max = 0
       this.list.name = ''
       this.list.startTime = ''
       this.list.state = 0
       this.list.inWarn = 0
       this.list.outWarn = 0
+      this.list.vehicleId = ''
     },
     // 新增
     handleAdd() {
@@ -303,6 +318,20 @@ export default {
     },
     // 保存
     handleSave() {
+      if (this.list.location === '') {
+        this.$message({
+          type: 'warning',
+          message: '区域不能为空,请绘制区域'
+        })
+        return
+      }
+      if (this.list.name === '') {
+        this.$message({
+          type: 'warning',
+          message: '名称不能为空'
+        })
+        return
+      }
       if (this.list.startTime > this.list.endTime) {
         this.$message({
           type: 'warning',
@@ -311,7 +340,9 @@ export default {
         return
       }
       if (this.isediting) {
-        this.$refs.map.save()
+        if (!this.hasRemove) {
+          this.$refs.map.save()
+        }
         editArea(this.list).then(response => {
           if (response.status === 200) {
             this.isadd = true
@@ -389,7 +420,8 @@ export default {
       this.isdelete = false
       this.areaindex = -1
       this.isSpeedLimit = 0
-      this.$refs.map.remove()
+      this.$refs.map.map.clearOverlays()
+      this.$refs.map.overlays = []
     },
     // 点击适用车辆
     handleApplVehicles() {
@@ -403,6 +435,15 @@ export default {
         this.vehiclearray = response.data.rows
         this.unSelectedList = this.vehiclearray
         this.total = response.data.total
+        const ids = this.list.vehicleId.split(',')
+        ids.forEach(id => {
+          this.unSelectedList.forEach((vehicle, index) => {
+            if (id === vehicle.id) {
+              this.selectedList.push(vehicle)
+              this.unSelectedList.splice(index, 1)
+            }
+          })
+        })
       })
     },
     // 退出适用车辆界面，返回设置适用规则界面
@@ -410,6 +451,7 @@ export default {
       this.issetapplvehicles = false
       this.vehicle = ''
       this.vehicleindex = -1
+      this.selectedList = []
     },
     // 添加车辆
     handleAddVehicles() {
@@ -427,10 +469,8 @@ export default {
             }
           })
         })
-        this.$message({
-          type: 'success',
-          message: '添加成功'
-        })
+        this.changeApplVehicle()
+        this.selectedIds = []
       }
     },
     // 删除车辆
@@ -443,7 +483,29 @@ export default {
           }
         })
       })
+      this.changeApplVehicle()
       this.unSelectedIds = []
+    },
+    // 添加或删除适用车辆
+    changeApplVehicle() {
+      let idsString = ''
+      this.selectedList.map((vehicle, index) => {
+        if (index === this.selectedList.length - 1) {
+          idsString += vehicle.id
+        } else {
+          idsString += `${vehicle.id},`
+        }
+      })
+      this.list.vehicleId = idsString
+      editArea(this.list).then(response => {
+        if (response.status === 200) {
+          this.fetchData()
+          this.$message({
+            message: response.message,
+            type: 'success'
+          })
+        }
+      })
     },
     // 点击选择车辆
     handleSelectVehicle(e, index) {
@@ -480,6 +542,10 @@ export default {
     // 获取点位信息
     handleGetLocation(location) {
       this.list.location = location
+    },
+    // 是否已清空过区域
+    handleRemove() {
+      this.hasRemove = true
     }
   }
 }

@@ -3,7 +3,7 @@
     <div v-show="show" class="pagination-container">
       <div class="pagination-outline">
         <ul class="pagination-ul">
-          <li v-show="current_page>1" class="jump" @click="current_page--">
+          <li v-show="current_page>1" class="jump" @click="jumpPage(current_page-1)">
             <button>上页</button>
           </li>
           <li v-show="current_page>4&&pages>7" class="jump" @click="jumpPage(1)">
@@ -21,7 +21,7 @@
           <li v-show="current_page<pages-3&&pages>7" class="jump" @click="jumpPage(pages)">
             <button>{{ pages }}</button>
           </li>
-          <li v-show="current_page<pages" class="jump" @click="current_page++">
+          <li v-show="current_page<pages" class="jump" @click="jumpPage(current_page+1)">
             <button>下页</button>
           </li>
           <li class="jumppoint">
@@ -99,6 +99,7 @@ export default {
     },
     jumpPage(id) {
       this.current_page = id
+      this.$emit('handleJumpPage', this.current_page)
     }
   }
 }
