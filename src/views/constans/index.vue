@@ -34,8 +34,8 @@
           </el-tabs>
         </div>
       </div>
-      <div class="list-box">
-        <h4 class="conf-h">当前监控车辆</h4>
+      <div class="list-box" v-if="tabIndex == '0'">
+        <h4 class="conf-h">当前监控车辆：</h4>
         <button :disabled="!monitorIds.length" class="btn" @click="handleFinish">结束</button>
         <div v-if="!monitorList.length" class="empty-box">
           无监控车辆
@@ -109,28 +109,12 @@ export default {
       isMonitorindeterminate: true,
       isUnMonitorCheckedAll: false,
       isMonitorCheckedAll: false,
-      vehiclearray: [
-        // { id: 'f9b99a7954324a389009631801ef5042', plateNumber: '川A22222' },
-        // { id: '681af98e12ed4fa2b95b81d252032a55', plateNumber: '川A11111' },
-        // { id: '1db6ccad42a5467f94d8da5d188866c7', plateNumber: '川A11v12' },
-        // { id: 'f9b99a7954324a38r409631801ef5042', plateNumber: '川A2z222' },
-        // { id: '6c4af98e12ed4fa2b95b81d252032a55', plateNumber: '川A111u1' },
-        // { id: '1db6ccad17a5m97f94d8da5d188866c7', plateNumber: '川Artr22' },
-        // { id: 'f9b99a79o5324a389009631801ef5042', plateNumber: '川A2but2' },
-        // { id: '681af98e12ed4j9a2b95b81d52032a55', plateNumber: '川Aasvv1' },
-        // { id: '1ds6ccad17a5467f94d8da5d188866c7', plateNumber: '川Avd122' },
-        // { id: 'f9b99a7954324a3890096vbgbggf5042', plateNumber: '川A2hc22' },
-        // { id: '681aegtyn2ed4fa2b95b81d252032a55', plateNumber: '川A1m7w1' },
-        // { id: '1db6ccad17a54myfdsay665d188866c7', plateNumber: '川Aaxw22' },
-        // { id: 'f9b9fsebdbfdbyijnyhyuk8i01ef5042', plateNumber: '川Amiyg2' },
-        // { id: '681affsd52ed4km888j681d252032a55', plateNumber: '川Afew11' },
-        // { id: '1db6ccdef4fby7j76nbtda5d188866c7', plateNumber: '川Aask22' }
-      ],
+      vehiclearray: [],
       unMonitorIds: [],
       monitorIds: [],
       unMonitorList: [],
       monitorList: [],
-      headerList: ['id', '速度', '状态', '驾驶员id', '驾驶员姓名', 'posTime', '车辆id', '车牌号', '车牌类型', 'plateBrand', 'volume', '组织id', '创建时间', '点位', '起点', '终点', '设备号'],
+      headerList: ['序号', '速度', '状态', '驾驶员姓名', '定位时间', '车牌号', '车辆品牌', '排量', '创建时间', '点位(经度,纬度)', '设备号'],
       locationList: [],
       states: [], // 车辆状态
       total: 0, // 总页数
@@ -205,6 +189,7 @@ export default {
       this.getPage(param)
       this.interval = setInterval(() => {
         this.getNewPoint(param)
+        this.getPage(param)
         console.log('this.count', this.count++)
       }, 5000)
     },
@@ -212,6 +197,7 @@ export default {
     getNewPoint(param) {
       getNewPointList(param).then(response => {
         this.newPointsList = response.data.rows
+        // debugger
         // 设置地图的中心点
         this.$refs.map.setZoom(this.newPointsList)
         var allOverlay = this.$refs.map.map.getOverlays()
@@ -228,9 +214,9 @@ export default {
                   this.newPointsList.splice(k, 1)
                 } else {
                   for (var m = 0; m < allOverlay.length; m++) {
-                    if (allOverlay[m].point.lng === this.oldPointsList[j].lng &&
-                      allOverlay[m].point.lat === this.oldPointsList[j].lat) {
-                      this.map.removeOverlay(allOverlay[m])
+                    if (`${allOverlay[m].point.lng}` === this.oldPointsList[j].lng &&
+                      `${allOverlay[m].point.lat}` === this.oldPointsList[j].lat) {
+                      this.$refs.map.map.removeOverlay(allOverlay[m])
                     }
                   }
                 }
@@ -240,7 +226,7 @@ export default {
               }
             }
             if (flag) {
-              this.map.removeOverlay(allOverlay[j])
+              this.$refs.map.map.removeOverlay(allOverlay[j])
             }
             j++
           }
@@ -319,6 +305,34 @@ export default {
         this.locationList = response.data.rows
         this.locationList.forEach((location, index) => {
           location.id = index + 1
+          if (location.state === '0') {
+            location.state = '离线'
+          } else if (location.state === '1') {
+            location.state = '执行任务中'
+          } else if (location.state === '2') {
+            location.state = '警告'
+          } else if (location.state === '3') {
+            location.state = '空闲'
+          }
+          delete location.driverId
+          delete location.vehicleId
+          delete location.plateType
+          delete location.orgId
+          delete location.lat
+          delete location.lng
+          // if (location.plateType === '0') {
+          //   location.plateType = '大型汽车'
+          // } else if (location.plateType === '1') {
+          //   location.plateType = '小型汽车'
+          // } else if (location.plateType === '2') {
+          //   location.plateType = '摩托车'
+          // } else if (location.plateType === '3') {
+          //   location.plateType = '拖拉机'
+          // } else if (location.plateType === '4') {
+          //   location.plateType = '挂车'
+          // } else if (location.plateType === '5') {
+          //   location.plateType = '新能源大型汽车'
+          // }
         })
         this.total = response.data.total
       })

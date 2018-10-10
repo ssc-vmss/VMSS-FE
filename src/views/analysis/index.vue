@@ -88,11 +88,7 @@ export default {
       vehicleIndex: -1,
       isindeterminate: true,
       ischeckedall: false,
-      vehiclearray: [
-        { id: 'dfbbb464c900431b9d728491117004f9', number: '川A111114' },
-        { id: '681af98e12ed4fa2b95b81d252032a55', number: '川A11111' },
-        { id: 'f9b99a7954324a389009631801ef5042', number: '川A222222' }
-      ],
+      vehiclearray: [],
       vehicleIds: []
     }
   },
@@ -109,6 +105,16 @@ export default {
     },
     // 查询
     handleQuery() {
+      if (!this.searchPlateNumber) {
+        this.$message({
+          type: 'warning',
+          message: '车牌号不能为空'
+        })
+        return
+      }
+      window.clearTimeout(this.$refs.map.timer)
+      this.$refs.map.index = 0
+      this.$refs.map.map.clearOverlays()
       let isExistence = false
       this.vehiclearray.forEach(vehicle => {
         if (this.searchPlateNumber === vehicle.plateNumber) {
@@ -134,8 +140,6 @@ export default {
         // 将日期时间字符串格式化成日期时间格式
         const startTime = new Date(this.startTime)
         const endTime = new Date(this.endTime)
-        console.log(this.startTime)
-        console.log(typeof this.startTime)
         // 计算开始时间和结束时间之间的间隔，以天为单位
         const timeInterval = parseInt((endTime - startTime) / 1000 / (24 * 60 * 60))
         // 判断开始时间和结束时间之间的间隔是否大于十天
@@ -147,12 +151,16 @@ export default {
           return
         }
         getPointList({ vehicleId: this.searchId, startTime: this.startTime, endTime: this.endTime }).then(response => {
-          if (response.data) {
+          if (response.data.rows.length) {
             this.pointsList = response.data.rows
-            console.log('this.pointsList', this.pointsList)
             this.$refs.map.list = this.pointsList
             this.$refs.map.ready()
             this.$refs.map.setZoom(this.pointsList)
+          } else {
+            this.$message({
+              type: 'info',
+              message: '该查询条件没有轨迹'
+            })
           }
         })
       }
@@ -162,7 +170,12 @@ export default {
       this.searchPlateNumber = ''
       this.startTime = ''
       this.endTime = ''
+      this.$refs.map.list = []
+      this.$refs.map.isChecked = false
+      this.$refs.map.speed = 2000
+      window.clearTimeout(this.$refs.map.timer)
       this.$refs.map.map.clearOverlays()
+      this.$refs.map.map.centerAndZoom(new BMap.Point(104.085145, 30.642301), 15) // 初始化地图,设置中心点坐标和地图级别
     },
     // 输入车牌号时获取相似车牌号提供输入建议
     handleFetchNumber(querystring, callback) {

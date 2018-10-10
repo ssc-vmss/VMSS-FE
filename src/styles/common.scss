@@ -565,3 +565,22 @@ input[type="number"]{
 .el-input-number{
   width: 200px;
 }
+.slider-box{
+  width: 200px;
+  padding: 0 10px;
+  // margin: 4px;
+  border-radius: 5px;
+  background-color: #fff;
+  border: 1px solid #606266;
+  color: #606266;
+  .slider-label{
+    font-weight: 400;
+    float: left;
+    padding: 8px 0;
+    margin-right: 20px;
+  }
+  .slider{
+    display: inline-block;
+    width: 100px;
+  }
+}

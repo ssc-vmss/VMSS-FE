@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Carloader v-if="listLoading" />
+    <!-- <Carloader v-if="listLoading" />
     <div v-else>
       <my-table ref="mytable" :header="headerList" :tableData="list"></my-table>
       <pagination :page-size='10' @handleJumpPage="handleJumpPage" :current-page='currPage' :total='total'></pagination>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -50,7 +50,7 @@ export default {
     }
   },
   created() {
-    this.fetchData()
+    // this.fetchData()
   },
   methods: {
     toDel(id) {
