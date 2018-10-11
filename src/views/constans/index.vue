@@ -12,11 +12,14 @@
               <div v-else class="checkbox">
                 <el-checkbox :indeterminate="isUnMonitorindeterminate" v-model="isUnMonitorCheckedAll" @change="unMonitorCheckAllChange">全选</el-checkbox>
                 <el-checkbox-group class="scrollBox" v-model="unMonitorIds" @change="unMonitorVehicleChange">
-                  <el-checkbox :class="{search:vehicle.plateNumber == searchVehicle}" v-for="(vehicle,index) in unMonitorList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
+                  <el-checkbox :class="{search:vehicle.id == searchVehicle}" v-for="(vehicle,index) in unMonitorList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
                 </el-checkbox-group>
               </div>
-              <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete>
-              <button :disabled="!unMonitorIds.length&&tabIndex=='0'" class="btn" @click="handleMonitor">监控</button>
+              <!-- <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete> -->
+              <el-select v-model="searchVehicle" clearable filterable remote placeholder="请输入关键词" @change="handleSelectNumber">
+                <el-option v-for="item in unMonitorList" :key="item.id" :label="item.plateNumber" :value="item.id"></el-option>
+              </el-select>
+              <button :disabled="!(unMonitorIds.length||searchVehicle)&&tabIndex=='0'" class="btn" @click="handleMonitor">监控</button>
             </el-tab-pane>
             <el-tab-pane label="按车辆状态">
               <div class="conf-form-row">
@@ -251,13 +254,14 @@ export default {
     handleSelectNumber(data) {
       let searchVehicleIndex = -1
       this.unMonitorList.forEach((vehicle, index) => {
-        if (data.plateNumber === vehicle.plateNumber) {
+        if (data === vehicle.id) {
+          console.log(11111111)
           searchVehicleIndex = index
         }
       })
       const scrollTop = this.unMonitorList.length * searchVehicleIndex
       document.getElementsByClassName('scrollBox')[0].scrollTop = scrollTop
-      this.searchVehicle = data.plateNumber
+      // this.searchVehicle = data.plateNumber
     },
     // 点击监控
     handleMonitor(index) {
@@ -275,6 +279,9 @@ export default {
         param = { state: paramString }
         // }
       } else {
+        if (this.unMonitorIds.indexOf(this.searchVehicle) === -1) {
+          this.unMonitorIds.push(this.searchVehicle)
+        }
         this.unMonitorIds.forEach(id => {
           this.unMonitorList.forEach((vehicle, index) => {
             if (id === vehicle.id) {
@@ -438,7 +445,7 @@ export default {
     margin-left: 10px;
   }
 }
-.el-autocomplete {
+.el-select {
   width: 80%;
 }
 </style>
