@@ -10,7 +10,7 @@
           <el-form-item label="车牌号码">
             <el-input v-model="plateNumber" placeholder="输入车牌号码"></el-input>
           </el-form-item>
-          <el-button type="primary" @click="query">查询</el-button>
+          <el-button type="primary" @click="query" size="medium">查询</el-button>
           <el-button @click="clear">重置</el-button>
         </el-form>
       </div>

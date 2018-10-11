@@ -8,8 +8,6 @@
         <button ref="play" :disabled="isPlaying||allOverlay.length == 0" class="btn" @click="play">播放</button>
         <button ref="pause" :disabled="!isPlaying" class="btn" @click="pause">暂停</button>
         <button :disabled="allOverlay.length == 0" class="btn" @click="reset">重置</button>
-        <button class="btn" @click="add">加速</button>
-        <button class="btn" @click="reduce">减速</button>
         <div class="slider-box">
           <div class="slider-label">播放慢速</div>
           <el-slider :format-tooltip="formatSpeed" :show-tooltip="false" v-model="speed" :step="250" :min="0" :max="4000" class="slider"></el-slider>
@@ -211,16 +209,6 @@ export default {
     // handleChangeSlider(val) {
     //   this.speed = 4000 - this.speed
     // },
-    // 点击加速
-    add() {
-      this.speed = this.speed / 2
-      console.log(this.speed)
-    },
-    // 点击减速
-    reduce() {
-      this.speed = this.speed * 2
-      console.log(this.speed)
-    },
     // 设置方向 curPos 起点 targetPos 终点
     setRotation(curPos, targetPos, marker) {
       var deg = 0
@@ -254,7 +242,7 @@ export default {
 <style lang="scss" scoped>
 .conf-form {
   .conf-form-row {
-    width: 800px;
+    width: 500px;
     margin: 0 auto;
     z-index: 999;
     height: 40px;
