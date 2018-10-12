@@ -5,10 +5,17 @@
       <div class="top-box">
         <el-form inline>
           <el-form-item label="驾驶员姓名">
-            <el-input v-model="driverName" placeholder="输入驾驶员姓名"></el-input>
+            <el-input v-model="form.driverName" placeholder="输入驾驶员姓名"></el-input>
           </el-form-item>
           <el-form-item label="车牌号码">
-            <el-input v-model="plateNumber" placeholder="输入车牌号码"></el-input>
+            <el-input v-model="form.plateNumber" placeholder="输入车牌号码"></el-input>
+          </el-form-item>
+          <el-form-item label="警告类型">
+            <el-select v-model="form.type" clearable @change="handleChangeType">
+              <el-option label="区域报警" value="1"></el-option>
+              <el-option label="防盗" value="2"></el-option>
+              <el-option label="违规用车" value="3"></el-option>
+            </el-select>
           </el-form-item>
           <el-button type="primary" @click="query" size="medium">查询</el-button>
           <el-button @click="clear">重置</el-button>
@@ -34,14 +41,17 @@ export default {
   },
   data() {
     return {
-      driverName: '',
-      plateNumber: '',
+      form: {
+        driverName: '',
+        plateNumber: '',
+        type: '1',
+        pageNo: 1
+      },
       listLoading: true, // 列表加载状态
-      headerList: ['序号', '创建时间', '速度', '车牌号码', '驾驶员姓名', '报警信息', '点位(经度,纬度)'],
+      headerList: ['序号', '创建时间', '速度(km/h)', '车牌号码', '驾驶员姓名', '报警信息', '点位(经度,纬度)', '警告类型'],
       warnList: [],
       total: 1,
-      currPage: 1,
-      param: { pageNo: this.currPage }
+      currPage: 1
     }
   },
   created() {
@@ -52,30 +62,41 @@ export default {
     fetchData() {
       this.listLoading = true
       // 获取定位信息
-      getPageQuery(this.param).then(response => {
-        if (response.data) {
+      getPageQuery(this.form).then(response => {
+        if (response.data.total) {
           this.warnList = []
           response.data.rows.map((item, index) => {
             item.id = index + 1
             delete item.driverId
             delete item.vehicleId
             delete item.orgId
-            delete item.type
+            if (item.type === '1') {
+              item.type = '区域报警'
+            } else if (item.type === '2') {
+              item.type = '防盗'
+            } else if (item.type === '3') {
+              item.type = '违规用车'
+            }
             this.warnList.push(item)
           })
           this.total = response.data.total
           this.listLoading = false
+        } else {
+          this.$message({
+            type: 'warning',
+            message: '该查询条件下无数据'
+          })
+          this.listLoading = false
         }
       })
     },
+    handleChangeType(val) {
+      this.form.type = val
+    },
     // 点击查询
     query() {
-      if (this.driverName && this.plateNumber) {
-        this.param = { driverName: this.driverName, plateNumber: this.plateNumber }
-      } else if (this.plateNumber) {
-        this.param = { plateNumber: this.plateNumber }
-      } else if (this.driverName) {
-        this.param = { driverName: this.driverName }
+      if (this.form.driverName || this.form.plateNumber || this.form.type) {
+        this.param = this.form
       } else {
         this.param = { pageNo: this.currPage }
       }
@@ -83,13 +104,11 @@ export default {
     },
     // 点击清空
     clear() {
-      this.driverName = ''
-      this.plateNumber = ''
+      this.form = { driverName: '', plateNumber: '', type: '1', pageNo: 1 }
     },
     // 分页组件传入当前页进行分页查询
     handleJumpPage(currPage) {
       this.currPage = currPage
-      this.param = { pageNo: this.currPage }
       this.fetchData()
     }
   }

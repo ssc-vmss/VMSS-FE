@@ -155,6 +155,12 @@ export const constantRouterMap = [
         name: 'threshold',
         component: () => import('@/views/threshold/index'),
         meta: { title: '点位离线阈值配置' }
+      },
+      {
+        path: 'guard',
+        name: 'guard',
+        component: () => import('@/views/guard/index'),
+        meta: { title: '点位防盗时间配置' }
       }
     ]
   },
@@ -174,9 +180,9 @@ export const constantRouterMap = [
         meta: { title: '账号管理' }
       },
       {
-        path: 'filteringrules',
-        name: 'filteringRules',
-        component: () => import('@/views/nested/menu2/index'),
+        path: 'filterrule',
+        name: 'filterrule',
+        component: () => import('@/views/filterrule/index'),
         meta: { title: '系统过滤规则' }
       }
     ]
