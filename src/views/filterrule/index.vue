@@ -1,16 +1,29 @@
 <template>
-  <div class="view">
+  <div class="app-container">
     <Carloader v-if="listLoading" />
     <div v-else>
-      <div class="top-box">
-        <div class="button-padding">
-          <el-button type="primary" @click="isAdd = true">新增</el-button>
-        </div>
-      </div>
-      <div class="table-view">
-        <my-table ref="mytable" :header="headerList" :tableData="tableData" :showOperation="true" @edit="edit" @del="del"></my-table>
-        <pagination :page-size='10' @handleJumpPage="handleJumpPage" :current-page='currPage' :total='total'></pagination>
-      </div>
+      <el-row class="toptools" type="flex" justify="space-between">
+        <el-col :span="6">
+          <el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="isAdd = true">添加</el-button>
+        </el-col>
+      </el-row>
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column align="center" type="index" label="序号">
+        </el-table-column>
+        <el-table-column align="center" prop="vehiclePlateNumber" label="车牌号码">
+        </el-table-column>
+        <el-table-column align="center" prop="createTime" label="事故创建时间">
+        </el-table-column>
+        <el-table-column align="center" prop="status" label="状态">
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="100" align="center">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="edit(scope.row.id)">修改</el-button>
+            <el-button type="text" size="small" @click="del(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination :page-size='10' @handleJumpPage="handleJumpPage" :current-page='currPage' :total='total'></pagination>
       <el-dialog :visible="isAdd||isEdit" :title="isAdd?'新增过滤规则':'修改过滤规则'" center width="25%" @close="clearForm">
         <el-form v-model="form">
           <el-form-item label="车牌号码" label-width="100px">
@@ -84,9 +97,7 @@ export default {
         if (response.data) {
           this.filterruleList = JSON.parse(JSON.stringify(response.data.rows))
           this.tableData = []
-          response.data.rows.map((item, index) => {
-            item.id = index + 1
-            delete item.vehicleId
+          response.data.rows.forEach((item, index) => {
             if (item.status === 1) {
               item.status = '启用'
             } else if (item.status === 2) {
@@ -136,16 +147,20 @@ export default {
       })
     },
     // 点击修改
-    edit(index) {
+    edit(id) {
       this.isEdit = true
-      this.form.id = this.filterruleList[index].id
-      this.form.vehicleId = this.filterruleList[index].vehicleId
-      this.form.status = this.tableData[index].status
-      this.form.vehiclePlateNumber = this.filterruleList[index].vehiclePlateNumber
+      this.filterruleList.forEach((item, index) => {
+        if (item.id === id) {
+          this.form.id = this.filterruleList[index].id
+          this.form.vehicleId = this.filterruleList[index].vehicleId
+          this.form.status = this.tableData[index].status
+          this.form.vehiclePlateNumber = this.filterruleList[index].vehiclePlateNumber
+        }
+      })
     },
     // 点击删除
-    del(index) {
-      delInfo({ id: this.filterruleList[index].id }).then(response => {
+    del(id) {
+      delInfo({ id: id }).then(response => {
         if (response.status === 200) {
           this.$message({
             type: 'success',
@@ -175,21 +190,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.view {
-  display: block;
-}
-.top-box {
-  width: 100%;
-  padding: 10px 20px 0 20px;
-}
-.conf-form-box {
-  margin: 0 10px;
-  display: flex;
-}
-.top-label {
-  text-align: center;
-  width: 200px;
-  padding: 8px 0;
-  margin: 0 0 0 10px;
-}
 </style>

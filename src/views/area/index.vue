@@ -6,7 +6,26 @@
           <h4 class="conf-h">区域设置</h4>
           <h4 v-if="isadding" class="conf-h">(新增中...)</h4>
           <h4 v-if="isediting" class="conf-h">(编辑中...)</h4>
+          <div class="btn-padding">
+            <button :disabled="!isadd" class="btn" @click="handleAdd">新增</button>
+            <button :disabled="!isedit" class="btn" @click="handleEdit">编辑</button>
+            <button :disabled="!(isadding||isediting)" class="btn" @click="handleSave">保存</button>
+            <button :disabled="!issave" class="btn" @click="handleCancel">取消操作</button>
+          </div>
           <div class="conf-form">
+            <div class="conf-form-row">
+              <div class="conf-form-label">
+                <span>围栏类型</span>
+              </div>
+              <input :disabled="isadd" v-model="list.type=='1'?'区域报警':'违规用车'" class="conf-form-input" type="text" @click="handleShowTypeMenu" placeholder="请选择" readonly />
+              <i :class="{isdisabled:isadd}" class="el-icon-caret-bottom conf-form-icon righticon" @click="handleShowTypeMenu"></i>
+              <div v-show="isShowTypeMenu" tabindex="-1" class="dropdown-menu">
+                <ul class="dropdown-ul" @click="handleSetType">
+                  <li value="1">区域报警</li>
+                  <li value="2">违规用车</li>
+                </ul>
+              </div>
+            </div>
             <div class="conf-form-row">
               <div class="conf-form-label">
                 <span>名称</span>
@@ -14,119 +33,115 @@
               </div>
               <input :disabled="isadd" v-model="list.name" class="conf-form-input" type="text" placeholder="请输入名称">
             </div>
-              <div class="conf-form-row">
-                <div class="conf-form-label">
-                  <span>区域描述</span>
-                </div>
-                <input :disabled="isadd" v-model="list.description" class="conf-form-input" type="text" placeholder="请输入区域描述">
+            <div class="conf-form-row">
+              <div class="conf-form-label">
+                <span>区域描述</span>
+              </div>
+              <input :disabled="isadd" v-model="list.description" class="conf-form-input" type="text" placeholder="请输入区域描述">
             </div>
-                <div class="conf-form-row">
-                  <div class="conf-form-label">
-                    <span>是否启用</span>
-                  </div>
-                  <input @blur="handleCloseMenu" :disabled="isadd" v-model="list.state==1?'是':'否'" class="conf-form-input" type="text" @click="handleShowMenu" placeholder="请选择" readonly/>
-                  <i :class="{isdisabled:isadd}" class="el-icon-caret-bottom conf-form-icon righticon" @click="handleShowMenu"></i>
-                  <div v-show="isshowmenu" tabindex="-1" class="dropdown-menu">
-                    <ul class="dropdown-ul" @click="handleSetState">
-                      <li value="0">否</li>
-                      <li value="1">是</li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="conf-form-row">
-                  <div class="conf-form-label">
-                    <span>开始时间</span>
-                  </div>
-                  <el-time-picker value-format="HH:mm:ss" :disabled="isadd" v-model="list.startTime" class="time-picker" placeholder="选择时间"></el-time-picker>
-                </div>
-                <div class="conf-form-row">
-                  <div class="conf-form-label">
-                    <span>结束时间</span>
-                  </div>
-                  <el-time-picker value-format="HH:mm:ss" :disabled="isadd" v-model="list.endTime" class="time-picker" placeholder="选择时间"></el-time-picker>
-                </div>
-                <div class="conf-form-row">
-                  <div class="conf-form-label">
-                    <span>启动报警</span>
-                  </div>
-                  <div :disabled="!(isadding||isediting)" class="singleline-checkbox">
-                    <el-checkbox :disabled="!(isadding||isediting)" v-model="list.inWarn" true-label="1" false-label="0">驶入</el-checkbox>
-                    <el-checkbox :disabled="!(isadding||isediting)" v-model="list.outWarn" true-label="1" false-label="0">驶出</el-checkbox>
-                    <el-checkbox :disabled="!(isadding||isediting)" v-model="isSpeedLimit">限速</el-checkbox>
-                  </div>
-                </div>
-                <div v-if="isSpeedLimit" class="conf-form-row">
-                  <div class="conf-form-label">
-                    <span>最高时速</span>
-                  </div>
-                  <input class="conf-form-input" :disabled="isadd" v-model="list.max" type="number">
-                  <span class="unit-span">km/h</span>
-                  <i :class="{isdisabled:(isadd||list.max==0)}" class="el-icon-minus conf-form-icon lefticon" @click="list.max--"></i>
-                  <i :class="{isdisabled:isadd}" class="el-icon-plus conf-form-icon righticon" @click="list.max++"></i>
-                </div>
+            <div class="conf-form-row">
+              <div class="conf-form-label">
+                <span>是否启用</span>
               </div>
-              <div class="btn-padding">
-                <button :disabled="!isadd" class="btn" @click="handleAdd">新增</button>
-                <button :disabled="!isedit" class="btn" @click="handleEdit">编辑</button>
-                <button :disabled="!(isadding||isediting)" class="btn" @click="handleSave">保存</button>
-                <button :disabled="!issave" class="btn" @click="handleCancel">取消操作</button>
-              </div>
-            </div>
-            <div v-else>
-              <h4 class="conf-h">已选车辆</h4>
-              <div v-if="!vehiclearray.length" class="empty-box">
-                暂无车辆
-              </div>
-              <div v-else class="checkbox">
-                <el-checkbox :indeterminate="isUnSelectedIndeterminate" v-model="isUnSelectedCheckedAll" @change="unSelectedCheckAllChange">全选</el-checkbox>
-                <el-checkbox-group class="scrollBox" v-model="unSelectedIds" @change="unSelectedVehicleChange">
-                  <el-checkbox :class="{search:vehicle.plateNumber == searchVehicle}" v-for="(vehicle,index) in unSelectedList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
-                </el-checkbox-group>
-              </div>
-              <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" trigger-on-focus v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete>
-              <div class="btn-padding">
-                <button class="btn" @click="handleExitSetApplVehicles">
-                  <i class="el-icon-arrow-left"></i>
-                  返回
-                </button>
-                <button class="btn" @click="handleAddVehicles">添加车辆</button>
-              </div>
-            </div>
-          </div>
-          <div class="list-box">
-            <div v-if="!issetapplvehicles">
-              <h4 class="conf-h">区域列表</h4>
-              <button :disabled="isadding||isediting||areaindex == -1" class="btn" @click="handleApplVehicles">适用车辆</button>
-              <button :disabled="!isdelete" class="btn" @click="handleDelete">删除</button>
-              <loader v-if="listLoading"></loader>
-              <div v-else class="list">
-                <ul>
-                  <li v-for="(area,index) in arealist" :class="{disabled:isadding||isediting,selected:areaindex == index}" :key="index" @click="handleSelectArea(index)">{{ area.name }}</li>
+              <input :disabled="isadd" v-model="list.state==1?'是':'否'" class="conf-form-input" type="text" @click="handleShowStateMenu" placeholder="请选择" readonly />
+              <i :class="{isdisabled:isadd}" class="el-icon-caret-bottom conf-form-icon righticon" @click="handleShowStateMenu"></i>
+              <div v-show="isShowStateMenu" tabindex="-1" class="dropdown-menu">
+                <ul class="dropdown-ul" @click="handleSetState">
+                  <li value="0">否</li>
+                  <li value="1">是</li>
                 </ul>
               </div>
             </div>
-            <div v-else>
-              <h4 class="conf-h">车辆</h4>
-              <button :disabled="!selectedIds.length" class="btn" @click="handleDeleteVehicle">删除车辆</button>
-              <div v-if="!selectedList.length" class="empty-box">
-                未选车辆
+            <div v-if="list.type=='1'">
+              <div class="conf-form-row">
+                <div class="conf-form-label">
+                  <span>开始时间</span>
+                </div>
+                <el-time-picker value-format="HH:mm:ss" :disabled="isadd" v-model="list.startTime" class="time-picker" placeholder="选择时间"></el-time-picker>
               </div>
-              <div v-else class="checkbox">
-                <el-checkbox v-if="selectedList.length" :indeterminate="isSelectedIndeterminate" v-model="isSelectedCheckedAll" @change="selectedCheckAllChange">全选</el-checkbox>
-                <el-checkbox-group v-model="selectedIds" @change="selectedVehicleChange">
-                  <el-checkbox v-for="(vehicle,index) in selectedList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
-                </el-checkbox-group>
+              <div class="conf-form-row">
+                <div class="conf-form-label">
+                  <span>结束时间</span>
+                </div>
+                <el-time-picker value-format="HH:mm:ss" :disabled="isadd" v-model="list.endTime" class="time-picker" placeholder="选择时间"></el-time-picker>
+              </div>
+              <div class="conf-form-row">
+                <div class="conf-form-label">
+                  <span>启动报警</span>
+                </div>
+                <div :disabled="!(isadding||isediting)" class="singleline-checkbox">
+                  <el-checkbox :disabled="!(isadding||isediting)" v-model="list.inWarn" true-label="1" false-label="0">驶入</el-checkbox>
+                  <el-checkbox :disabled="!(isadding||isediting)" v-model="list.outWarn" true-label="1" false-label="0">驶出</el-checkbox>
+                  <el-checkbox :disabled="!(isadding||isediting)" v-model="isSpeedLimit">限速</el-checkbox>
+                </div>
+              </div>
+              <div v-if="isSpeedLimit" class="conf-form-row">
+                <div class="conf-form-label">
+                  <span>最高时速</span>
+                </div>
+                <input class="conf-form-input" :disabled="isadd" v-model="list.max" type="number">
+                <span class="unit-span">km/h</span>
+                <i :class="{isdisabled:(isadd||list.max==0)}" class="el-icon-minus conf-form-icon lefticon" @click="list.max--"></i>
+                <i :class="{isdisabled:isadd}" class="el-icon-plus conf-form-icon righticon" @click="list.max++"></i>
               </div>
             </div>
           </div>
         </div>
-        <div class="arrow-left" @click="handleIsShowLeftBox">
-          <i :class="[isShowLeftBox?'el-icon-d-arrow-left':'el-icon-d-arrow-right']"></i>
-        </div>
-        <div class="right-box">
-          <b-map-component ref="map" @handleGetLocation="handleGetLocation" @handleRemove="handleRemove" :isadd="isadding" :isedit="isediting"></b-map-component>
+        <div v-else>
+          <h4 class="conf-h">已选车辆</h4>
+          <div v-if="!vehiclearray.length" class="empty-box">
+            暂无车辆
+          </div>
+          <div v-else class="checkbox">
+            <el-checkbox :indeterminate="isUnSelectedIndeterminate" v-model="isUnSelectedCheckedAll" @change="unSelectedCheckAllChange">全选</el-checkbox>
+            <el-checkbox-group class="scrollBox" v-model="unSelectedIds" @change="unSelectedVehicleChange">
+              <el-checkbox :class="{search:vehicle.plateNumber == searchVehicle}" v-for="(vehicle,index) in unSelectedList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
+            </el-checkbox-group>
+          </div>
+          <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" trigger-on-focus v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete>
+          <div class="btn-padding">
+            <button class="btn" @click="handleExitSetApplVehicles">
+              <i class="el-icon-arrow-left"></i>
+              返回
+            </button>
+            <button class="btn" @click="handleAddVehicles">添加车辆</button>
+          </div>
         </div>
       </div>
+      <div class="list-box">
+        <div v-if="!issetapplvehicles">
+          <h4 class="conf-h">区域列表</h4>
+          <button :disabled="isadding||isediting||areaindex == -1" class="btn" @click="handleApplVehicles">适用车辆</button>
+          <button :disabled="!isdelete" class="btn" @click="handleDelete">删除</button>
+          <loader v-if="listLoading"></loader>
+          <div v-else class="list">
+            <ul>
+              <li v-for="(area,index) in arealist" :class="{disabled:isadding||isediting,selected:areaindex == index}" :key="index" @click="handleSelectArea(index)">{{ area.name }}</li>
+            </ul>
+          </div>
+        </div>
+        <div v-else>
+          <h4 class="conf-h">车辆</h4>
+          <button :disabled="!selectedIds.length" class="btn" @click="handleDeleteVehicle">删除车辆</button>
+          <div v-if="!selectedList.length" class="empty-box">
+            未选车辆
+          </div>
+          <div v-else class="checkbox">
+            <el-checkbox v-if="selectedList.length" :indeterminate="isSelectedIndeterminate" v-model="isSelectedCheckedAll" @change="selectedCheckAllChange">全选</el-checkbox>
+            <el-checkbox-group v-model="selectedIds" @change="selectedVehicleChange">
+              <el-checkbox v-for="(vehicle,index) in selectedList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
+            </el-checkbox-group>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="arrow-left" @click="handleIsShowLeftBox">
+      <i :class="[isShowLeftBox?'el-icon-d-arrow-left':'el-icon-d-arrow-right']"></i>
+    </div>
+    <div class="right-box">
+      <b-map-component ref="map" @handleGetLocation="handleGetLocation" @handleRemove="handleRemove" :isadd="isadding" :isedit="isediting"></b-map-component>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -143,6 +158,7 @@ export default {
     return {
       searchVehicle: '',
       list: {
+        type: '1',
         description: '',
         endTime: '',
         location: '',
@@ -163,7 +179,8 @@ export default {
       isediting: false, // 是否正在编辑
       issave: false, // 是否保存
       isdelete: false, // 是否删除
-      isshowmenu: false,
+      isShowTypeMenu: false, // 是否显示类型下拉菜单
+      isShowStateMenu: false, // 是否显示状态下拉菜单
       issetapplvehicles: false,
       arealist: null,
       areaindex: -1,
@@ -228,26 +245,41 @@ export default {
       document.getElementsByClassName('scrollBox')[0].scrollTop = scrollTop
       this.searchVehicle = data.plateNumber
     },
+    // 点击区域围栏的下拉菜单
+    handleSetType(e) {
+      // 下拉菜单的点击选择后下拉菜单关闭
+      this.list.type = e.target.value
+      this.isShowTypeMenu = false
+    },
     // 点击是否启用的下拉菜单
     handleSetState(e) {
       // 下拉菜单的点击选择后下拉菜单关闭
       this.list.state = e.target.value
-      this.isshowmenu = false
+      this.isShowStateMenu = false
     },
-    handleShowMenu() {
-      if (!this.isshowmenu) {
-        this.isshowmenu = true
+    // 切换显示类型下拉菜单
+    handleShowTypeMenu() {
+      if (!this.isShowTypeMenu) {
+        this.isShowTypeMenu = true
         document.addEventListener('mousedown', e => {
           if (e.target.parentElement.className !== 'dropdown-ul') {
-            this.isshowmenu = false
+            this.isShowTypeMenu = false
             return
           }
         })
       }
     },
-    // 鼠标移出时隐藏下拉菜单
-    handleCloseMenu() {
-      // this.isshowmenu = false
+    // 切换显示状态下拉菜单
+    handleShowStateMenu() {
+      if (!this.isShowStateMenu) {
+        this.isShowStateMenu = true
+        document.addEventListener('mousedown', e => {
+          if (e.target.parentElement.className !== 'dropdown-ul') {
+            this.isShowStateMenu = false
+            return
+          }
+        })
+      }
     },
     // 点击隐藏或显示左边菜单栏
     handleIsShowLeftBox() {
@@ -260,6 +292,7 @@ export default {
     },
     // 点击区域列表
     handleSelectArea(index) {
+      // debugger
       if (index === this.areaindex) {
         this.areaindex = -1
         this.isedit = false
@@ -283,6 +316,7 @@ export default {
     },
     // 清空表单
     handleClear() {
+      this.list.type = '1'
       this.list.description = ''
       this.list.endTime = ''
       this.list.location = ''
@@ -318,6 +352,7 @@ export default {
     },
     // 保存
     handleSave() {
+      console.log(this.list.location)
       if (this.list.location === '') {
         this.$message({
           type: 'warning',

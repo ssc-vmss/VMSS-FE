@@ -165,8 +165,6 @@ export default {
   height: 60px;
   padding: 10px;
 }
-.bottom-box {
-}
 .conf-form-box {
   margin: 0 10px;
   display: flex;

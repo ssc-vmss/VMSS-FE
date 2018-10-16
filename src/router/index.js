@@ -91,6 +91,12 @@ export const constantRouterMap = [
         name: 'etc',
         component: () => import('@/views/etc/index'),
         meta: { title: 'ETC卡信息' }
+      },
+      {
+        path: 'oilrecord',
+        name: 'oilrecord',
+        component: () => import('@/views/oilrecord/index'),
+        meta: { title: '加油记录' }
       }
     ]
   },

@@ -77,7 +77,7 @@ input[type="number"]{
     margin: 5px 10px;
     padding: 5px;
     overflow-y: auto;
-    height: 260px;
+    height: 230px;
     text-align: center;
     // overflow: hidden;
     @extend %section;
@@ -102,7 +102,7 @@ input[type="number"]{
     }
   }
   .el-checkbox-group{
-    height: 220px;
+    height: 200px;
   }
 }
 .right-box {
@@ -110,13 +110,18 @@ input[type="number"]{
   height: 100%;
   width: 100%;
   overflow: auto;
+  padding: 10px 10px 10px 0;
 }
 .top-box{
   width: 100%;
   display: block;
+  padding: 20px 20px 0 20px;
+}
+.bottom-box{
+  padding: 0 20px;
 }
 .conf-box{
-  height: 55%;
+  height: 60%;
   .scrollBox{
     height: 200px;
     .search{
@@ -337,9 +342,6 @@ input[type="number"]{
           background: rgba(0, 128, 128,.5);
         }
       }
-      &:focus{
-        color: red;
-      }
     }
   }
 }
@@ -456,7 +458,6 @@ input[type="number"]{
 .map-view {
   display: block;
   height: 100%;
-  padding: 10px 10px 10px 0;
 }
 #allmap {
   width: 100%;
@@ -581,4 +582,10 @@ input[type="number"]{
     display: inline-block;
     width: 100px;
   }
+}
+.toptools{
+  margin-bottom: 20px;
+}
+.el-table th, .el-table td{
+  padding: 9px 0;
 }

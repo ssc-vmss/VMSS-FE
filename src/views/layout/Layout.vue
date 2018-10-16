@@ -44,7 +44,7 @@
         </div>
       </el-menu>
       <!-- <breadcrumb @handleClicLogo="handleClicLogo"/> -->
-      <app-main />
+      <app-main :class="{'app-main':itemMenu.length>0}" />
       <el-footer style="height:20px">Copyright © 2018 VMSS.</el-footer>
     </div>
   </div>
@@ -148,7 +148,7 @@ export default {
       this.showInfoIndex = index
       setTimeout(() => {
         if (this.$refs.imginfo) {
-          this.$refs.imginfo.style.top = `${target.offsetTop}px`
+          this.$refs.imginfo.style.top = `${target.offsetTop - target.parentNode.scrollTop}px`
         }
       }, 100)
       this.showInfo = true

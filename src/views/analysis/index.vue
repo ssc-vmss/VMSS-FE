@@ -119,7 +119,7 @@ export default {
       this.$refs.map.map.clearOverlays()
       let isExistence = false
       this.vehiclearray.forEach(vehicle => {
-        if (this.searchPlateNumber === vehicle.plateNumber) {
+        if (this.searchPlateNumber === vehicle.id) {
           this.searchId = vehicle.id
           isExistence = true
         }

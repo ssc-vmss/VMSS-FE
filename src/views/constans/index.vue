@@ -15,7 +15,6 @@
                   <el-checkbox :class="{search:vehicle.id == searchVehicle}" v-for="(vehicle,index) in unMonitorList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
                 </el-checkbox-group>
               </div>
-              <!-- <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete> -->
               <el-select v-model="searchVehicle" clearable filterable remote placeholder="请输入关键词" @change="handleSelectNumber">
                 <el-option v-for="item in unMonitorList" :key="item.id" :label="item.plateNumber" :value="item.id"></el-option>
               </el-select>
@@ -61,10 +60,26 @@
       </div>
       <b-map-component v-show="isMapView" ref="map" @handleGetLocation="handleGetLocation"></b-map-component>
       <div v-if="!isMapView">
-        <my-table :header="headerList" :tableData="locationList"></my-table>
-        <pagination :page-size='10' :current-page='1' :total='total'></pagination>
+        <el-table class="table-view" :data="locationList" :max-height="tableHeight">
+          <el-table-column align="center" type="index" width="100" label="序号">
+          </el-table-column>
+          <el-table-column align="center" prop="plateNumber" width="150" label="车牌号">
+          </el-table-column>
+          <el-table-column align="center" prop="plateBrand" width="100" label="车辆品牌">
+          </el-table-column>
+          <el-table-column align="center" prop="speed" width="100" label="速度(km/h)">
+          </el-table-column>
+          <el-table-column align="center" prop="state" width="100" label="状态">
+          </el-table-column>
+          <el-table-column align="center" prop="driverName" width="150" label="驾驶员姓名">
+          </el-table-column>
+          <el-table-column align="center" prop="location" width="200" label="定位时间">
+          </el-table-column>
+          <el-table-column align="center" prop="location" label="点位(经度,纬度)">
+          </el-table-column>
+        </el-table>
+        <!-- <pagination :page-size='10' :current-page='1' :total='total'></pagination> -->
       </div>
-
     </div>
   </div>
 </template>
@@ -84,6 +99,7 @@ export default {
   },
   data() {
     return {
+      tableHeight: document.documentElement.clientHeight - 230 || document.body.clientHeight - 230,
       tabIndex: '',
       searchVehicle: '',
       list: {
@@ -117,17 +133,25 @@ export default {
       monitorIds: [],
       unMonitorList: [],
       monitorList: [],
-      headerList: ['序号', '速度', '状态', '驾驶员姓名', '定位时间', '车牌号', '车辆品牌', '排量', '创建时间', '点位(经度,纬度)', '设备号'],
+      headerList: ['序号', '速度', '状态', '驾驶员姓名', '定位时间', '车牌号', '车辆品牌', '排量', '点位(经度,纬度)'],
       locationList: [],
       states: [], // 车辆状态
       total: 0, // 总页数
       monitoredIdsArray: [], // 已监控车辆id数组
       count: 0,
-      interval: null // 定时器
+      interval: null, // 定时器
+      listLoading: true // 列表加载状态
+
     }
   },
   created() {
     this.fetchVehicle()
+  },
+  mounted() {
+    const that = this;
+    window.onresize = function () {
+      that.tableHeight = document.documentElement.clientHeight - 230 || document.body.clientHeight - 230
+    }
   },
   destroyed() {
     clearInterval(this.interval)
@@ -137,7 +161,6 @@ export default {
       // 获取车辆信息
       getInfoList({ pageNo: 1, pageSize: 1000 }).then(response => {
         this.vehiclearray = response.data.rows
-        this.total = response.data.total
       })
       // 获取已监控车辆列表
       setTimeout(() => {
@@ -189,10 +212,8 @@ export default {
         param = { vehicleId: paramString }
       }
       this.getNewPoint(param)
-      this.getPage(param)
       this.interval = setInterval(() => {
         this.getNewPoint(param)
-        this.getPage(param)
         console.log('this.count', this.count++)
       }, 5000)
     },
@@ -200,11 +221,23 @@ export default {
     getNewPoint(param) {
       getNewPointList(param).then(response => {
         this.newPointsList = response.data.rows
-        // debugger
+        this.locationList = JSON.parse(JSON.stringify(response.data.rows))
+        this.locationList.forEach(location => {
+          if (location.state === '0') {
+            location.state = '离线'
+          } else if (location.state === '1') {
+            location.state = '执行任务中'
+          } else if (location.state === '2') {
+            location.state = '警告'
+          } else if (location.state === '3') {
+            location.state = '空闲'
+          }
+        })
+        this.total = response.data.total
         // 设置地图的中心点
         this.$refs.map.setZoom(this.newPointsList)
         var allOverlay = this.$refs.map.map.getOverlays()
-        console.log(allOverlay)
+        // console.log(allOverlay)
         const pointsList = JSON.parse(JSON.stringify(this.newPointsList))
         if (this.count > 0) {
           for (var j = 0; j < this.oldPointsList.length;) {
@@ -305,44 +338,6 @@ export default {
         }, 5000)
         this.monitorIds = []
       }
-    },
-    // 获取定位信息列表
-    getPage(param) {
-      getPageQuery(param).then(response => {
-        this.locationList = response.data.rows
-        this.locationList.forEach((location, index) => {
-          location.id = index + 1
-          if (location.state === '0') {
-            location.state = '离线'
-          } else if (location.state === '1') {
-            location.state = '执行任务中'
-          } else if (location.state === '2') {
-            location.state = '警告'
-          } else if (location.state === '3') {
-            location.state = '空闲'
-          }
-          delete location.driverId
-          delete location.vehicleId
-          delete location.plateType
-          delete location.orgId
-          delete location.lat
-          delete location.lng
-          // if (location.plateType === '0') {
-          //   location.plateType = '大型汽车'
-          // } else if (location.plateType === '1') {
-          //   location.plateType = '小型汽车'
-          // } else if (location.plateType === '2') {
-          //   location.plateType = '摩托车'
-          // } else if (location.plateType === '3') {
-          //   location.plateType = '拖拉机'
-          // } else if (location.plateType === '4') {
-          //   location.plateType = '挂车'
-          // } else if (location.plateType === '5') {
-          //   location.plateType = '新能源大型汽车'
-          // }
-        })
-        this.total = response.data.total
-      })
     },
     // 点击结束
     handleFinish() {
@@ -446,6 +441,7 @@ export default {
   }
 }
 .el-select {
+  padding: 0 5px;
   width: 80%;
 }
 </style>

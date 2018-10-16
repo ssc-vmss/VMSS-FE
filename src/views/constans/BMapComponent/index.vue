@@ -119,7 +119,16 @@ export default {
       if (points.driverName == null) {
         points.driverName = ''
       }
-      const vehicleInfo = `<div class="conf-form label-box"><div class="label-row"><div class="label">车牌号码：</div>${points.plateNumber}</div><div class="label-row"><div class="label">车辆状态：</div>${points.plateBrand}</div><div class="label-row"><div class="label">行驶速度：</div>${points.speed}</div><div class="label-row"><div class="label">司机姓名：</div>${points.driverName}</div></div>`
+      if (points.state === '0') {
+        points.state = '离线'
+      } else if (points.state === '1') {
+        points.state = '执行任务中'
+      } else if (points.state === '2') {
+        points.state = '警告'
+      } else if (points.state === '3') {
+        points.state = '空闲'
+      }
+      const vehicleInfo = `<div class="conf-form label-box"><div class="label-row"><div class="label">车牌号码：</div>${points.plateNumber}</div><div class="label-row"><div class="label">司机姓名：</div>${points.driverName}</div><div class="label-row"><div class="label">车辆状态：</div>${points.state}</div><div class="label-row"><div class="label">行驶速度：</div>${points.speed}</div><div class="label-row"><div class="label">司机姓名：</div>${points.driverName}</div></div>`
       const infoWindow = new BMap.InfoWindow(vehicleInfo)
       thisMarker.openInfoWindow(infoWindow)
     }

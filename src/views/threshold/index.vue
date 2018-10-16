@@ -1,34 +1,47 @@
 <template>
-  <div class="view">
+  <div class="app-container">
     <Carloader v-if="listLoading" />
     <div v-else>
-      <div class="top-box">
-        <div class="button-padding">
-          <el-button type="primary" @click="isAdd = true">新增</el-button>
-        </div>
-      </div>
-      <div class="table-view">
-        <my-table ref="mytable" :header="headerList" :tableData="tableData" :showOperation="true" @edit="edit" @del="del"></my-table>
-        <pagination :page-size='10' @handleJumpPage="handleJumpPage" :current-page='currPage' :total='total'></pagination>
-      </div>
-      <el-dialog :visible="isAdd||isEdit" :title="isAdd?'新增阈值':'修改阈值'" center width="25%" @close="clearForm">
-        <el-form v-model="form">
-          <el-form-item label="阈值" label-width="100px">
-            <el-input-number controls-position="right" v-model="form.threshold" :min="0" :max="60"></el-input-number>
-          </el-form-item>
-          <el-form-item label="状态" label-width="100px">
-            <el-select v-model="form.state">
-              <el-option label="停用" value="0"></el-option>
-              <el-option label="启用" value="1"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="clearForm">取消</el-button>
-          <el-button type="primary" @click="isAdd?add():update()">提交</el-button>
-        </div>
-      </el-dialog>
+      <el-row class="toptools" type="flex" justify="space-between">
+        <el-col :span="6">
+          <el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="isAdd = true">添加</el-button>
+        </el-col>
+      </el-row>
+      <el-table :data="thresholdList" style="width: 100%">
+        <el-table-column align="center" type="index" width="100" label="序号">
+        </el-table-column>
+        <el-table-column align="center" prop="threshold" label="阈值(分钟)">
+        </el-table-column>
+        <el-table-column align="center" prop="state" label="状态">
+        </el-table-column>
+        <el-table-column align="center" prop=" createTime" label="创建时间">
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" width="100" align="center">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="edit(scope.row)">修改</el-button>
+            <el-button type="text" size="small" @click="del(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination :page-size='10' @handleJumpPage="handleJumpPage" :current-page='currPage' :total='total'></pagination>
     </div>
+    <el-dialog :visible="isAdd||isEdit" :title="isAdd?'新增阈值':'修改阈值'" center width="25%" @close="clearForm">
+      <el-form v-model="form">
+        <el-form-item label="阈值" label-width="100px">
+          <el-input-number controls-position="right" v-model="form.threshold" :min="0" :max="60"></el-input-number>
+        </el-form-item>
+        <el-form-item label="状态" label-width="100px">
+          <el-select v-model="form.state">
+            <el-option label="停用" value="0"></el-option>
+            <el-option label="启用" value="1"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="clearForm">取消</el-button>
+        <el-button type="primary" @click="isAdd?add():update()">提交</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -46,7 +59,7 @@ export default {
     return {
       listLoading: true, // 列表加载状态
       headerList: ['序号', '阈值(分钟)', '状态', '创建时间'],
-      tableData: [],
+      // tableData: [],
       thresholdList: [],
       isAdd: false, // 是否新增
       isEdit: false, // 是否修改
@@ -69,15 +82,14 @@ export default {
       getPageQuery({ pageNo: this.currPage }).then(response => {
         if (response.data) {
           this.thresholdList = JSON.parse(JSON.stringify(response.data.rows))
-          this.tableData = []
-          response.data.rows.map((item, index) => {
-            item.id = index + 1
+          // this.tableData = []
+          this.thresholdList.map((item, index) => {
             if (item.state === '0') {
               item.state = '停用'
             } else if (item.state === '1') {
               item.state = '启用'
             }
-            this.tableData.push(item)
+            // this.tableData.push(item)
           })
           this.total = response.data.total
           this.listLoading = false
@@ -93,19 +105,26 @@ export default {
     },
     // 点击修改提交
     update() {
+      console.log('this.update')
       editThreshold(this.form).then(response => {
         this.clearForm()
         this.fetchData()
       })
     },
     // 点击修改
-    edit(index) {
+    edit(data) {
       this.isEdit = true
-      this.form = this.thresholdList[index]
+      this.form.id = data.id
+      this.form.threshold = data.threshold
+      if (data.state === '停用') {
+        this.form.state = '0'
+      } else {
+        this.form.state = '1'
+      }
     },
     // 点击删除
-    del(index) {
-      delThreshold(this.thresholdList[index].id).then(response => {
+    del(id) {
+      delThreshold(id).then(response => {
         if (response.status === 200) {
           this.$message({
             type: 'success',
@@ -135,13 +154,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.view {
-  display: block;
-}
-.top-box {
-  width: 100%;
-  padding: 10px 20px 0 20px;
-}
 .el-select {
   width: 200px;
 }
