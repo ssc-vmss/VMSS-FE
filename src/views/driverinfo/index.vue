@@ -37,10 +37,10 @@
       border
       fit
       :max-height="tableHeight">
-      <el-table-column type="expand">
+      <!-- <el-table-column type="expand">
         <template slot-scope="scope">
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column align="center" label="姓名">
         <template slot-scope="scope">
           {{ scope.row.userName }}
@@ -68,7 +68,6 @@
       </el-table-column>
       <el-table-column label="入职时间" align="center">
         <template slot-scope="scope">
-          <!-- <i class="el-icon-time"/> -->
           <span>{{ scope.row.startTime }}</span>
         </template>
       </el-table-column>
@@ -138,7 +137,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="入职时间" prop="startTime" :label-width="formLabelWidth">
-              <el-date-picker  v-model="form.startTime" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" style="width:180px"></el-date-picker>
+              <el-date-picker  v-model="form.startTime" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" :picker-options="pickerOptions" style="width:180px"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -196,6 +195,11 @@ export default {
       options:[],
       optionsLoading:false,
       editUserName:'',
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      },
       form: {
         userName: '',
         sex: '',
@@ -346,6 +350,7 @@ export default {
       })
     },
     addData(formName){
+      this.searchType=null;
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.saveData();

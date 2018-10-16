@@ -250,6 +250,7 @@ export default {
       })
     },
     addData(formName) {
+      this.searchType=null;
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.saveData();

@@ -13,6 +13,7 @@
       </div>
     </el-row>
     <el-table
+      :max-height="tableHeight"
       v-loading="listLoading"
       :data="list"
       element-loading-text="Loading"
@@ -93,7 +94,7 @@
 
     <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
     <!-- add from -->
-    <el-dialog title="添加维修保养信息" :visible.sync="dialogFormVisible" width="800px" @close="closeDialog('ruleForm')">
+    <el-dialog :title="dialogTitle+'维修保养信息'" :visible.sync="dialogFormVisible" width="800px" @close="closeDialog('ruleForm')">
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
@@ -118,11 +119,11 @@
           <el-col :span="12">
             <el-form-item label="车辆维修状态" prop="status" :label-width="formLabelWidth">
               <el-select v-model="form.status" placeholder="请选择状态">
-                <el-option label="未维修" value="0"></el-option>
-                <el-option label="维修中" value="1"></el-option>
-                <el-option label="已维修" value="2"></el-option>
-                <el-option label="已验收" value="3"></el-option>
-                <el-option label="注销" value="4"></el-option>
+                <el-option label="未维修" :value="0"></el-option>
+                <el-option label="维修中" :value="1"></el-option>
+                <el-option label="已维修" :value="2"></el-option>
+                <el-option label="已验收" :value="3"></el-option>
+                <!-- <el-option label="注销" :value="4"></el-option> -->
               </el-select>
             </el-form-item>
           </el-col>
@@ -151,11 +152,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="维修保养" prop="status" :label-width="formLabelWidth">
-              <el-select v-model="form.status" placeholder="请选择状态">
-                <el-option label="小修" value="0"></el-option>
-                <el-option label="大修" value="1"></el-option>
-                <el-option label="保养" value="2"></el-option>
+            <el-form-item label="维修保养" prop="type" :label-width="formLabelWidth">
+              <el-select v-model="form.type" placeholder="请选择状态">
+                <el-option label="小修" :value="0"></el-option>
+                <el-option label="大修" :value="1"></el-option>
+                <el-option label="保养" :value="2"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -175,7 +176,8 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="维修金额" prop="amount" :label-width="formLabelWidth">
-              <el-input v-model="form.amount" auto-complete="off"></el-input>
+              <!-- <el-input type="number" v-model="form.amount" auto-complete="off"></el-input> -->
+              <el-input-number v-model="form.amount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -208,7 +210,20 @@ import { getInfoList as getVehicleList } from '@/api/vehicle'
 
 export default {
   data() {
+    let validataSendDate=(rule,value,callback)=>{
+      if(value){
+        if(this.form.reportDate&&(new Date(value)-new Date(this.form.reportDate)<0)){
+          callback('送修日期不能早于报修日期');
+        }else{
+          callback();
+        }
+      }else{
+        callback();
+      }
+    };
     return {
+      dialogTitle:'添加',
+      tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
       list: null,
       listLoading: true,
       searchType:'1',
@@ -235,6 +250,9 @@ export default {
       rules: {
         vehicleId:[
           { required: true, message: '请选择维修车辆', trigger: 'blur' },
+        ],
+        sendDate:[
+          { validator: validataSendDate, trigger: 'blur' }
         ]
       },
       formLabelWidth: '100px',
@@ -250,6 +268,15 @@ export default {
   },
   created() {
     this.fetchData()
+  },
+  mounted(){
+    const that=this;
+    window.onresize=function(){
+      that.tableHeight=document.documentElement.clientHeight-230||document.body.clientHeight-230
+    }
+  },
+  beforeDestroy(){
+    window.onresize="";
   },
   methods: {
     getVehicles(query){
@@ -275,9 +302,9 @@ export default {
         case 3:
           return '已验收';
           break;
-        case 4:
-          return '注销';
-          break;
+        // case 4:
+        //   return '注销';
+        //   break;
         default:
           break;
       }
@@ -303,6 +330,7 @@ export default {
     },
     closeDialog(formName) {
       this.editact = false;
+      this.dialogTitle="添加";
     },
     resetForm() {
       this.form = {
@@ -359,6 +387,7 @@ export default {
       })
     },
     addData(formName) {
+      this.searchType=null;
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.saveData();
@@ -371,11 +400,14 @@ export default {
     toEdit(data){
       console.log('data:',data)
       this.vehicles=[{plateNumber:data.vehiclePlateNumber,id:data.vehicleId}]
-      data.type=data.type+'';
+      // data.status+='';
+      // data.type=data.type+'';
       // this.form=data;
       this.form=Object.assign({},data);
+      console.log('this.form:',this.form)
       this.dialogFormVisible=true;
       this.editact=true;
+      this.dialogTitle="修改";
     },
     saveData(){
       let data=this.form;

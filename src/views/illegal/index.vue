@@ -12,6 +12,7 @@
       </div>
     </el-row>
     <el-table
+      :max-height="tableHeight"
       v-loading="listLoading"
       :data="list"
       element-loading-text="Loading"
@@ -72,7 +73,7 @@
 
     <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
     <!-- add from -->
-    <el-dialog title="添加违章信息" :visible.sync="dialogFormVisible" width="800px" @close="closeDialog('ruleForm')">
+    <el-dialog :title="dialogTitle+'违章信息'" :visible.sync="dialogFormVisible" width="800px" @close="closeDialog('ruleForm')">
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
@@ -108,7 +109,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="违章时间" prop="happenTime" :label-width="formLabelWidth">
-              <el-date-picker v-model="form.happenTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+              <el-date-picker v-model="form.happenTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" :picker-options="pickerOptions"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -116,20 +117,20 @@
           <el-col :span="12">
             <el-form-item label="违章类型" prop="type" :label-width="formLabelWidth">
               <el-select v-model="form.type" placeholder="请选择类型">
-                <el-option label="闯红灯" value="0"></el-option>
-                <el-option label="超速" value="1"></el-option>
-                <el-option label="压线" value="2"></el-option>
-                <el-option label="违章停车" value="3"></el-option>
-                <el-option label="其他" value="4"></el-option>
+                <el-option label="闯红灯" :value="0"></el-option>
+                <el-option label="超速" :value="1"></el-option>
+                <el-option label="压线" :value="2"></el-option>
+                <el-option label="违章停车" :value="3"></el-option>
+                <el-option label="其他" :value="4"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="状态" prop="status" :label-width="formLabelWidth">
               <el-select v-model="form.status" placeholder="请选择状态">
-                <el-option label="未处理" value="0"></el-option>
-                <el-option label="已经处理" value="1"></el-option>
-                <el-option label="注销" value="2"></el-option>
+                <el-option label="未处理" :value="0"></el-option>
+                <el-option label="已经处理" :value="1"></el-option>
+                <!-- <el-option label="注销" :value="2"></el-option> -->
               </el-select>
             </el-form-item>
           </el-col>
@@ -142,14 +143,16 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="违章罚款金额" prop="amount" :label-width="formLabelWidth">
-              <el-input v-model="form.amount" auto-complete="off"></el-input>
+              <!-- <el-input v-model="form.amount" auto-complete="off"></el-input> -->
+              <el-input-number v-model="form.amount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="违章扣分" prop="course" :label-width="formLabelWidth">
-              <el-input v-model="form.course" auto-complete="off"></el-input>
+              <!-- <el-input v-model="form.course" auto-complete="off"></el-input> -->
+              <el-input-number v-model="form.course" :min="0" :precision="0" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -172,6 +175,8 @@ import { getInfoList as getDriverList } from '@/api/driver'
 export default {
   data() {
     return {
+      dialogTitle:'添加',
+      tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
       list: null,
       listLoading: true,
       searchType:'1',
@@ -180,6 +185,11 @@ export default {
       vehicles:[],
       drivers:[],
       vehiclesLoading:false,
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      },
       form: {
         amount: '',
         course: '',
@@ -188,8 +198,8 @@ export default {
         happenTime:'',
         mechanism:'',
         place:'',
-        status:'0',
-        type:'4',
+        status:0,
+        type:4,
         vehicleId:'',
         vehiclePlateNumber:''
       },
@@ -217,6 +227,15 @@ export default {
   },
   created() {
     this.fetchData()
+  },
+  mounted(){
+    const that=this;
+    window.onresize=function(){
+      that.tableHeight=document.documentElement.clientHeight-230||document.body.clientHeight-230
+    }
+  },
+  beforeDestroy(){
+    window.onresize="";
   },
   methods: {
     getVehicles(query){
@@ -266,9 +285,9 @@ export default {
         case 1:
           return '已经处理';
           break;
-        case 2:
-          return '注销';
-          break;
+        // case 2:
+        //   return '注销';
+        //   break;
         default:
           break;
       }
@@ -279,6 +298,7 @@ export default {
     },
     closeDialog(formName) {
       this.editact = false;
+      this.dialogTitle="添加";
     },
     resetForm() {
       this.form = {
@@ -289,8 +309,8 @@ export default {
         happenTime:'',
         mechanism:'',
         place:'',
-        status:'0',
-        type:'4',
+        status:0,
+        type:4,
         vehicleId:'',
         vehiclePlateNumber:''
       }
@@ -329,6 +349,7 @@ export default {
       })
     },
     addData(formName) {
+      this.searchType=null;
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.saveData();
@@ -341,11 +362,12 @@ export default {
     toEdit(data){
       this.vehicles=[{plateNumber:data.vehiclePlateNumber,id:data.vehicleId}]
       this.drivers=[{userName:data.driverName,id:data.driverId}]
-      data.type=data.type+'';
+      // data.type=data.type+'';
       // this.form=data;
       this.form=Object.assign({},data);
       this.dialogFormVisible=true;
       this.editact=true;
+      this.dialogTitle="修改";
     },
     saveData(){
       let data=this.form;

@@ -77,7 +77,8 @@
 </template>
 
 <script>
-import { isvalidUsername } from '@/utils/validate'
+import { isvalidUsername } from '@/utils/validate';
+import { Base64 } from 'js-base64';
 
 export default {
   name: 'Login',
@@ -113,10 +114,11 @@ export default {
   },
   methods: {
     handleLogin () {
+      let loginData={username:this.loginForm.username.trim(),password:Base64.encode(this.loginForm.password)};
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('Login', this.loginForm).then(() => {
+          this.$store.dispatch('Login', loginData).then(() => {console.log('login ok')
             this.loading = false
             this.$router.push({ path: '/' })
           }).catch(() => {

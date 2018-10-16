@@ -84,9 +84,16 @@
           {{ scope.row.simNo }}
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="100" align="center">
+      <el-table-column label="是否开启防盗" width="120" align="center">
+        <template slot-scope="scope">
+          {{ (scope.row.isPickproof==1)?'未开启':'已开启' }}
+        </template>
+      </el-table-column>
+      <el-table-column fixed="right" label="操作" width="180" align="center">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="toEdit(scope.row)">修改</el-button>
+          <el-button v-if="scope.row.isPickproof==1" type="text" size="small" @click="Pickproof(scope.row.LPNO,'open')">开启防盗</el-button>
+          <el-button v-if="scope.row.isPickproof==2" type="text" size="small" @click="Pickproof(scope.row.LPNO,'close')">关闭防盗</el-button>
           <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -144,23 +151,23 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="车辆购置时间" prop="buyTimes" :label-width="formLabelWidth">
-              <el-date-picker v-model="form.buyTimes" type="date" placeholder="选择日期" value-format="yyyy-MM-dd"></el-date-picker>
+              <el-date-picker v-model="form.buyTimes" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" :picker-options="pickerOptions"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="车辆状态" :label-width="formLabelWidth">
+            <el-form-item label="车辆状态" prop="Status" :label-width="formLabelWidth">
               <el-select v-model="form.Status" placeholder="请选择车辆状态">
-                <el-option label="未运行" value="0"></el-option>
-                <el-option label="运行" value="1"></el-option>
-                <el-option label="事故" value="2"></el-option>
-                <el-option label="理赔" value="3"></el-option>
-                <el-option label="保养" value="4"></el-option>
-                <el-option label="年检" value="5"></el-option>
-                <el-option label="报废" value="6"></el-option>
-                <el-option label="维修" value="7"></el-option>
-                <el-option label="注销" value="8"></el-option>
+                <el-option label="未运行" :value="0"></el-option>
+                <el-option label="运行" :value="1"></el-option>
+                <el-option label="事故" :value="2"></el-option>
+                <el-option label="理赔" :value="3"></el-option>
+                <el-option label="保养" :value="4"></el-option>
+                <el-option label="年检" :value="5"></el-option>
+                <el-option label="报废" :value="6"></el-option>
+                <el-option label="维修" :value="7"></el-option>
+                <!-- <el-option label="注销" :value="8"></el-option> -->
               </el-select>
             </el-form-item>
           </el-col>
@@ -208,7 +215,7 @@
 </template>
 
 <script>
-import { getInfoList, addInfo, editInfo, delInfo,getEquipmentList } from '@/api/vehicle'
+import { getInfoList, addInfo, editInfo, delInfo,getEquipmentList,openPickproof,closePickproof } from '@/api/vehicle'
 import {vechileType} from '@/utils/constant'
 
 export default {
@@ -241,6 +248,11 @@ export default {
       searchTxt:'',
       options:[],
       optionsLoading:false,
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      },
       form: {
         LPNO: '',
         Color: '',
@@ -250,7 +262,7 @@ export default {
         engineId: '',
         Load: '',
         buyTimes: '',
-        Status: '0',
+        Status: 0,
         EnterpriseNO: '',
         // VehicleNO: '',
         Emission: '',
@@ -287,7 +299,7 @@ export default {
   },
   mounted(){
     const that=this;
-    window.onresize=function(){console.log('resize')
+    window.onresize=function(){
       that.tableHeight=document.documentElement.clientHeight-230||document.body.clientHeight-230
     }
   },
@@ -333,6 +345,9 @@ export default {
     },
     vehicleStatus(status) {
       switch (status) {
+        case 0:
+          return '未运行'
+          break;
         case 1:
           return '运行'
           break;
@@ -354,11 +369,10 @@ export default {
         case 7:
           return '维修'
           break;
-        case 8:
-          return '注销'
-          break;
+        // case 8:
+        //   return '注销'
+        //   break;
         default:
-          return '未运行'
           break;
       }
     },
@@ -397,7 +411,7 @@ export default {
         engineId: '',
         Load: '',
         buyTimes: '',
-        Status: '0',
+        Status: 0,
         EnterpriseNO: '',
         // VehicleNO: '',
         Emission: '',
@@ -439,8 +453,8 @@ export default {
       getInfoList(params).then(response => {
         let resData;
         resData=response.data.rows&&response.data.rows.map(item=>{
-          let{id,plateNumber:LPNO,plateColour:Color,plateType:Type,engineNumber:EngineNO,engineId,type:Status,enterpriseNumber:EnterpriseNO,emissionStandard:Emission,buyTimes,plateBrand,unitType,simNo}=item;
-          return {id,LPNO,Color,Type,EngineNO,engineId,Status,EnterpriseNO,Emission,buyTimes,plateBrand,unitType,simNo}
+          let{id,plateNumber:LPNO,plateColour:Color,plateType:Type,engineNumber:EngineNO,engineId,type:Status,enterpriseNumber:EnterpriseNO,emissionStandard:Emission,buyTimes,plateBrand,unitType,simNo,isPickproof}=item;
+          return {id,LPNO,Color,Type,EngineNO,engineId,Status,EnterpriseNO,Emission,buyTimes,plateBrand,unitType,simNo,isPickproof}
         })
         this.list = resData;
         this.total = response.data.total;
@@ -449,6 +463,7 @@ export default {
       })
     },
     addData(formName) {
+      this.searchType=null;
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.saveData();
@@ -459,9 +474,6 @@ export default {
       });
     },
     toEdit(data) {
-      data.Type = data.Type ;
-      data.Status = data.Status + '';
-      // this.form = data;
       this.form = Object.assign({},data);
       this.dialogFormVisible = true;
       this.editact = true;
@@ -491,6 +503,25 @@ export default {
           this.fetchData();
         }
       })
+    },
+    Pickproof(vehicleNumber,act){
+      if(act=='open'){
+        openPickproof({vehicleNumber}).then(response=>{
+          this.$message({
+            type: 'success',
+            message: '开启成功!'
+          });
+          this.fetchData();
+        }).catch()
+      }else{
+        closePickproof({vehicleNumber}).then(response=>{
+          this.$message({
+            type: 'success',
+            message: '关闭成功!'
+          });
+          this.fetchData();
+        }).catch()
+      }
     }
   }
 }
