@@ -1,15 +1,13 @@
 <template>
   <div :class="classObj" class="app-wrapper">
     <div v-if="itemMenu.length>0" ref="sidebar" class="sidebar-container">
-      <ul class="sidebar-ul">
-        <li v-for="(item,index) in itemMenu" v-if="item.path!=='warning'" :key="index" :class="{active:itemMenuIndex == index}" @click="handleClickItemMenu(index)" @mouseover="showInfoIndex = index" @mouseout="showInfoIndex = -1">
+      <ul class="sidebar-ul" @mouseout="handleHideInfo">
+        <li v-for="(item,index) in itemMenu" v-if="item.path!=='warning'" :key="index" :class="{active:itemMenuIndex == index}" @click="handleClickItemMenu(index)" @mouseover.prevent="handleShowInfo($event,item,index)">
           <router-link :to="resolvePath(menuPath+'/'+item.path)">
             <img :src="require('@/assets/icons/'+item.name+'.png')" :title="item.meta.title" />
-            <div v-if="showInfoIndex == index" class="img-info">{{ item.meta.title }}</div>
-            <!-- <div class="img-info">{{ item.meta.title }}</div> -->
           </router-link>
-          <!-- <div v-if="showInfoIndex == index" class="img-info">{{ item.meta.title }}</div> -->
         </li>
+        <div v-if="showInfo" ref="imginfo" class="img-info imginfo">{{ itemMenu[showInfoIndex].meta.title }}</div>
       </ul>
       <ul>
         <li :class="{active:itemMenuIndex == itemMenu.length + 1}" class="warning-box" @click="handleClickItemMenu(itemMenu.length + 1)" @mouseover="showWarningInfo = true" @mouseout="showWarningInfo = false">
@@ -46,7 +44,7 @@
         </div>
       </el-menu>
       <!-- <breadcrumb @handleClicLogo="handleClicLogo"/> -->
-      <app-main />
+      <app-main :class="{'app-main':itemMenu.length>0}" />
       <el-footer style="height:20px">Copyright © 2018 VMSS.</el-footer>
     </div>
   </div>
@@ -71,6 +69,7 @@ export default {
       itemMenu: [],
       itemMenuIndex: 0,
       showInfoIndex: -1,
+      showInfo: false,
       showWarningInfo: false
     }
   },
@@ -140,6 +139,25 @@ export default {
       this.itemMenuIndex = index
       this.setSessionStorage()
     },
+    // 显示提示文字
+    handleShowInfo(e, item, index) {
+      let target = e.target
+      while (target.tagName !== 'LI') {
+        target = target.parentNode
+      }
+      this.showInfoIndex = index
+      setTimeout(() => {
+        if (this.$refs.imginfo) {
+          this.$refs.imginfo.style.top = `${target.offsetTop - target.parentNode.scrollTop}px`
+        }
+      }, 100)
+      this.showInfo = true
+    },
+    // 隐藏提示文字
+    handleHideInfo() {
+      this.showInfoIndex = -1
+      this.showInfo = false
+    },
     resolvePath(...paths) {
       return path.resolve(...paths)
     },
@@ -167,7 +185,8 @@ export default {
   }
   &::-webkit-scrollbar {
     height: 10px;
-    width: 5px;
+    width: 4px;
+    cursor: pointer;
   }
   &::-webkit-scrollbar-track {
     border-radius: 20px;

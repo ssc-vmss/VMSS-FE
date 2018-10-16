@@ -106,6 +106,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.pagination-view{
+  padding: 10px;
+}
 .pagination-outline {
   background: linear-gradient(
     to right,

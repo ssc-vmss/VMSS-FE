@@ -144,10 +144,15 @@ export default {
 
     // 展示
     show(location) {
+      debugger
       if (this.overlays.length > 0) {
-        this.remove()
+        // this.remove()
+        this.overlays = []
+      this.map.clearOverlays()
+      
+      
       }
-      this.location = location
+      // this.location = location
       var str = []
       str = location.split(';')// 坐标点通过分号分割
       for (var i = 0; i < str.length; i++) {
@@ -172,7 +177,6 @@ export default {
       }
     },
     overlaycomplete(e) {
-  
       console.log('overlaycomplete')
       var path = e.overlay.getPath()// Array<Point> 返回多边型的点数组
       if (path.length > 2) {

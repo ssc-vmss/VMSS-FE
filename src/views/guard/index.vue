@@ -7,12 +7,14 @@
           <el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="isAdd = true">添加</el-button>
         </el-col>
       </el-row>
-      <el-table :data="thresholdList" style="width: 100%">
+      <el-table class="table-view" :data="guardList" :max-height="tableHeight">
         <el-table-column align="center" type="index" width="100" label="序号">
         </el-table-column>
-        <el-table-column align="center" prop="threshold" label="阈值(分钟)">
+        <el-table-column align="center" prop="state" label="开启防盗">
         </el-table-column>
-        <el-table-column align="center" prop="state" label="状态">
+        <el-table-column align="center" prop="startTime" label="防盗开始时间">
+        </el-table-column>
+        <el-table-column align="center" prop="endTime" label="防盗结束时间">
         </el-table-column>
         <el-table-column align="center" prop=" createTime" label="创建时间">
         </el-table-column>
@@ -23,30 +25,34 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- <my-table ref="mytable" :header="headerList" :tableData="tableData" :showOperation="true" @edit="edit" @del="del"></my-table> -->
       <pagination :page-size='10' @handleJumpPage="handleJumpPage" :current-page='currPage' :total='total'></pagination>
+      <el-dialog :visible="isAdd||isEdit" :title="isAdd?'新增防盗时间':'修改防盗时间'" center width="25%" @close="clearForm">
+        <el-form v-model="form">
+          <el-form-item label="开始时间" label-width="100px">
+            <el-time-picker value-format="HH:mm:ss" v-model="form.startTime" class="time-picker" placeholder="选择时间"></el-time-picker>
+          </el-form-item>
+          <el-form-item label="结束时间" label-width="100px">
+            <el-time-picker value-format="HH:mm:ss" v-model="form.endTime" class="time-picker" placeholder="选择时间"></el-time-picker>
+          </el-form-item>
+          <el-form-item label="开启防盗" label-width="100px">
+            <el-select v-model="form.state">
+              <el-option label="是" value="是"></el-option>
+              <el-option label="否" value="否"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="clearForm">取消</el-button>
+          <el-button type="primary" @click="isAdd?add():update()">提交</el-button>
+        </div>
+      </el-dialog>
     </div>
-    <el-dialog :visible="isAdd||isEdit" :title="isAdd?'新增阈值':'修改阈值'" center width="25%" @close="clearForm">
-      <el-form v-model="form">
-        <el-form-item label="阈值" label-width="100px">
-          <el-input-number controls-position="right" v-model="form.threshold" :min="0" :max="60"></el-input-number>
-        </el-form-item>
-        <el-form-item label="状态" label-width="100px">
-          <el-select v-model="form.state">
-            <el-option label="停用" value="0"></el-option>
-            <el-option label="启用" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="clearForm">取消</el-button>
-        <el-button type="primary" @click="isAdd?add():update()">提交</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getPageQuery, addThreshold, editThreshold, delThreshold } from '@/api/threshold'
+import { getPageQuery, addGuard, editGuard, delGuard } from '@/api/guard'
 import Carloader from '@/components/loader'
 import MyTable from '@/components/Mytable'
 import Pagination from '@/components/pagination'
@@ -57,14 +63,16 @@ export default {
   },
   data() {
     return {
+      tableHeight: document.documentElement.clientHeight - 210 || document.body.clientHeight - 210,
       listLoading: true, // 列表加载状态
-      headerList: ['序号', '阈值(分钟)', '状态', '创建时间'],
-      // tableData: [],
-      thresholdList: [],
+      headerList: ['序号', '开启防盗', '防盗开始时间', '防盗结束时间', '创建时间'],
+      tableData: [],
+      guardList: [],
       isAdd: false, // 是否新增
       isEdit: false, // 是否修改
       form: {
-        threshold: '',
+        startTime: '',
+        endTime: '',
         state: ''
       },
       total: 1,
@@ -74,6 +82,12 @@ export default {
   created() {
     this.fetchData()
   },
+  mounted() {
+    const that = this;
+    window.onresize = function () {
+      that.tableHeight = document.documentElement.clientHeight - 210 || document.body.clientHeight - 210
+    }
+  },
   methods: {
     // 获取信息
     fetchData() {
@@ -81,15 +95,10 @@ export default {
       // 获取定位信息
       getPageQuery({ pageNo: this.currPage }).then(response => {
         if (response.data) {
-          this.thresholdList = JSON.parse(JSON.stringify(response.data.rows))
-          // this.tableData = []
-          this.thresholdList.map((item, index) => {
-            if (item.state === '0') {
-              item.state = '停用'
-            } else if (item.state === '1') {
-              item.state = '启用'
-            }
-            // this.tableData.push(item)
+          this.guardList = JSON.parse(JSON.stringify(response.data.rows))
+          this.tableData = []
+          response.data.rows.map((item, index) => {
+            this.tableData.push(item)
           })
           this.total = response.data.total
           this.listLoading = false
@@ -98,15 +107,14 @@ export default {
     },
     // 点击新增提交
     add() {
-      addThreshold(this.form).then(response => {
+      addGuard(this.form).then(response => {
         this.clearForm()
         this.fetchData()
       })
     },
     // 点击修改提交
     update() {
-      console.log('this.update')
-      editThreshold(this.form).then(response => {
+      editGuard(this.form).then(response => {
         this.clearForm()
         this.fetchData()
       })
@@ -114,17 +122,11 @@ export default {
     // 点击修改
     edit(data) {
       this.isEdit = true
-      this.form.id = data.id
-      this.form.threshold = data.threshold
-      if (data.state === '停用') {
-        this.form.state = '0'
-      } else {
-        this.form.state = '1'
-      }
+      this.form = Object.assign({}, data)
     },
     // 点击删除
     del(id) {
-      delThreshold(id).then(response => {
+      delGuard(id).then(response => {
         if (response.status === 200) {
           this.$message({
             type: 'success',
@@ -142,7 +144,7 @@ export default {
       if (this.isEdit) {
         this.isEdit = false
       }
-      this.form = { threshold: '', state: '' }
+      this.form = { startTime: '', endTime: '', state: '' }
     },
     // 分页组件传入当前页进行分页查询
     handleJumpPage(currPage) {
@@ -154,7 +156,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.app-container{
+  padding: 20px 20px 0 20px;
+}
 .el-select {
-  width: 200px;
+  width: 220px;
 }
 </style>

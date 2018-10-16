@@ -1,12 +1,9 @@
 <template>
   <div class="table-view">
-    <div class="table-container">
+    <div v-bind:style="{paddingRight:isShowOperation?'95px':0}" class="table-container">
       <table id="vmssTable" class="vmss-table">
         <thead class="vmss-thead">
           <tr class="vmss-tr">
-            <!-- <th class="vmss-th">
-              <el-checkbox></el-checkbox>
-            </th> -->
             <th v-if="headerList.length == 0" class="vmss-th">暂无表头</th>
             <th v-for="(title,index) in headerList" v-else :key="index" class="vmss-th">{{ title }}</th>
             <th v-if="isShowOperation" class="vmss-th operation-th">操作
@@ -16,9 +13,6 @@
         <tbody class="vmss-tbody">
           <div v-if="tableList.length == 0" class="empty-tableData">暂无数据</div>
           <tr v-for="(item,index) in tableList" v-else :key="index" class="vmss-tr">
-            <!-- <td class="vmss-td">
-              <el-checkbox></el-checkbox>
-            </td> -->
             <td v-for="(key,ind) in item" :key="ind" class="vmss-td">{{ key }}</td>
             <td v-if="isShowOperation" class="vmss-td operation-td">
               <el-button type="text" size="mini" @click="edit(index)">修改</el-button>
@@ -115,18 +109,19 @@ export default {
   padding: 17px;
 }
 .operation-th {
+  border: none;
   width: 100px;
   position: fixed;
-  right: 10px;
+  right: 11px;
   background: rgba(102, 179, 179, 1);
 }
 .operation-td {
   width: 100px;
   position: fixed;
-  right: 10px;
+  right: 11px;
   background: #fff;
   &:last-child {
-    padding: 13px;
+    padding: 11px;
   }
 }
 .vmss-td {

@@ -10,7 +10,9 @@
                 <span>车牌号</span>
               </div>
               <div class="search-vehicle">
-                <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" trigger-on-focus v-model="searchPlateNumber" placeholder="输入车牌号搜索"></el-autocomplete>
+                <el-select v-model="searchPlateNumber" clearable filterable remote placeholder="请输入关键词">
+                  <el-option v-for="item in vehiclearray" :key="item.id" :label="item.plateNumber" :value="item.id"></el-option>
+                </el-select>
               </div>
             </div>
             <div class="conf-form-row">
@@ -117,7 +119,7 @@ export default {
       this.$refs.map.map.clearOverlays()
       let isExistence = false
       this.vehiclearray.forEach(vehicle => {
-        if (this.searchPlateNumber === vehicle.plateNumber) {
+        if (this.searchPlateNumber === vehicle.id) {
           this.searchId = vehicle.id
           isExistence = true
         }
@@ -176,17 +178,6 @@ export default {
       window.clearTimeout(this.$refs.map.timer)
       this.$refs.map.map.clearOverlays()
       this.$refs.map.map.centerAndZoom(new BMap.Point(104.085145, 30.642301), 15) // 初始化地图,设置中心点坐标和地图级别
-    },
-    // 输入车牌号时获取相似车牌号提供输入建议
-    handleFetchNumber(querystring, callback) {
-      const results = []
-      this.vehiclearray.forEach(vehicle => {
-        const reg = new RegExp(querystring.toLowerCase())
-        if (vehicle.plateNumber.toLowerCase().match(reg) !== null) {
-          results.push(vehicle)
-        }
-      })
-      callback(results)
     },
     // 点击建议项里的车牌号
     handleSelectNumber(data) {
