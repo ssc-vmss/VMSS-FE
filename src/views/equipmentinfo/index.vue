@@ -63,7 +63,7 @@
 
     <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
     <!-- add from -->
-    <el-dialog title="添加车载设备信息" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
+    <el-dialog :title="dialogTitle+'车载设备信息'" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
@@ -124,6 +124,7 @@ import { getInfoList as getVehicleList } from '@/api/vehicle'
 export default {
   data() {
     return {
+      dialogTitle:'添加',
       tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
       list: null,
       listLoading: true,
@@ -204,6 +205,7 @@ export default {
     },
     closeDialog(formName) {
       this.editact = false;
+      this.dialogTitle="添加";
     },
     resetForm() {
       this.form = {
@@ -248,6 +250,7 @@ export default {
       })
     },
     addData(formName) {
+      this.searchType=null;
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.saveData();
@@ -264,6 +267,7 @@ export default {
       this.form=Object.assign({},data);
       this.dialogFormVisible=true;
       this.editact=true;
+      this.dialogTitle="修改";
     },
     saveData(){
       let {id,unitType,manufactor,simNo,type,vehicleId}=this.form;

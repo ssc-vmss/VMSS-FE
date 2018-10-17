@@ -194,6 +194,23 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/statistical',
+    component: Layout,
+    name: 'statistical',
+    meta: {
+      title: '统计分析',
+      icon: 'nested'
+    },
+    children: [
+      {
+        path: 'accident',
+        component: () => import('@/views/statisticals/accident/index'),
+        name: 'accident',
+        meta: { title: '事故统计' }
+      }
+    ]
+  },
+  {
     path: '/',
     component: Layout,
     redirect: '/warning',

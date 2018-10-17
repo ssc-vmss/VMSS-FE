@@ -12,6 +12,7 @@
       </div>
     </el-row>
     <el-table
+      :max-height="tableHeight"
       v-loading="listLoading"
       :data="list"
       element-loading-text="Loading"
@@ -117,7 +118,7 @@
 
     <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
     <!-- add from -->
-    <el-dialog title="添加事故信息" :visible.sync="dialogFormVisible" width="800px" @close="closeDialog('ruleForm')">
+    <el-dialog :title="dialogTitle+'事故信息'" :visible.sync="dialogFormVisible" width="800px" @close="closeDialog('ruleForm')">
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
@@ -161,20 +162,20 @@
           <el-col :span="12">
             <el-form-item label="事故程度" prop="degree" :label-width="formLabelWidth">
               <el-select v-model="form.degree" placeholder="请选择事故程度">
-                <el-option label="轻微事故" value="0"></el-option>
-                <el-option label="一般事故" value="1"></el-option>
-                <el-option label="重大事故" value="2"></el-option>
-                <el-option label="特大事故" value="3"></el-option>
+                <el-option label="轻微事故" :value="0"></el-option>
+                <el-option label="一般事故" :value="1"></el-option>
+                <el-option label="重大事故" :value="2"></el-option>
+                <el-option label="特大事故" :value="3"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="事故责任" prop="accidentLiability" :label-width="formLabelWidth">
               <el-select v-model="form.accidentLiability" placeholder="请选择事故责任">
-                <el-option label="无责" value="0"></el-option>
-                <el-option label="次责" value="1"></el-option>
-                <el-option label="同则" value="2"></el-option>
-                <el-option label="全责" value="3"></el-option>
+                <el-option label="无责" :value="0"></el-option>
+                <el-option label="次责" :value="1"></el-option>
+                <el-option label="同责" :value="2"></el-option>
+                <el-option label="全责" :value="3"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -218,24 +219,28 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="损失金额" prop="lossAmount" :label-width="formLabelWidth">
-              <el-input v-model="form.lossAmount" auto-complete="off"></el-input>
+              <!-- <el-input v-model="form.lossAmount" auto-complete="off"></el-input> -->
+              <el-input-number v-model="form.lossAmount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="我方赔偿金额" prop="myAmount" :label-width="formLabelWidth">
-              <el-input v-model="form.myAmount" auto-complete="off"></el-input>
+              <!-- <el-input v-model="form.myAmount" auto-complete="off"></el-input> -->
+              <el-input-number v-model="form.myAmount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="对方赔偿金额" prop="otherAmount" :label-width="formLabelWidth">
-              <el-input v-model="form.otherAmount" auto-complete="off"></el-input>
+              <!-- <el-input v-model="form.otherAmount" auto-complete="off"></el-input> -->
+              <el-input-number v-model="form.otherAmount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="保险公司赔偿金额" prop="insuranceAmount" :label-width="formLabelWidth">
-              <el-input v-model="form.insuranceAmount" auto-complete="off"></el-input>
+              <!-- <el-input v-model="form.insuranceAmount" auto-complete="off"></el-input> -->
+              <el-input-number v-model="form.insuranceAmount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -248,8 +253,8 @@
           <el-col :span="12">
             <el-form-item label="事故类型" prop="type" :label-width="formLabelWidth">
               <el-select v-model="form.type" placeholder="请选择事故责任">
-                <el-option label="未结案" value="0"></el-option>
-                <el-option label="已结案" value="1"></el-option>
+                <el-option label="未结案" :value="0"></el-option>
+                <el-option label="已结案" :value="1"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -272,7 +277,9 @@ import { getInfoList as getDriverList } from '@/api/driver'
 export default {
   data() {
     return {
-      list: null,
+      dialogTitle:'添加',
+      tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
+      list: [],
       listLoading: true,
       searchType:'1',
       searchTxt:'',
@@ -298,7 +305,7 @@ export default {
         reachAgreement:'',
         respConfirm:'',
         seriousNumber: '',
-        type: '0',
+        type: 0,
         vehicleId:'',
         vehiclePlateNumber:''
       },
@@ -326,6 +333,15 @@ export default {
   },
   created() {
     this.fetchData()
+  },
+  mounted(){
+    const that=this;
+    window.onresize=function(){
+      that.tableHeight=document.documentElement.clientHeight-230||document.body.clientHeight-230
+    }
+  },
+  beforeDestroy(){
+    window.onresize="";
   },
   methods: {
     getVehicles(query){
@@ -373,7 +389,7 @@ export default {
           return '次责';
           break;
         case 2:
-          return '同则';
+          return '同责';
           break;
         case 3:
           return '全责';
@@ -400,6 +416,7 @@ export default {
     },
     closeDialog(formName) {
       this.editact = false;
+      this.dialogTitle="添加";
     },
     resetForm() {
       this.form = {
@@ -420,7 +437,7 @@ export default {
         reachAgreement:'',
         respConfirm:'',
         seriousNumber: '',
-        type: '0',
+        type: 0,
         vehicleId:'',
         vehiclePlateNumber:''
       }
@@ -459,6 +476,7 @@ export default {
       })
     },
     addData(formName) {
+      this.searchType=null;
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.saveData();
@@ -471,13 +489,14 @@ export default {
     toEdit(data){
       this.vehicles=[{plateNumber:data.vehiclePlateNumber,id:data.vehicleId}];
       this.drivers=[{userName:data.driverName,id:data.driverId}];
-      data.accidentLiability+='';
-      data.degree+='';
-      data.type=data.type+'';
+      // data.accidentLiability+='';
+      // data.degree+='';
+      // data.type=data.type+'';
       // this.form=data;
       this.form=Object.assign({},data);
       this.dialogFormVisible=true;
       this.editact=true;
+      this.dialogTitle="修改";
     },
     saveData(){
       let data=this.form;

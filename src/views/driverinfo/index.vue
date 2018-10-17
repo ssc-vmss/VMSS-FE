@@ -37,10 +37,10 @@
       border
       fit
       :max-height="tableHeight">
-      <el-table-column type="expand">
+      <!-- <el-table-column type="expand">
         <template slot-scope="scope">
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column align="center" label="姓名">
         <template slot-scope="scope">
           {{ scope.row.userName }}
@@ -68,7 +68,6 @@
       </el-table-column>
       <el-table-column label="入职时间" align="center">
         <template slot-scope="scope">
-          <!-- <i class="el-icon-time"/> -->
           <span>{{ scope.row.startTime }}</span>
         </template>
       </el-table-column>
@@ -83,7 +82,7 @@
 
     <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
     <!-- add from -->
-    <el-dialog title="添加驾驶员信息" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
+    <el-dialog :title="dialogTitle+'驾驶员信息'" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
@@ -138,7 +137,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="入职时间" prop="startTime" :label-width="formLabelWidth">
-              <el-date-picker  v-model="form.startTime" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" style="width:180px"></el-date-picker>
+              <el-date-picker  v-model="form.startTime" type="date" placeholder="选择日期" value-format="yyyy-MM-dd" :picker-options="pickerOptions" style="width:180px"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -184,6 +183,7 @@ export default {
       }
     }
     return {
+      dialogTitle:'添加',
       tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
       list: null,
       listLoading: true,
@@ -195,6 +195,11 @@ export default {
       options:[],
       optionsLoading:false,
       editUserName:'',
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      },
       form: {
         userName: '',
         sex: '',
@@ -298,6 +303,7 @@ export default {
     },
     closeDialog(formName){
       this.editact=false;
+      this.dialogTitle="添加";
       // this.resetForm();
       this.form.userName=this.editUserName;
       this.$refs[formName].resetFields();
@@ -344,6 +350,7 @@ export default {
       })
     },
     addData(formName){
+      this.searchType=null;
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.saveData();
@@ -367,6 +374,7 @@ export default {
         this.options=[{id:data.userId,name:data.userName}]
         this.dialogFormVisible=true;
         this.editact=true;
+        this.dialogTitle="修改";
       })
     },
     saveData(){

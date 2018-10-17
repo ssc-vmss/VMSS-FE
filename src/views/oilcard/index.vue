@@ -51,7 +51,7 @@
 
     <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
     <!-- add from -->
-    <el-dialog title="添加加油卡信息" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
+    <el-dialog :title="dialogTitle+'加油卡信息'" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
       <el-form :model="form" :rules="rules" ref="ruleForm">
         <el-row>
           <el-col :span="12">
@@ -68,12 +68,14 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="总计金额" prop="totalAmount" :label-width="formLabelWidth">
-              <el-input type="number" v-model.number="form.totalAmount" auto-complete="off"></el-input>
+              <!-- <el-input type="number" v-model.number="form.totalAmount" auto-complete="off"></el-input> -->
+              <el-input-number v-model="form.totalAmount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="剩余余额" prop="remainAmount" :label-width="formLabelWidth">
-              <el-input type="number" v-model="form.remainAmount" auto-complete="off"></el-input>
+              <!-- <el-input type="number" v-model="form.remainAmount" auto-complete="off"></el-input> -->
+              <el-input-number v-model="form.remainAmount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -117,6 +119,8 @@ export default {
       }
     };
     return {
+      dialogTitle:'添加',
+      tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
       list: null,
       listLoading: true,
       searchType:'1',
@@ -160,6 +164,15 @@ export default {
   created() {
     this.fetchData()
   },
+  mounted(){
+    const that=this;
+    window.onresize=function(){
+      that.tableHeight=document.documentElement.clientHeight-230||document.body.clientHeight-230
+    }
+  },
+  beforeDestroy(){
+    window.onresize="";
+  },
   methods: {
     getVehicles(query){
       if(query!=''){
@@ -188,6 +201,7 @@ export default {
     },
     closeDialog(formName) {
       this.editact = false;
+      this.dialogTitle="添加";
     },
     resetForm() {
       this.form = {
@@ -230,6 +244,7 @@ export default {
       })
     },
     addData(formName) {
+      this.searchType=null;
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.saveData();
@@ -241,11 +256,12 @@ export default {
     },
     toEdit(data){
       this.vehicles=[{plateNumber:data.plateNumber,id:data.vehicleId}]
-      data.type=data.type+'';
+      // data.type=data.type+'';
       // this.form=data;
       this.form=Object.assign({},data);
       this.dialogFormVisible=true;
       this.editact=true;
+      this.dialogTitle="修改";
     },
     saveData(){
       let data=this.form;

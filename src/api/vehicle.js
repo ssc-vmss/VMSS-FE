@@ -32,6 +32,22 @@ export function delInfo(params) {
   })
 }
 
+export function openPickproof(params) {
+  return request({
+    url: '/admin/vehicle/openVehiclePickproof',
+    method: 'put',
+    params
+  })
+}
+
+export function closePickproof(params) {
+  return request({
+    url: '/admin/vehicle/closeVehiclePickproof',
+    method: 'put',
+    params
+  })
+}
+
 export function getEquipmentList(params) {
   return request({
     url: '/admin/vehicleEquipment/pageQuery',

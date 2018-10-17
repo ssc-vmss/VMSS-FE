@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "axios": "0.18.0",
-    "echarts": "^4.2.0-rc.1",
+    "echarts": "^4.2.0-rc.2",
     "element-ui": "2.4.6",
     "js-cookie": "2.2.0",
     "normalize.css": "7.0.0",
@@ -46,6 +46,7 @@
     "friendly-errors-webpack-plugin": "1.7.0",
     "html-webpack-plugin": "4.0.0-alpha",
     "jquery": "^3.3.1",
+    "js-base64": "^2.4.9",
     "mini-css-extract-plugin": "0.4.1",
     "node-notifier": "5.2.1",
     "node-sass": "^4.7.2",
