@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function getOilRecord(params) {
+export function getInfoList(params) {
   return request({
     url: '/admin/oilRecord/pageQuery',
     method: 'get',

@@ -117,8 +117,9 @@
 </template>
 
 <script>
-import { getOilRecord, addInfo, editInfo, delInfo } from '@/api/oilrecord'
-import { getInfoList } from '@/api/vehicle'
+import { getInfoList as getOilRecord, addInfo, editInfo, delInfo } from '@/api/oilrecord'
+import { getInfoList as getVehicleList } from '@/api/vehicle'
+import { getInfoList as getDriverList } from '@/api/driver'
 
 export default {
   data() {
@@ -180,15 +181,14 @@ export default {
     }
   },
   created() {
-    this.fetchVehicle()
+    this.fetchDataList()
     this.fetchData()
   },
   methods: {
     // 获取车辆信息
-    fetchVehicle() {
-      getInfoList({ pageNo: 1, pageSize: 1000 }).then(response => {
+    fetchDataList() {
+      getVehicleList({ pageNo: 1, pageSize: 1000 }).then(response => {
         this.vehiclearray = response.data.rows
-        this.total = response.data.total
       })
     },
     handleCreate() {
