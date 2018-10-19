@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getInfoList(params) {
   return request({
-    url: '/admin/oilRecord/pageQuery',
+    url: '/admin/returnTeam/pageQuery',
     method: 'get',
     params
   })
@@ -10,23 +10,15 @@ export function getInfoList(params) {
 
 export function addInfo(data) {
   return request({
-    url: '/admin/oilRecord',
+    url: '/admin/returnTeamAll',
     method: 'post',
-    data
-  })
-}
-
-export function editInfo(data) {
-  return request({
-    url: '/admin/oilRecord',
-    method: 'put',
     data
   })
 }
 
 export function delInfo(params) {
   return request({
-    url: '/admin/oilRecord/deleteOilRecord',
+    url: '/admin/returnTeam/deleteReturnTeam',
     method: 'put',
     params
   })

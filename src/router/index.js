@@ -81,9 +81,9 @@ export const constantRouterMap = [
         meta: { title: '事故信息' }
       },
       {
-        path: 'oilcard',
-        name: 'oilcard',
-        component: () => import('@/views/oilcard/index'),
+        path: 'fuelcard',
+        name: 'fuelcard',
+        component: () => import('@/views/fuelcard/index'),
         meta: { title: '加油卡信息' }
       },
       {
@@ -97,6 +97,12 @@ export const constantRouterMap = [
         name: 'oilrecord',
         component: () => import('@/views/oilrecord/index'),
         meta: { title: '加油记录' }
+      },
+      {
+        path: 'returnteam',
+        name: 'returnteam',
+        component: () => import('@/views/returnteam/index'),
+        meta: { title: '归队记录' }
       }
     ]
   },

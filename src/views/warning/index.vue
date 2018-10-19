@@ -22,7 +22,7 @@
         </el-form>
       </div>
       <div class="bottom-box">
-        <el-table :data="warnList" style="width: 100%">
+        <el-table :max-height="tableHeight" :data="warnList" style="width: 100%">
           <el-table-column align="center" type="index" width="100" label="序号">
           </el-table-column>
           <el-table-column align="center" prop="plateNumber" width="150" label="车牌号码">
@@ -35,13 +35,14 @@
           </el-table-column>
           <el-table-column v-if="type!=='3'" align="center" prop="location" width="200" label="点位(经度,纬度)">
           </el-table-column>
-          <el-table-column v-if="type!=='3'" align="center" prop="createTime" width="200" label="创建时间">
+          <el-table-column v-if="type!=='3'" align="center" prop="createTime" width="200" label="报警时间">
           </el-table-column>
           <el-table-column v-if="type==='3'" align="center" prop="startTime" width="200" label="违规开始时间">
           </el-table-column>
           <el-table-column v-if="type==='3'" align="center" prop="endTime" width="200" label="违规结束时间">
           </el-table-column>
         </el-table>
+        <!-- <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination> -->
         <pagination :page-size="10" @handleJumpPage="handleJumpPage" :current-page="currPage" :total="total"></pagination>
       </div>
     </div>
@@ -60,6 +61,7 @@ export default {
   },
   data() {
     return {
+      tableHeight: document.documentElement.clientHeight - 230 || document.body.clientHeight - 230,
       form: {
         driverName: '',
         plateNumber: '',
@@ -68,36 +70,37 @@ export default {
       },
       listLoading: true, // 列表加载状态
       warnList: [],
-      total: 1,
       currPage: 1,
+      page: 1,
+      pageSize: 10,
+      total: 0,
       type: false
     }
   },
   created() {
     this.fetchData()
   },
+  mounted() {
+    const that = this;
+    window.onresize = function () {
+      that.tableHeight = document.documentElement.clientHeight - 230 || document.body.clientHeight - 230
+    }
+  },
   methods: {
-    // 获取信息s
+    // 获取信息
     fetchData() {
       this.listLoading = true
       // 获取定位信息
       getPageQuery(this.form).then(response => {
+        this.warnList = []
         if (response.data.total) {
-          this.warnList = []
           this.type = this.form.type
           response.data.rows.map((item, index) => {
             this.warnList.push(item)
           })
-          this.total = response.data.total
-          this.listLoading = false
-        } else {
-          this.$message({
-            type: 'warning',
-            message: '该查询条件下无数据'
-          })
-          this.warnList = []
-          this.listLoading = false
         }
+        this.total = response.data.total
+        this.listLoading = false
       })
     },
     handleChangeType(val) {
@@ -110,6 +113,7 @@ export default {
       } else {
         this.param = { pageNo: this.currPage }
       }
+      this.currPage = 1
       this.fetchData()
     },
     // 点击清空
@@ -120,6 +124,9 @@ export default {
     handleJumpPage(currPage) {
       this.currPage = currPage
       this.fetchData()
+    },
+    handleCurrentChange(val) {
+      this.page = val
     }
   }
 }

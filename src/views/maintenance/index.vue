@@ -29,7 +29,7 @@
           {{ scope.row.enterpriseName }}
         </template>
       </el-table-column>
-      <el-table-column label="车辆维修状态" align="center">
+      <el-table-column label="维修状态" align="center">
         <template slot-scope="scope">
           {{ statusName(scope.row.status) }}
         </template>
@@ -79,7 +79,7 @@
           <span>{{ scope.row.checkReporterName }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="车辆验收结果" align="center">
+      <el-table-column label="车辆验收结果" width="120" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.checkResult }}</span>
         </template>
@@ -456,8 +456,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.toptools{
-  margin-bottom: 20px;
-}
 </style>
 

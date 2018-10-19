@@ -4,7 +4,7 @@
       <div class="conf-box">
         <h4 class="conf-h">未监控车辆</h4>
         <div class="conf-form">
-          <el-tabs v-model="tabIndex">
+          <el-tabs v-model="tabIndex" @tab-click="handleChangeTab" class="tab">
             <el-tab-pane label="按车牌号码">
               <div v-if="!unMonitorList.length" class="empty-box">
                 无未监控车辆
@@ -73,7 +73,7 @@
           </el-table-column>
           <el-table-column align="center" prop="driverName" width="150" label="驾驶员姓名">
           </el-table-column>
-          <el-table-column align="center" prop="location" width="200" label="定位时间">
+          <el-table-column align="center" prop="createTime" width="200" label="定位时间">
           </el-table-column>
           <el-table-column align="center" prop="location" label="点位(经度,纬度)">
           </el-table-column>
@@ -91,7 +91,7 @@ import Pagination from '@/components/pagination'
 import BMapComponent from './BMapComponent'
 import { getInfoList } from '@/api/vehicle'
 import { getRecordList } from '@/api/record'
-import { getPageQuery, getNewPointList } from '@/api/points'
+import { getNewPointList } from '@/api/points'
 
 export default {
   components: {
@@ -122,8 +122,8 @@ export default {
       },
       isMapView: true, // 显示方式
       isshowleftbox: true,
-      oldPointsList: null,
-      newPointsList: null,
+      oldPointsList: [],
+      newPointsList: [],
       isUnMonitorindeterminate: true,
       isMonitorindeterminate: true,
       isUnMonitorCheckedAll: false,
@@ -140,8 +140,9 @@ export default {
       monitoredIdsArray: [], // 已监控车辆id数组
       count: 0,
       interval: null, // 定时器
-      listLoading: true // 列表加载状态
-
+      listLoading: true, // 列表加载状态
+      param: {},
+      paramString: ''
     }
   },
   created() {
@@ -197,91 +198,108 @@ export default {
     },
     // 将已监控车辆id已选的数组刷新点位
     getMonitoredPoint() {
-      let paramString = ''
-      let param = null
+      // let paramString = ''
+      // let param = null
+      this.paramString = ''
       this.monitorList.forEach((vehicle, index) => {
         if (index === this.monitorList.length - 1) {
-          paramString += vehicle.id
+          this.paramString += vehicle.id
         } else {
-          paramString += `${vehicle.id},`
+          this.paramString += `${vehicle.id},`
         }
       })
       if (this.tabIndex === '1') {
-        param = { state: paramString }
+        this.param = { state: this.paramString }
       } else {
-        param = { vehicleId: paramString }
+        this.param = { vehicleId: this.paramString }
       }
-      this.getNewPoint(param)
-      this.interval = setInterval(() => {
-        this.getNewPoint(param)
-        console.log('this.count', this.count++)
-      }, 5000)
+      this.getNewPoint(this.param)
+      if (this.total) {
+        this.interval = setInterval(() => {
+          this.getNewPoint(this.param)
+          console.log('this.count', this.count++)
+        }, 5000)
+      }
     },
     // 获取最新点位列表
     getNewPoint(param) {
       getNewPointList(param).then(response => {
         this.newPointsList = response.data.rows
         this.locationList = JSON.parse(JSON.stringify(response.data.rows))
-        this.locationList.forEach(location => {
-          if (location.state === '0') {
-            location.state = '离线'
-          } else if (location.state === '1') {
-            location.state = '执行任务中'
-          } else if (location.state === '2') {
-            location.state = '警告'
-          } else if (location.state === '3') {
-            location.state = '空闲'
-          }
-        })
-        this.total = response.data.total
-        // 设置地图的中心点
-        this.$refs.map.setZoom(this.newPointsList)
-        var allOverlay = this.$refs.map.map.getOverlays()
-        // console.log(allOverlay)
-        const pointsList = JSON.parse(JSON.stringify(this.newPointsList))
-        if (this.count > 0) {
-          for (var j = 0; j < this.oldPointsList.length;) {
-            var flag = true
-            for (var k = 0; k < this.newPointsList.length; k++) {
-              // 同车同点位
-              if (this.oldPointsList[j].vehicleId === this.newPointsList[k].vehicleId) {
-                flag = false
-                if (this.oldPointsList[j].location === this.newPointsList[k].location) {
-                  this.newPointsList.splice(k, 1)
-                } else {
-                  for (var m = 0; m < allOverlay.length; m++) {
-                    if (`${allOverlay[m].point.lng}` === this.oldPointsList[j].lng &&
-                      `${allOverlay[m].point.lat}` === this.oldPointsList[j].lat) {
-                      this.$refs.map.map.removeOverlay(allOverlay[m])
+        if (this.locationList.length === 0) {
+          clearInterval(this.interval)
+          this.$refs.map.map.clearOverlays()
+        } else {
+          this.locationList.forEach(location => {
+            if (location.state === '0') {
+              location.state = '离线'
+            } else if (location.state === '1') {
+              location.state = '执行任务中'
+            } else if (location.state === '2') {
+              location.state = '警告'
+            } else if (location.state === '3') {
+              location.state = '空闲'
+            }
+          })
+          this.total = response.data.total
+          // 设置地图的中心点
+          this.$refs.map.setZoom(this.newPointsList)
+          console.log('param.action', param.action)
+          // if (param.action) {
+            var allOverlay = this.$refs.map.map.getOverlays()
+            console.log("allOverlay", allOverlay.length)
+            console.log("this.oldPointsList", this.oldPointsList)
+            const pointsList = JSON.parse(JSON.stringify(this.newPointsList))
+            if (this.count > 0) {
+              for (var j = 0; j < this.oldPointsList.length;) {
+                var flag = true
+                for (var k = 0; k < this.newPointsList.length; k++) {
+                  // 同车同点位
+                  if (this.oldPointsList[j].vehicleId === this.newPointsList[k].vehicleId) {
+                    flag = false
+                    if (this.oldPointsList[j].location === this.newPointsList[k].location) {
+                      this.newPointsList.splice(k, 1)
+                    } else {
+                      for (var m = 0; m < allOverlay.length; m++) {
+                        if (`${allOverlay[m].point.lng}` === this.oldPointsList[j].lng &&
+                          `${allOverlay[m].point.lat}` === this.oldPointsList[j].lat) {
+                          this.$refs.map.map.removeOverlay(allOverlay[m])
+                        }
+                      }
                     }
+                    break
+                  } else {
+                    flag = true
                   }
                 }
-                break
-              } else {
-                flag = true
+                if (flag) {
+                  this.$refs.map.map.removeOverlay(allOverlay[j])
+                }
+                j++
               }
             }
-            if (flag) {
-              this.$refs.map.map.removeOverlay(allOverlay[j])
-            }
-            j++
-          }
+            this.oldPointsList = pointsList
+          // }
+          // 添加覆盖物到地图
+          this.$refs.map.addMarker(this.newPointsList)
         }
-        this.oldPointsList = pointsList
-        // 添加覆盖物到地图
-        this.$refs.map.addMarker(this.newPointsList)
       })
     },
-    // 输入车牌号时获取相似车牌号提供输入建议
-    handleFetchNumber(querystring, callback) {
-      const results = []
-      this.unMonitorList.forEach(vehicle => {
-        const reg = new RegExp(querystring.toLowerCase())
-        if (vehicle.plateNumber.toLowerCase().match(reg) !== null) {
-          results.push(vehicle)
-        }
-      })
-      callback(results)
+    //  切换标签页
+    handleChangeTab() {
+      if (this.tabIndex === '0') {
+        console.log(this.param)
+        this.oldPointsList = []
+        clearInterval(this.interval)
+        // this.oldPointsList = []
+        // this.newPointsList = []
+        // this.monitorIds = []
+        // this.monitorList = []
+        this.$refs.map.map.clearOverlays()
+        setTimeout(() => {
+          this.getMonitoredPoint()
+        }, 100)
+      }
     },
     // 点击建议项里的车牌号
     handleSelectNumber(data) {
@@ -299,18 +317,18 @@ export default {
     // 点击监控
     handleMonitor(index) {
       clearInterval(this.interval)
-      let param = {}
-      let paramString = ''
+      this.param = { action: '1' }
+      // let paramString = ''
+      this.paramString = ''
       if (this.tabIndex === '1') {
         this.states.map((state, index) => {
           if (index === this.states.length - 1) {
-            paramString += state
+            this.paramString += state
           } else {
-            paramString += `${state},`
+            this.paramString += `${state},`
           }
         })
-        param = { state: paramString }
-        // }
+        this.param.state = this.paramString
       } else {
         if (this.unMonitorIds.indexOf(this.searchVehicle) === -1) {
           this.unMonitorIds.push(this.searchVehicle)
@@ -325,19 +343,21 @@ export default {
         })
         this.monitorList.map((vehicle, index) => {
           if (index === this.monitorList.length - 1) {
-            paramString += vehicle.id
+            this.paramString += vehicle.id
           } else {
-            paramString += `${vehicle.id},`
+            this.paramString += `${vehicle.id},`
           }
         })
-        param = { vehicleId: paramString }
-        this.getNewPoint(param)
-        this.interval = setInterval(() => {
-          console.log('this.count', this.count++)
-          this.getNewPoint(param)
-        }, 5000)
-        this.monitorIds = []
+        this.param.vehicleId = this.paramString
       }
+      console.log(123)
+      this.getNewPoint(this.param)
+      this.interval = setInterval(() => {
+        delete this.param.action
+        console.log('this.count', this.count++)
+        this.getNewPoint(this.param)
+      }, 5000)
+      this.monitorIds = []
     },
     // 点击结束
     handleFinish() {
@@ -350,31 +370,35 @@ export default {
           }
         })
       })
-      let param = {}
+      this.param = { action: '1' }
       if (this.monitorList.length) {
-        let paramString = ''
+        // let paramString = ''
+        this.paramString = ''
         this.monitorList.forEach((vehicle, index) => {
           if (index === this.monitorList.length - 1) {
-            paramString += vehicle.id
+            this.paramString += vehicle.id
           } else {
-            paramString += `${vehicle.id},`
+            this.paramString += `${vehicle.id},`
           }
         })
         if (this.tabIndex === '1') {
-          param = { state: paramString }
+          this.param.state = this.paramString
         } else {
-          param = { vehicleId: paramString }
+          this.param.vehicleId = this.paramString
         }
-        this.getNewPoint(param)
       } else {
-        param = { vehicleId: 'NA' }
+        this.param.vehicleId = 'NA'
         this.$refs.map.map.clearOverlays()
+        clearInterval(this.interval)
       }
-      this.getNewPoint(param)
-      this.interval = setInterval(() => {
-        console.log('this.count', this.count++)
-        this.getNewPoint(param)
-      }, 5000)
+      this.getNewPoint(this.param)
+      if (this.monitorList.length) {
+        this.interval = setInterval(() => {
+          delete this.param.action
+          console.log('this.count', this.count++)
+          this.getNewPoint(this.param)
+        }, 5000)
+      }
       this.unMonitorIds = []
       this.monitorIds = []
     },
@@ -443,5 +467,8 @@ export default {
 .el-select {
   padding: 0 5px;
   width: 80%;
+}
+.tab{
+  padding: 0 10px;
 }
 </style>

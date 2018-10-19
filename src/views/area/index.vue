@@ -95,10 +95,13 @@
           <div v-else class="checkbox">
             <el-checkbox :indeterminate="isUnSelectedIndeterminate" v-model="isUnSelectedCheckedAll" @change="unSelectedCheckAllChange">全选</el-checkbox>
             <el-checkbox-group class="scrollBox" v-model="unSelectedIds" @change="unSelectedVehicleChange">
-              <el-checkbox :class="{search:vehicle.plateNumber == searchVehicle}" v-for="(vehicle,index) in unSelectedList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
+              <el-checkbox :class="{search:vehicle.id == searchVehicle}" v-for="(vehicle,index) in unSelectedList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
             </el-checkbox-group>
           </div>
-          <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" trigger-on-focus v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete>
+          <el-select v-model="searchVehicle" clearable filterable remote placeholder="请输入车牌号码" @change="handleSelectNumber">
+            <el-option v-for="item in vehiclearray" :key="item.id" :label="item.plateNumber" :value="item.id"></el-option>
+          </el-select>
+          <!-- <el-autocomplete valueKey="plateNumber" @select="handleSelectNumber" :fetch-suggestions="handleFetchNumber" trigger-on-focus v-model="searchVehicle" placeholder="输入车牌号搜索"></el-autocomplete> -->
           <div class="btn-padding">
             <button class="btn" @click="handleExitSetApplVehicles">
               <i class="el-icon-arrow-left"></i>
@@ -237,13 +240,12 @@ export default {
     handleSelectNumber(data) {
       let searchVehicleIndex = -1
       this.vehiclearray.forEach((vehicle, index) => {
-        if (data.plateNumber === vehicle.plateNumber) {
+        if (data === vehicle.id) {
           searchVehicleIndex = index
         }
       })
       const scrollTop = this.vehiclearray.length * searchVehicleIndex
-      document.getElementsByClassName('scrollBox')[0].scrollTop = scrollTop
-      this.searchVehicle = data.plateNumber
+      document.getElementsByClassName('scrollBox')[0].scrollTop = `${scrollTop}px`
     },
     // 点击区域围栏的下拉菜单
     handleSetType(e) {
@@ -533,12 +535,9 @@ export default {
       })
       this.list.vehicleId = idsString
       editArea(this.list).then(response => {
+        console.log(response)
         if (response.status === 200) {
           this.fetchData()
-          this.$message({
-            message: response.message,
-            type: 'success'
-          })
         }
       })
     },

@@ -4,7 +4,7 @@
     <el-tabs v-model="activeName" type="border-card" @tab-click="tabhandleClick">
       <!-- 调度申请单信息 -->
       <el-tab-pane label="调度申请单" name="first">
-        <el-row class="toptools"  type="flex" justify="end">
+        <el-row class="toptools" type="flex" justify="end">
           <!-- <el-col :span="6"><el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="openDispatchDialog">添加</el-button></el-col> -->
           <div>
             <!-- <el-input v-model="applySearchTxt">
@@ -30,14 +30,7 @@
             <el-button type="primary" slot="append" icon="el-icon-search" @click="fetchData">查询</el-button>
           </div>
         </el-row>
-        <el-table
-          :max-height="tableHeight"
-          v-loading="listLoading"
-          :data="listData"
-          element-loading-text="Loading"
-          border
-          fit
-          highlight-current-row>
+        <el-table :max-height="tableHeight" v-loading="listLoading" :data="listData" element-loading-text="Loading" border fit highlight-current-row>
           <el-table-column label="调度状态" align="center">
             <template slot-scope="scope">
               {{ isDispatchFormat(scope.row.isDispatch) }}
@@ -61,7 +54,7 @@
           </el-table-column>
           <el-table-column prop="staffName" label="申请人" align="center">
           </el-table-column>
-          <el-table-column prop="department" label="用车人单位"  min-width="110" align="center">
+          <el-table-column prop="department" label="用车人单位" min-width="110" align="center">
           </el-table-column>
           <el-table-column prop="reason" label="用车事由" align="center">
           </el-table-column>
@@ -87,7 +80,7 @@
       </el-tab-pane>
       <!-- 派遣单信息 -->
       <el-tab-pane label="派遣单" name="second">
-        <el-row class="toptools"  type="flex" justify="end">
+        <el-row class="toptools" type="flex" justify="end">
           <div>
             <el-input v-model="sendSearchTxt">
               <el-select slot="prepend" v-model="sendSearchType" style="width:120px">
@@ -100,13 +93,7 @@
             </el-input>
           </div>
         </el-row>
-        <el-table
-          :max-height="tableHeight"
-          v-loading="listLoading"
-          :data="listData"
-          element-loading-text="Loading"
-          border
-          fit>
+        <el-table :max-height="tableHeight" v-loading="listLoading" :data="listData" element-loading-text="Loading" border fit>
           <!-- <el-table-column align="center" label="派遣单号" width="95">
             <template slot-scope="scope">
               {{ scope.row.LPNO }}
@@ -167,7 +154,7 @@
           <el-table-column fixed="right" label="操作" width="100" align="center">
             <template slot-scope="scope" v-if="(scope.row.doStatus!=2)&&(scope.row.doStatus!=3)&&(scope.row.doStatus!=5)">
               <!-- <el-button  type="text" size="small" @click="toEdit(scope.row.id,6)" >提醒</el-button> -->
-              <el-button v-if="scope.row.doStatus!=6"  type="text" size="small" @click="toInvalidDispatch(scope.row.id,6,'取消')" >取消</el-button>
+              <el-button v-if="scope.row.doStatus!=6" type="text" size="small" @click="toInvalidDispatch(scope.row.id,6,'取消')">取消</el-button>
               <el-button type="text" size="small" @click="toInvalidDispatch(scope.row.id,5,'作废')">作废</el-button>
             </template>
           </el-table-column>
@@ -282,7 +269,7 @@
             <el-table height="200" class="driverTable" border ref="driverTable" :data="dform.driverData" highlight-current-row @current-change="driverCurrentChange" @row-dblclick="groupData">
               <el-table-column label="驾驶员姓名" prop="userName" align="center"></el-table-column>
               <el-table-column label="性别" prop="sex" align="center"></el-table-column>
-              <el-table-column label="准驾车型"  align="center" prop="driverLicenseType"></el-table-column>
+              <el-table-column label="准驾车型" align="center" prop="driverLicenseType"></el-table-column>
             </el-table>
             <el-pagination background layout="prev, pager, next" :page-size="dform.pageSize" :total="dform.total" @current-change="dPageCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
           </el-col>
@@ -309,124 +296,124 @@
 </template>
 
 <script>
-import { getApplyList,editApplyStatus,getDispatchList,VehicleDataFilter,DriverDataFilter,addDispatch,editDispatch,delDispatch,invalidDispatch } from '@/api/dispatch'
-import {vechileType} from '@/utils/constant'
+import { getApplyList, editApplyStatus, getDispatchList, VehicleDataFilter, DriverDataFilter, addDispatch, editDispatch, delDispatch, invalidDispatch } from '@/api/dispatch'
+import { vechileType } from '@/utils/constant'
 
 export default {
   data() {
     return {
-      vechileType:vechileType,
-      tableHeight:document.documentElement.clientHeight-300||document.body.clientHeight-300,
+      vechileType: vechileType,
+      tableHeight: document.documentElement.clientHeight - 300 || document.body.clientHeight - 300,
       listData: [],
       listLoading: false,
-      dialogFormVisible:false,
-      applySearchType:'1',
-      applySearchTxt:'',
-      dispatchSearchType:'1',
-      sendSearchType:'2',
-      sendSearchTxt:'',
-      searchTxt:'',
-      activeName:'first',
+      dialogFormVisible: false,
+      applySearchType: '1',
+      applySearchTxt: '',
+      dispatchSearchType: '1',
+      sendSearchType: '2',
+      sendSearchTxt: '',
+      searchTxt: '',
+      activeName: 'first',
       form: {
-          LPNO: '',
-          Color: '',
-          Type: [],
-          VehicleID: '',
-          EngineNO: '',
-          Load: '',
-          BuyTime: '',
-          Status: [],
-          EnterpriseNO:'',
-          VehicleNO:'',
-          Emission:'',
-          equipmentModel:[],
-          equipmentID:''
+        LPNO: '',
+        Color: '',
+        Type: [],
+        VehicleID: '',
+        EngineNO: '',
+        Load: '',
+        BuyTime: '',
+        Status: [],
+        EnterpriseNO: '',
+        VehicleNO: '',
+        Emission: '',
+        equipmentModel: [],
+        equipmentID: ''
       },
-      vform:{
-        plateNumber:'',
-        plateType:'',
-        page:1,
-        pageSize:10,
-        total:0,
-        vehicleData:[]
+      vform: {
+        plateNumber: '',
+        plateType: '',
+        page: 1,
+        pageSize: 10,
+        total: 0,
+        vehicleData: []
       },
-      dform:{
-        userName:'',
-        driverLicenseType:'',
-        page:1,
-        pageSize:10,
-        total:0,
-        driverData:[],
+      dform: {
+        userName: '',
+        driverLicenseType: '',
+        page: 1,
+        pageSize: 10,
+        total: 0,
+        driverData: [],
       },
       formLabelWidth: '120px',
-      page:1,
-      pageSize:10,
-      total:0,
+      page: 1,
+      pageSize: 10,
+      total: 0,
 
-      dispatchloading:false,
-      dispatchInfo:{
-        applyId:'',
-        applyerId:'',
-        useId:'',
-        driverId:'',
-        vehicleId:'',
+      dispatchloading: false,
+      dispatchInfo: {
+        applyId: '',
+        applyerId: '',
+        useId: '',
+        driverId: '',
+        vehicleId: '',
       },
-      applyVehicleDetails:[],
-      selectData:[],
-      selectTempData:{}
+      applyVehicleDetails: [],
+      selectData: [],
+      selectTempData: {}
     }
   },
-  watch:{
-    page(){
+  watch: {
+    page() {
       this.fetchData(this.activeName)
     },
-    'vform.page':function(){
+    'vform.page': function () {
       this.getVehicleDataFilter();
     },
-    'dform.page':function(){
+    'dform.page': function () {
       this.getDriverDataFilter();
     }
   },
   created() {
     this.fetchData(this.activeName)
   },
-  mounted(){
-    const that=this;
-    window.onresize=function(){
-      that.tableHeight=document.documentElement.clientHeight-300||document.body.clientHeight-300
+  mounted() {
+    const that = this;
+    window.onresize = function () {
+      that.tableHeight = document.documentElement.clientHeight - 300 || document.body.clientHeight - 300
     }
   },
-  beforeDestroy(){
-    window.onresize="";
+  beforeDestroy() {
+    window.onresize = "";
   },
   methods: {
-    closeDialog(done){
-      this.vform.vehicleData=[];
-      this.dform.driverData=[];
-      this.selectData=[];
+    closeDialog(done) {
+      this.vform.vehicleData = [];
+      this.dform.driverData = [];
+      this.selectData = [];
       done();
     },
-    carDetailFormat(value){
-      let html='';
-      value&&JSON.parse(value).map(item=>{
-        html+=`<div>${item.carType}：${item.carNum}辆</div>`
+    carDetailFormat(value) {
+      let html = '';
+      value && JSON.parse(value).map(item => {
+        html += `<div>${item.carType}：${item.carNum}辆</div>`
       })
       return html
     },
-    tabhandleClick(tab){//tab click
-      this.activeName=tab.name;
-      this.applySearchTxt='';
-      this.sendSearchTxt='';
-      this.total=0;
+    tabhandleClick(tab) {//tab click
+      this.activeName = tab.name;
+      this.applySearchTxt = '';
+      this.sendSearchTxt = '';
+      this.total = 0;
 
-      if(this.page!=1){
-        this.page=1;
+      if (this.page != 1) {
+        this.page = 1;
         return;
       }
 
       this.fetchData(tab.name)
     },
-    approvalStatus(status){//审批状态
+    approvalStatus(status) {//审批状态
       switch (status) {
         case '0':
           return '审批未通过'
@@ -438,7 +425,7 @@ export default {
           break;
       }
     },
-    isDispatchFormat(status){//派单状态
+    isDispatchFormat(status) {//派单状态
       switch (status) {
         case 1:
           return '未派单'
@@ -453,7 +440,7 @@ export default {
           break;
       }
     },
-    dispatchStatusFormat(status){//调度状态
+    dispatchStatusFormat(status) {//调度状态
       switch (status) {
         case 1:
           return '未调度'
@@ -468,7 +455,7 @@ export default {
           break;
       }
     },
-    doStatusFormat(status){//执行状态
+    doStatusFormat(status) {//执行状态
       switch (status) {
         case 1:
           return '未执行'
@@ -492,9 +479,9 @@ export default {
           break;
       }
     },
-    toEdit(id,val){
-      let data={id,doStatus:val}
-      editDispatch(data).then(response=>{
+    toEdit(id, val) {
+      let data = { id, doStatus: val }
+      editDispatch(data).then(response => {
         this.$message({
           type: 'success',
           message: '操作成功!'
@@ -502,57 +489,57 @@ export default {
         this.fetchData();
       })
     },
-    toDel(id){
+    toDel(id) {
       this.$confirm('您确定要删除该记录?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          });
-        }).catch(() => {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
         });
+      }).catch(() => {
+      });
     },
-    rejected(ddid){//驳回申请
-      let data={ddids:ddid,isDispatch:3}
-      this.$prompt(`请输入 驳回 原因`,'',{
-        inputValidator:(txt)=>{
-          if(!txt||!(txt.trim()).length){
+    rejected(ddid) {//驳回申请
+      let data = { ddids: ddid, isDispatch: 3 }
+      this.$prompt(`请输入 驳回 原因`, '', {
+        inputValidator: (txt) => {
+          if (!txt || !(txt.trim()).length) {
             return '输入内容不能为空'
           }
-          data.demo=txt
+          data.demo = txt
         },
-        beforeClose:(action, instance, done)=>{
+        beforeClose: (action, instance, done) => {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true;
-            editApplyStatus(data).then(response=>{
+            editApplyStatus(data).then(response => {
               this.fetchData();
               instance.confirmButtonLoading = false;
-              this.dialogFormVisible=false;//调度对话框驳回
+              this.dialogFormVisible = false;//调度对话框驳回
               done();
-            }).catch(error=>{
+            }).catch(error => {
               instance.confirmButtonLoading = false;
             })
           } else {
             done();
           }
         }
-      }).then(({value})=>{
+      }).then(({ value }) => {
 
       }).catch()
     },
-    openDispatchDialog(row){
-      this.dispatchInfo.applyId=row.ddid;
-      this.dispatchInfo.applyerId =row.staffid;
-      this.dispatchInfo.useId =row.caruserid;
-      this.dispatchInfo.useName =row.caruser;
-      this.dispatchInfo.taskDoStartTimes =row.useDate;
-      this.dispatchInfo.taskDoEndTimes =row.returnDate;
+    openDispatchDialog(row) {
+      this.dispatchInfo.applyId = row.ddid;
+      this.dispatchInfo.applyerId = row.staffid;
+      this.dispatchInfo.useId = row.caruserid;
+      this.dispatchInfo.useName = row.caruser;
+      this.dispatchInfo.taskDoStartTimes = row.useDate;
+      this.dispatchInfo.taskDoEndTimes = row.returnDate;
 
-      this.applyVehicleDetails=row.carDetail&&JSON.parse(row.carDetail);
-      this.applyVehicleDetails=this.applyVehicleDetails.map(item=>{
+      this.applyVehicleDetails = row.carDetail && JSON.parse(row.carDetail);
+      this.applyVehicleDetails = this.applyVehicleDetails.map(item => {
         return `${item.carType}：${item.carNum}辆`
       })
 
@@ -562,92 +549,92 @@ export default {
     },
     fetchData() {//获取申请单和派遣单数据
       this.listLoading = true;
-      let params={pageNo:this.page,pageSize:this.pageSize};
+      let params = { pageNo: this.page, pageSize: this.pageSize };
 
-      if(this.activeName=='first'){
+      if (this.activeName == 'first') {
 
-          let applySearchType=this.applySearchType,
-              applySearchTxt=this.applySearchTxt,
-              dispatchSearchType=this.dispatchSearchType;
+        let applySearchType = this.applySearchType,
+          applySearchTxt = this.applySearchTxt,
+          dispatchSearchType = this.dispatchSearchType;
 
-          switch (applySearchType) {
-            case '1':
-              params.caruser=applySearchTxt;
-              break;
-            case '2':
-              params.staffName=applySearchTxt;
-              break;
-            case '3':
-              params.isDispatch=dispatchSearchType;
-              break;
-            case '4':
-              params.ddid=applySearchTxt;
-              break;
-            default:
-              break;
-          }
+        switch (applySearchType) {
+          case '1':
+            params.caruser = applySearchTxt;
+            break;
+          case '2':
+            params.staffName = applySearchTxt;
+            break;
+          case '3':
+            params.isDispatch = dispatchSearchType;
+            break;
+          case '4':
+            params.ddid = applySearchTxt;
+            break;
+          default:
+            break;
+        }
 
-        getApplyList(params).then(response=>{
+        getApplyList(params).then(response => {
           this.listData = response.data.rows
-          this.total=response.data.total;
+          this.total = response.data.total;
           this.listLoading = false
         })
-      }else{
+      } else {
 
-          let sendSearchType=this.sendSearchType,
-          sendSearchTxt=this.sendSearchTxt;
+        let sendSearchType = this.sendSearchType,
+          sendSearchTxt = this.sendSearchTxt;
 
-          switch (sendSearchType) {
-            case '1':
-              params.useName=sendSearchTxt;
-              break;
-            case '2':
-              params.vehiclePlateNumber=sendSearchTxt;
-              break;
-            case '3':
-              params.driverName=sendSearchTxt;
-              break;
-            case '4':
-              params.applyId=sendSearchTxt;
-              break;
-            default:
-              break;
-          }
+        switch (sendSearchType) {
+          case '1':
+            params.useName = sendSearchTxt;
+            break;
+          case '2':
+            params.vehiclePlateNumber = sendSearchTxt;
+            break;
+          case '3':
+            params.driverName = sendSearchTxt;
+            break;
+          case '4':
+            params.applyId = sendSearchTxt;
+            break;
+          default:
+            break;
+        }
 
-        getDispatchList(params).then(response=>{
+        getDispatchList(params).then(response => {
           this.listData = response.data.rows
-          this.total=response.data.total;
+          this.total = response.data.total;
           this.listLoading = false
         })
       }
     },
-    pageCurrentChange(page){
-      this.page=page;
+    pageCurrentChange(page) {
+      this.page = page;
     },
-    vPageCurrentChange(page){
-      this.vform.page=page;
+    vPageCurrentChange(page) {
+      this.vform.page = page;
     },
-    dPageCurrentChange(page){
-      this.dform.page=page;
+    dPageCurrentChange(page) {
+      this.dform.page = page;
     },
-    getVehicleDataFilter(){//获取可用车辆数据
-      let {plateNumber,plateType,page:pageNo,pageSize}=this.vform;
+    getVehicleDataFilter() {//获取可用车辆数据
+      let { plateNumber, plateType, page: pageNo, pageSize } = this.vform;
 
-      VehicleDataFilter({applicationId:this.dispatchInfo.applyId,plateType,plateNumber,pageNo,pageSize}).then(response=>{
-        this.vform.vehicleData=response.data.rows;
-        this.vform.total=response.data.total;
+      VehicleDataFilter({ applicationId: this.dispatchInfo.applyId, plateType, plateNumber, pageNo, pageSize }).then(response => {
+        this.vform.vehicleData = response.data.rows;
+        this.vform.total = response.data.total;
       })
     },
-    getDriverDataFilter(){//获取可用驾驶员数据
-      let {userName,driverLicenseType,page:pageNo,pageSize}=this.dform;
-      DriverDataFilter({applicationId:this.dispatchInfo.applyId,userName,driverLicenseType,pageNo,pageSize}).then(response=>{
-        this.dform.driverData=response.data.rows;
-        this.dform.total=response.data.total;
+    getDriverDataFilter() {//获取可用驾驶员数据
+      let { userName, driverLicenseType, page: pageNo, pageSize } = this.dform;
+      DriverDataFilter({ applicationId: this.dispatchInfo.applyId, userName, driverLicenseType, pageNo, pageSize }).then(response => {
+        this.dform.driverData = response.data.rows;
+        this.dform.total = response.data.total;
       })
     },
-    vehicleType(type){//车辆类型名称
-      let selectData=this.vechileType.find(item=>{
-        return item.value==type;
+    vehicleType(type) {//车辆类型名称
+      let selectData = this.vechileType.find(item => {
+        return item.value == type;
       })
       return selectData.type;
 
@@ -672,28 +659,28 @@ export default {
       //     break;
       // }
     },
-    vehicleCurrentChange(row){//选择调度车辆
-      this.selectTempData.vehicleId=row&&row.id;
-      this.selectTempData.plateNumber=row&&row.plateNumber;
+    vehicleCurrentChange(row) {//选择调度车辆
+      this.selectTempData.vehicleId = row && row.id;
+      this.selectTempData.plateNumber = row && row.plateNumber;
     },
-    driverCurrentChange(row){//选择调度驾驶员
-      this.selectTempData.userName=row&&row.userName;
-      this.selectTempData.driverId=row&&row.id;
+    driverCurrentChange(row) {//选择调度驾驶员
+      this.selectTempData.userName = row && row.userName;
+      this.selectTempData.driverId = row && row.id;
     },
-    groupData(){//添加组合
-      if(!this.selectTempData.plateNumber||!this.selectTempData.userName){
+    groupData() {//添加组合
+      if (!this.selectTempData.plateNumber || !this.selectTempData.userName) {
         this.$message({
           type: 'error',
           message: '车辆和司机都必选!'
         });
         return;
       }
-      let found=this.selectData.find(item=>{
-        if(item.plateNumber==this.selectTempData.plateNumber||item.userName==this.selectTempData.userName){
+      let found = this.selectData.find(item => {
+        if (item.plateNumber == this.selectTempData.plateNumber || item.userName == this.selectTempData.userName) {
           return true;
         }
       });
-      if(found){
+      if (found) {
         this.$message({
           type: 'error',
           message: '车辆或司机已存在!'
@@ -701,29 +688,29 @@ export default {
         return;
       }
       this.selectData.push(this.selectTempData);
-      this.selectTempData={};
+      this.selectTempData = {};
       this.setCurrent("vehicleTable");
       this.setCurrent("driverTable");
     },
-    delGroupData(index){//删除组合
-      this.selectData.splice(index,1);
+    delGroupData(index) {//删除组合
+      this.selectData.splice(index, 1);
     },
     setCurrent(ref) {//清除选中行
-        this.$refs[ref].setCurrentRow();
+      this.$refs[ref].setCurrentRow();
     },
-    addNewDispath(){//新增调度
-      let driverId=[],driverName=[],vehicleId=[],vehiclePlateNumber=[];
-      this.selectData.map(item=>{
+    addNewDispath() {//新增调度
+      let driverId = [], driverName = [], vehicleId = [], vehiclePlateNumber = [];
+      this.selectData.map(item => {
         driverId.push(item.driverId);
         driverName.push(item.userName);
         vehicleId.push(item.vehicleId);
         vehiclePlateNumber.push(item.plateNumber);
       })
 
-      this.dispatchInfo.driverId=driverId.join();
-      this.dispatchInfo.driverName=driverName.join();
-      this.dispatchInfo.vehicleId=vehicleId.join();
-      this.dispatchInfo.vehiclePlateNumber=vehiclePlateNumber.join();
+      this.dispatchInfo.driverId = driverId.join();
+      this.dispatchInfo.driverName = driverName.join();
+      this.dispatchInfo.vehicleId = vehicleId.join();
+      this.dispatchInfo.vehiclePlateNumber = vehiclePlateNumber.join();
 
 
       let data=this.dispatchInfo;
@@ -737,19 +724,19 @@ export default {
         this.dispatchloading=false;
       })
     },
-    toInvalidDispatch(id,val,opt){//取消、废除调度
-      let data={id,doStatus:val,msg_send_status:0}
-      this.$prompt(`请输入 ${opt} 原因`,'',{
-        inputValidator:(txt)=>{
-          if(!txt||!(txt.trim()).length){
+    toInvalidDispatch(id, val, opt) {//取消、废除调度
+      let data = { id, doStatus: val, msg_send_status: 0 }
+      this.$prompt(`请输入 ${opt} 原因`, '', {
+        inputValidator: (txt) => {
+          if (!txt || !(txt.trim()).length) {
             return '输入内容不能为空'
           }
-          data.demo=txt
+          data.demo = txt
         },
-        beforeClose:(action, instance, done)=>{
+        beforeClose: (action, instance, done) => {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true;
-            editDispatch(data).then(response=>{
+            editDispatch(data).then(response => {
               this.fetchData();
               instance.confirmButtonLoading = false;
               done();
@@ -758,7 +745,7 @@ export default {
             done();
           }
         }
-      }).then(({value})=>{
+      }).then(({ value }) => {
 
       }).catch()
     }
@@ -767,10 +754,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.toptools{
-  margin-bottom: 20px;
-}
-.groupbox{
+.groupbox {
   text-align: center;
   margin: 20px auto;
   border-top: 1px solid;
@@ -778,24 +762,23 @@ export default {
   padding: 10px;
   border-color: cadetblue;
 }
-
 </style>
 <style>
-.driverTable .el-table__body tr.current-row>td,
-.vehicleTable .el-table__body tr.current-row>td{
+.driverTable .el-table__body tr.current-row > td,
+.vehicleTable .el-table__body tr.current-row > td {
   background-color: #008080;
-  color:#fff;
+  color: #fff;
 }
-.dispatchDialog .el-dialog{
-  margin-top: 10px!important;
+.dispatchDialog .el-dialog {
+  margin-top: 10px !important;
 }
-.dispatchDialog .el-dialog__body{
+.dispatchDialog .el-dialog__body {
   padding-top: 10px;
 }
-.dispatchDialog .el-dialog__header{
-      border-bottom: 1px solid #d1dbe5;
+.dispatchDialog .el-dialog__header {
+  border-bottom: 1px solid #d1dbe5;
 }
-.dispatchDialog .el-table td{
+.dispatchDialog .el-table td {
   padding: 8px;
 }
 </style>

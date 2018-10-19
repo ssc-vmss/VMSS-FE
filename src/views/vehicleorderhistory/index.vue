@@ -236,8 +236,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.toptools{
-  margin-bottom: 20px;
-}
 </style>
 

@@ -144,15 +144,10 @@ export default {
 
     // 展示
     show(location) {
-      debugger
       if (this.overlays.length > 0) {
-        // this.remove()
         this.overlays = []
-      this.map.clearOverlays()
-      
-      
+        this.map.clearOverlays()
       }
-      // this.location = location
       var str = []
       str = location.split(';')// 坐标点通过分号分割
       for (var i = 0; i < str.length; i++) {

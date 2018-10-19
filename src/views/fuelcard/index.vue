@@ -52,28 +52,28 @@
     <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
     <!-- add from -->
     <el-dialog :title="dialogTitle+'加油卡信息'" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
-      <el-form :model="form" :rules="rules" ref="ruleForm">
+      <el-form :model="form" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="企业名称" prop="enterpriseName" :label-width="formLabelWidth">
+            <el-form-item label="企业名称" prop="enterpriseName">
               <el-input v-model="form.enterpriseName" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="油卡编号" prop="fuelcardNo" :label-width="formLabelWidth">
+            <el-form-item label="油卡编号" prop="fuelcardNo">
               <el-input v-model="form.fuelcardNo" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="总计金额" prop="totalAmount" :label-width="formLabelWidth">
+            <el-form-item label="总计金额" prop="totalAmount">
               <!-- <el-input type="number" v-model.number="form.totalAmount" auto-complete="off"></el-input> -->
               <el-input-number v-model="form.totalAmount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="剩余余额" prop="remainAmount" :label-width="formLabelWidth">
+            <el-form-item label="剩余余额" prop="remainAmount">
               <!-- <el-input type="number" v-model="form.remainAmount" auto-complete="off"></el-input> -->
               <el-input-number v-model="form.remainAmount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
@@ -81,7 +81,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="油卡种类" prop="type" :label-width="formLabelWidth">
+            <el-form-item label="油卡种类" prop="type">
               <el-input v-model="form.type" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import { getInfoList,addInfo,editInfo,delInfo } from '@/api/oilcard'
+import { getInfoList,addInfo,editInfo,delInfo } from '@/api/fuelcard'
 import { getInfoList as getVehicleList } from '@/api/vehicle'
 
 export default {
@@ -150,7 +150,7 @@ export default {
           { validator:validateRemainAmount, trigger: 'blur' },
         ]
       },
-      formLabelWidth: '80px',
+      formLabelWidth: '120px',
       page: 1,
       pageSize: 10,
       total: 0
@@ -310,8 +310,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.toptools{
-  margin-bottom: 20px;
+.el-input-number{
+  width: 100%;
 }
 </style>
 
