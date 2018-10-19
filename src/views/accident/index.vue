@@ -182,8 +182,8 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="事故发生内容" prop="conten" :label-width="formLabelWidth">
-              <el-input v-model="form.conten" auto-complete="off"></el-input>
+            <el-form-item label="事故发生内容" prop="content" :label-width="formLabelWidth">
+              <el-input v-model="form.content" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">

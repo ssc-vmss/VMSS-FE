@@ -381,7 +381,7 @@ input[type="number"]{
     width: auto;
     &:first-child{
       padding-left: 0;
-    }  
+    }
   }
 }
 .el-time-panel{
@@ -403,7 +403,7 @@ input[type="number"]{
   width: 270px;
 }
 .el-picker-panel{
-  width: 300px;
+  // width: 300px;
   border-radius: 5px;
   margin-top: 5px;
   .cancel,

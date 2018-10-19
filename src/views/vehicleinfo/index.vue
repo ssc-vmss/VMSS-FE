@@ -163,11 +163,10 @@
                 <el-option label="运行" :value="1"></el-option>
                 <el-option label="事故" :value="2"></el-option>
                 <el-option label="理赔" :value="3"></el-option>
-                <el-option label="保养" :value="4"></el-option>
+                <el-option label="维修保养" :value="4"></el-option>
                 <el-option label="年检" :value="5"></el-option>
                 <el-option label="报废" :value="6"></el-option>
-                <el-option label="维修" :value="7"></el-option>
-                <!-- <el-option label="注销" :value="8"></el-option> -->
+                <!-- <el-option label="注销" :value="7"></el-option> -->
               </el-select>
             </el-form-item>
           </el-col>
@@ -358,7 +357,7 @@ export default {
           return '理赔'
           break;
         case 4:
-          return '保养'
+          return '维修保养'
           break;
         case 5:
           return '年检'
@@ -367,11 +366,8 @@ export default {
           return '报废'
           break;
         case 7:
-          return '维修'
+          return '注销'
           break;
-        // case 8:
-        //   return '注销'
-        //   break;
         default:
           break;
       }

@@ -729,9 +729,12 @@ export default {
       let data=this.dispatchInfo;
       this.dispatchloading=true;
       addDispatch(data).then(response=>{
+        this.selectData=[];
         this.dispatchloading=false;
         this.dialogFormVisible = false;
         this.tabhandleClick({name:'second'})
+      }).catch(()=>{
+        this.dispatchloading=false;
       })
     },
     toInvalidDispatch(id,val,opt){//取消、废除调度
