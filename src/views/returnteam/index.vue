@@ -6,106 +6,89 @@
       </el-col>
       <div>
         <el-select v-model="searchType" style="width:120px">
-          <el-option label="驾驶员姓名" value="1"></el-option>
+          <el-option label="司机姓名" value="1"></el-option>
         </el-select>
         <el-input v-model="searchTxt" placeholder="请输入内容" size="medium" style="width:200px" />
         <el-button size="medium" type="primary" icon="el-icon-search" @click="toSearch">搜索</el-button>
       </div>
     </el-row>
     <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit>
+      <el-table-column label="派遣单号" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.dispatchId }}
+        </template>
+      </el-table-column>
       <el-table-column label="车牌号码" align="center">
         <template slot-scope="scope">
           {{ scope.row.vehiclePlateNumber }}
         </template>
       </el-table-column>
-      <el-table-column label="驾驶员姓名" align="center">
+      <el-table-column label="司机姓名" align="center">
         <template slot-scope="scope">
           {{ scope.row.driverName }}
         </template>
       </el-table-column>
-      <el-table-column label="油卡编号" align="center">
+      <el-table-column label="使用人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.fuelcardNo }}</span>
+          <span>{{ scope.row.caruser }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="加油时间" align="center">
+      <el-table-column label="始发地" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.createTime }}</span>
+          <span>{{ scope.row.origin }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="加油地点" align="center">
+      <el-table-column label="目的地" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.place }}</span>
+          <span>{{ scope.row.destination }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="油价" align="center">
+      <el-table-column label="使用日期" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.unitPrice }}</span>
+          <span>{{ scope.row.useDate }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="加油升数" align="center">
+      <el-table-column label="返回日期" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.volume }}</span>
+          <span>{{ scope.row.returnDate }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="归队时间" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.returnTime }}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right" label="操作" width="100" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="toEdit(scope.row)">修改</el-button>
           <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
-    <el-dialog :visible.sync="dialogFormVisible" :title="isAdd?'添加加油记录信息':'编辑加油记录信息'" width="600px" @close="handleCancle">
-      <el-form ref="ruleForm" :model="form" :rules="rules" :label-width="formLabelWidth">
+    <el-dialog :visible.sync="dialogFormVisible" :title="isAdd?'添加归队记录信息':'编辑归队记录信息'" width="620px" @close="handleCancle">
+      <el-form ref="ruleForm" :model="form" :rules="rules">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="车牌号码" prop="vehiclePlateNumber">
-              <el-select v-model="form.vehicleId" clearable filterable remote placeholder="请输入关键词">
+            <el-form-item :label-width="formLabelWidth" label="派遣单号" prop="vehiclePlateNumber">
+              <el-select v-model="form.dispatchId" clearable filterable remote placeholder="请输入车牌号码">
+                <el-option v-for="item in dispatchArray" :key="item.id" :label="item.id" :value="item.id"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item :label-width="formLabelWidth" label="车牌号码" prop="vehiclePlateNumber">
+              <el-select v-model="form.vehicleId" clearable filterable remote placeholder="请输入车牌号码">
                 <el-option v-for="item in vehicleArray" :key="item.id" :label="item.plateNumber" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="驾驶员姓名" prop="driverName">
-              <el-select v-model="form.driverId" clearable filterable remote placeholder="请输入关键词">
+            <el-form-item :label-width="formLabelWidth" label="司机姓名" prop="driverName">
+              <el-select v-model="form.driverId" clearable filterable remote placeholder="请输入驾驶员姓名">
                 <el-option v-for="item in driverArray" :key="item.id" :label="item.userName" :value="item.id"></el-option>
               </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="油卡编号" prop="fuelcardNo">
-              <el-select v-model="form.fuelcardId" clearable filterable remote placeholder="请输入关键词">
-                <el-option v-for="item in fuelCardArray" :key="item.id" :label="item.fuelcardNo" :value="item.id"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <!-- <el-col :span="12">
-            <el-form-item label="加油时间" prop="createTime">
-              <el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="form.createTime" type="datetime" class="datetime-picker" placeholder="选择时间"></el-date-picker>
-            </el-form-item>
-          </el-col> -->
-          <el-col :span="12">
-            <el-form-item label="加油地点" prop="place">
-              <el-input v-model="form.place" auto-complete="off"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="油价" prop="unitPrice">
-              <el-input-number v-model="form.unitPrice" auto-complete="off" :controls="false">
-                <template slot="append">元</template>
-              </el-input-number>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="加油升数" prop="volume">
-              <el-input-number v-model="form.volume" :min="0" :max="500" :controls="false">
-                <template slot="append">升</template>
-              </el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -120,10 +103,10 @@
 </template>
 
 <script>
-import { getInfoList as getOilRecordList, addInfo, editInfo, delInfo } from '@/api/oilrecord'
+import { getInfoList as getReturnTeamList, addInfo, delInfo } from '@/api/returnteam'
+import { getDispatchList } from '@/api/dispatch'
 import { getInfoList as getVehicleList } from '@/api/vehicle'
 import { getInfoList as getDriverList } from '@/api/driver'
-import { getInfoList as getFuelCardList } from '@/api/fuelcard'
 
 export default {
   data() {
@@ -150,37 +133,31 @@ export default {
       searchTxt: '',
       dialogFormVisible: false,
       form: {
+        dispatchId: '',
         vehicleId: '',
-        driverId: '',
-        fuelcardId: '',
-        place: '',
-        unitPrice: 0,
-        volume: 0
+        driverId: ''
       },
       rules: {
-        vehiclePlateNumber: [
-          { required: true, message: '请输入车牌号码', trigger: 'blur' }
+        vehicleId: [
+          { required: true, message: '请输入企业名称', trigger: 'blur' }
         ],
-        driverName: [
-          { required: true, message: '请输入驾驶员姓名', trigger: 'blur' }
+        driverId: [
+          { required: true, message: '请输入油卡编号', trigger: 'blur' }
         ],
-        fuelcardNo: [
-          { required: true, message: '请输入加油卡编号', trigger: 'blur' }
+        fuelcardId: [
+          { validator: validateTotalAmount, trigger: 'blur' }
         ],
-        unitPrice: [
-          { required: true, message: '请输入油价', trigger: 'blur'}
-        ],
-        volume: [
-          { required: true, message: '请输入加油升数', trigger: 'blur' }
+        remainAmount: [
+          { validator: validateRemainAmount, trigger: 'blur' }
         ]
       },
-      formLabelWidth: '120px',
+      formLabelWidth: '90px',
       page: 1,
       pageSize: 10,
       total: 0,
+      dispatchArray: [],
       vehicleArray: [],
       driverArray: [],
-      fuelCardArray: [],
       isAdd: false,
       isEdit: false
     }
@@ -196,6 +173,10 @@ export default {
   },
   methods: {
     fetchDataList() {
+      // 获取派遣单信息
+      getDispatchList().then(response => {
+        this.dispatchArray = response.data.rows
+      })
       // 获取车辆信息
       getVehicleList().then(response => {
         this.vehicleArray = response.data.rows
@@ -203,10 +184,6 @@ export default {
       // 获取驾驶员信息
       getDriverList().then(response => {
         this.driverArray = response.data.rows
-      })
-      // 获取加油卡信息
-      getFuelCardList().then(response => {
-        this.fuelCardArray = response.data.rows
       })
     },
     handleCreate() {
@@ -235,14 +212,11 @@ export default {
         default:
           break
       }
-      getOilRecordList(params).then(response => {
+      getReturnTeamList(params).then(response => {
         this.list = response.data.rows
         this.total = response.data.total
         this.listLoading = false
       })
-    },
-    changeColor(driverName) {
-
     },
     handleCancle() {
       if (this.isAdd) {
@@ -261,17 +235,6 @@ export default {
           return false
         }
       })
-    },
-    toEdit(data) {
-      this.form.id = data.id
-      this.form.vehicleId = data.vehicleId
-      this.form.driverId = data.driverId
-      this.form.fuelcardId = data.fuelcardId
-      this.form.place = data.place
-      this.form.unitPrice = data.unitPrice
-      this.form.volume = data.volume
-      this.dialogFormVisible = true
-      this.isEdit = true
     },
     saveData() {
       const data = this.form
@@ -324,9 +287,6 @@ export default {
 .el-date-editor.el-input,
 .el-date-editor.el-input__inner {
   width: 200px;
-}
-.el-input-number {
-  width: 100%;
 }
 </style>
 
