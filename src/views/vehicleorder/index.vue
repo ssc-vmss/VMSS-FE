@@ -713,12 +713,15 @@ export default {
       this.dispatchInfo.vehiclePlateNumber = vehiclePlateNumber.join();
 
 
-      let data = this.dispatchInfo;
-      this.dispatchloading = true;
-      addDispatch(data).then(response => {
-        this.dispatchloading = false;
+      let data=this.dispatchInfo;
+      this.dispatchloading=true;
+      addDispatch(data).then(response=>{
+        this.selectData=[];
+        this.dispatchloading=false;
         this.dialogFormVisible = false;
-        this.tabhandleClick({ name: 'second' })
+        this.tabhandleClick({name:'second'})
+      }).catch(()=>{
+        this.dispatchloading=false;
       })
     },
     toInvalidDispatch(id, val, opt) {//取消、废除调度

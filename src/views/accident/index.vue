@@ -159,7 +159,7 @@
         <el-row>
           <el-col :span="16">
             <el-form-item label="事故发生内容" prop="conten">
-              <el-input v-model="form.conten" auto-complete="off"></el-input>
+              <el-input v-model="form.content" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
