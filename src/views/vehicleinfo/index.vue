@@ -219,7 +219,7 @@ import { vechileType } from '@/utils/constant'
 export default {
   watch: {
     page() {
-      this.fetchData();
+      this.fetchData()
     }
   },
   data() {
@@ -288,9 +288,6 @@ export default {
       pageSize: 10,
       total: 0
     }
-  },
-  computed: {
-
   },
   created() {
     this.fetchData()

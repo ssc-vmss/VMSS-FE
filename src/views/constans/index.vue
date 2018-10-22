@@ -99,6 +99,7 @@ export default {
   },
   data() {
     return {
+      screenWidth: document.body.clientWidth,
       tableHeight: document.documentElement.clientHeight - 230 || document.body.clientHeight - 230,
       tabIndex: '',
       searchVehicle: '',
@@ -149,9 +150,15 @@ export default {
     this.fetchVehicle()
   },
   mounted() {
-    const that = this;
-    window.onresize = function () {
-      that.tableHeight = document.documentElement.clientHeight - 230 || document.body.clientHeight - 230
+    const that = this
+    window.onresize = () => {
+      return (() => {
+        window.screenWidth = document.body.clientWidth
+        that.screenWidth = window.screenWidth
+      })()
+    }
+    if (this.screenWidth < 650) {
+      this.handleIsShowLeftBox()
     }
   },
   destroyed() {
@@ -246,39 +253,39 @@ export default {
           this.$refs.map.setZoom(this.newPointsList)
           console.log('param.action', param.action)
           // if (param.action) {
-            var allOverlay = this.$refs.map.map.getOverlays()
-            console.log("allOverlay", allOverlay.length)
-            console.log("this.oldPointsList", this.oldPointsList)
-            const pointsList = JSON.parse(JSON.stringify(this.newPointsList))
-            if (this.count > 0) {
-              for (var j = 0; j < this.oldPointsList.length;) {
-                var flag = true
-                for (var k = 0; k < this.newPointsList.length; k++) {
-                  // 同车同点位
-                  if (this.oldPointsList[j].vehicleId === this.newPointsList[k].vehicleId) {
-                    flag = false
-                    if (this.oldPointsList[j].location === this.newPointsList[k].location) {
-                      this.newPointsList.splice(k, 1)
-                    } else {
-                      for (var m = 0; m < allOverlay.length; m++) {
-                        if (`${allOverlay[m].point.lng}` === this.oldPointsList[j].lng &&
-                          `${allOverlay[m].point.lat}` === this.oldPointsList[j].lat) {
-                          this.$refs.map.map.removeOverlay(allOverlay[m])
-                        }
+          var allOverlay = this.$refs.map.map.getOverlays()
+          console.log("allOverlay", allOverlay.length)
+          console.log("this.oldPointsList", this.oldPointsList)
+          const pointsList = JSON.parse(JSON.stringify(this.newPointsList))
+          if (this.count > 0) {
+            for (var j = 0; j < this.oldPointsList.length;) {
+              var flag = true
+              for (var k = 0; k < this.newPointsList.length; k++) {
+                // 同车同点位
+                if (this.oldPointsList[j].vehicleId === this.newPointsList[k].vehicleId) {
+                  flag = false
+                  if (this.oldPointsList[j].location === this.newPointsList[k].location) {
+                    this.newPointsList.splice(k, 1)
+                  } else {
+                    for (var m = 0; m < allOverlay.length; m++) {
+                      if (`${allOverlay[m].point.lng}` === this.oldPointsList[j].lng &&
+                        `${allOverlay[m].point.lat}` === this.oldPointsList[j].lat) {
+                        this.$refs.map.map.removeOverlay(allOverlay[m])
                       }
                     }
-                    break
-                  } else {
-                    flag = true
                   }
+                  break
+                } else {
+                  flag = true
                 }
-                if (flag) {
-                  this.$refs.map.map.removeOverlay(allOverlay[j])
-                }
-                j++
               }
+              if (flag) {
+                this.$refs.map.map.removeOverlay(allOverlay[j])
+              }
+              j++
             }
-            this.oldPointsList = pointsList
+          }
+          this.oldPointsList = pointsList
           // }
           // 添加覆盖物到地图
           this.$refs.map.addMarker(this.newPointsList)
@@ -468,7 +475,12 @@ export default {
   padding: 0 5px;
   width: 80%;
 }
-.tab{
+.tab {
   padding: 0 10px;
+}
+.app-main {
+  @media screen and (max-device-width: 450px) {
+    margin-left: 0;
+  }
 }
 </style>

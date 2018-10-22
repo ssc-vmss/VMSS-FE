@@ -54,32 +54,32 @@
     <el-dialog :title="dialogTitle+'加油卡信息'" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
       <el-form :model="form" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
         <el-row>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item label="企业名称" prop="enterpriseName">
               <el-input v-model="form.enterpriseName" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="油卡编号" prop="fuelcardNo">
               <el-input v-model="form.fuelcardNo" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="总计金额" prop="totalAmount">
               <!-- <el-input type="number" v-model.number="form.totalAmount" auto-complete="off"></el-input> -->
               <el-input-number v-model="form.totalAmount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="剩余余额" prop="remainAmount">
               <!-- <el-input type="number" v-model="form.remainAmount" auto-complete="off"></el-input> -->
               <el-input-number v-model="form.remainAmount" :min="0" :precision="2" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="油卡种类" prop="type">
               <el-input v-model="form.type" auto-complete="off"></el-input>

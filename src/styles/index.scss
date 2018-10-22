@@ -73,6 +73,9 @@ a:hover {
 .app-main{
   min-height: 100%;
   margin-left: 40px;
+  @media screen and (max-device-width: 450px) {
+    margin-left: 0;
+  }
 }
 
 .app-container {

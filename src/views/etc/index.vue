@@ -67,7 +67,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item label="企业名称" prop="enterpriseName">
               <el-input v-model="form.enterpriseName" auto-complete="off"></el-input>
             </el-form-item>

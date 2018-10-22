@@ -1,6 +1,6 @@
 <template>
   <div :class="classObj" class="app-wrapper">
-    <div v-if="itemMenu.length>0" ref="sidebar" class="sidebar-container">
+    <div v-if="itemMenu.length>0" ref="sidebar" class="sidebar-container" v-show="screenWidth>650">
       <ul class="sidebar-ul" @mouseout="handleHideInfo">
         <li v-for="(item,index) in itemMenu" v-if="item.path!=='warning'" :key="index" :class="{active:itemMenuIndex == index}" @click="handleClickItemMenu(index)" @mouseover.prevent="handleShowInfo($event,item,index)">
           <router-link :to="resolvePath(menuPath+'/'+item.path)">
@@ -20,13 +20,16 @@
     </div>
     <div class="main-container">
       <el-menu class="navbar-container" mode="horizontal">
+        <div v-show="screenWidth<650" class="left-menu">
+          <el-button type="text" class="el-icon-menu"></el-button>
+        </div>
         <div class="logo" @click="handleClicLogo">
           <router-link :to="resolvePath('dashboard')">
             <img class="logo-img" :src="require('@/assets/icons/logo.png')" title="首页" />
             <span class="logo-span">车辆调度管理系统</span>
           </router-link>
         </div>
-        <div ref="navmenu" class="navmenu-container">
+        <div ref="navmenu" class="navmenu-container" v-show="screenWidth>650">
           <div :default-active="$route.path" class="navmenu-box">
             <ul>
               <li v-for="(route,index) in routes" v-if="route.meta&&route.meta.title" :class="{active:menuIndex == index}" :key="route.name" :index="resolvePath(route.path)" @click="handleClickMenu(route,index)">
@@ -43,6 +46,7 @@
           <button class="btn" @click="logout">退出</button>
         </div>
       </el-menu>
+
       <!-- <breadcrumb @handleClicLogo="handleClicLogo"/> -->
       <app-main :class="{'app-main':itemMenu.length>0}" />
       <el-footer style="height:20px">Copyright © 2018 VMSS.</el-footer>
@@ -64,6 +68,7 @@ export default {
   mixins: [ResizeMixin],
   data() {
     return {
+      screenWidth: document.body.clientWidth,
       menuPath: '',
       menuIndex: 0,
       itemMenu: [],
@@ -96,6 +101,13 @@ export default {
     // console.log(this.routes)
   },
   mounted() {
+    const that = this
+    window.onresize = () => {
+      return (() => {
+        window.screenWidth = document.body.clientWidth
+        that.screenWidth = window.screenWidth
+      })()
+    }
     this.getSessionStorage()
   },
   methods: {
@@ -289,6 +301,17 @@ export default {
         top: 25px;
         font-size: 12px;
       }
+    }
+  }
+}
+.left-menu {
+  position: absolute;
+  padding: 0 10px;
+  button {
+    color: #fff;
+    &:hover {
+      transform: scale(1.1);
+      transition: 3s;
     }
   }
 }

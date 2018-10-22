@@ -14,12 +14,12 @@
       </div>
     </el-row>
     <el-table :max-height="tableHeight" v-loading="listLoading" :data="list" element-loading-text="Loading" border fit>
-      <el-table-column label="车牌号码" width="100" align="center">
+      <el-table-column label="车牌号码" width="120" align="center">
         <template slot-scope="scope">
           {{ scope.row.vehiclePlateNumber }}
         </template>
       </el-table-column>
-      <el-table-column label="驾驶员姓名" width="100" align="center">
+      <el-table-column label="驾驶员姓名" width="120" align="center">
         <template slot-scope="scope">
           {{ scope.row.driverName }}
         </template>
@@ -34,7 +34,7 @@
           <span>{{ scope.row.happenTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="违章类型" width="150" align="center">
+      <el-table-column label="违章类型" width="120" align="center">
         <template slot-scope="scope">
           <span>{{ typeName(scope.row.type) }}</span>
         </template>
@@ -49,12 +49,12 @@
           <span>{{ statusName(scope.row.status) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="罚款金额" width="150" align="center">
+      <el-table-column label="罚款金额" width="120" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.amount }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="违章扣分" width="100" align="center">
+      <el-table-column label="违章扣分" width="120" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.course }}</span>
         </template>
@@ -164,7 +164,7 @@ export default {
     return {
       dialogTitle: '添加',
       tableHeight: document.documentElement.clientHeight - 230 || document.body.clientHeight - 230,
-      list: null,
+      list: [],
       listLoading: true,
       searchType: '1',
       searchTxt: '',
