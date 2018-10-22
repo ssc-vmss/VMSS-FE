@@ -44,9 +44,15 @@ export default {
       searchDate:[new Date(Date.now()-3600*1000*24*180),new Date()],
       searchType:'',
       searchTxt:'',
+      totalChart:'',
       listData:null,
+      totalOption:'',
+      driverChart:'',
       driverData:null,
+      driverOption:'',
+      vehicleChart:'',
       vehicleData:null,
+      vehicleOption:'',
       startTime:'',
       endTime:'',
       pickerOptions:{
@@ -59,54 +65,26 @@ export default {
   mounted(){
     this.startTime=parseTime(this.searchDate[0]);
     this.endTime=parseTime(this.searchDate[1]);
-    this.getDatas();
+
+    this.initCharts();
   },
   methods: {
-    toSearch(){
-      if(!this.searchDate){
-        this.$message({
-          message: '请选择统计日期',
-          type: 'warning'
-        });
-        return;
-      }
+    initCharts(){
+      this.initChartsOption();
 
-      this.startTime=parseTime(this.searchDate[0]);
-      this.endTime=parseTime(this.searchDate[1]);
+      this.totalChart=echarts.init(document.getElementById('totalbox'));
+      this.totalChart.setOption(this.totalOption);
+      this.driverChart=echarts.init(document.getElementById('driverbox'));
+      this.driverChart.setOption(this.driverOption);
+      this.vehicleChart=echarts.init(document.getElementById('vehiclebox'));
+      this.vehicleChart.setOption(this.vehicleOption);
 
-      this.getDatas();
+      this.getChartsData();
     },
-    getDatas(){
-      let params={startTime:this.startTime,endTime:this.endTime}
-
-      if(this.searchType==1)params.driverName=this.searchTxt;
-      if(this.searchType==2)params.vehiclePlateNumber=this.searchTxt;
-
-      this.loading=true;
-      const totalAccident=statisticalAcidentTotalByDate(params).then(Response=>{
-        this.listData=Response.data.rows;
-        this.total();
-      })
-      const driverAccident=statisticalAcidentDriverByDate(params).then(Response=>{
-        this.driverData=Response.data.rows;
-        this.driver();
-      })
-      const vehicleAccident=statisticalAcidentVehicleByDate(params).then(Response=>{
-        this.vehicleData=Response.data.rows;
-        this.vehicle();
-      })
-
-      Promise.all([driverAccident,driverAccident,vehicleAccident]).then(()=>{
-        this.loading=false;
-      }).catch(()=>{
-        this.loading=false;
-      })
-    },
-    total(){
-      var myChart = echarts.init(document.getElementById('totalbox'));
-      var option = {
+    initChartsOption(){
+      this.totalOption={
         title: {
-            text: '事故统计',
+            text: '事故类型总计',
             show:true,
             left:'center'
         },
@@ -121,7 +99,7 @@ export default {
         ],
         dataset:{
           dimensions: ['happenTime', 'majorAccident', 'oversizeAccident', 'generalAccident','minorAccident'],
-          source:this.listData
+          source:[]
         },
         series: [
           {type: 'bar',name:'重大事故'},
@@ -130,31 +108,28 @@ export default {
           {type: 'bar',name:'轻微事故'},
         ]
       };
-      myChart.setOption(option);
-    },
-    driver(){
-      var myChart = echarts.init(document.getElementById('driverbox'));
-      var option = {
-        title: {
-            text: '事故总计',
-            show:false,
 
+      this.driverOption={
+        title: {
+            text: '驾驶员事故统计',
+            show:true,
+            left:'center'
         },
         tooltip: {},
-        legend: {},
+        legend: {type:'scroll',orient:'vertica',right:0,top:'middle'},
         // dataZoom:[{type: 'slider',filterMode: 'empty',yAxisIndex:[0,1]}],
-        grid:[{height:'35%',top:'20%',containLabel:true},{height:'35%',top:'65%',bottom:'5%',containLabel:true}],
+        grid:[{height:'35%',top:'20%',right:'30%',containLabel:true},{height:'35%',top:'65%',bottom:'5%',right:'30%',containLabel:true}],
         xAxis: [
           {type: 'category', gridIndex: 0,name:'姓名'},
           {type: 'category', gridIndex: 1,name:'姓名'}
         ],
         yAxis: [
-          {gridIndex: 0,name:'人数'},
+          {gridIndex: 0,name:'人数',minInterval: 1},
           {gridIndex: 1,name:'元'}
         ],
         dataset:{
           dimensions: ['driverName', 'number', 'lossAmount', 'otherAmount','deadNumber','seriousNumbe','myAmout'],
-          source:this.driverData
+          source:[]
         },
         series: [
           {type: 'bar',name:'事故人数'},
@@ -165,32 +140,30 @@ export default {
           {type: 'bar',name:'我方赔偿金额',xAxisIndex:1,yAxisIndex:1}
         ]
       };
-      myChart.setOption(option);
-    },
-    vehicle(){
-      var myChart = echarts.init(document.getElementById('vehiclebox'));
-      var option = {
+
+      this.vehicleOption={
         title: {
-            text: '事故统计',
-            show:false
+            text: '车辆事故统计',
+            show:true,
+            left:'center'
         },
         tooltip: {},
-        legend: {},
-        grid:[{height:'35%',top:'20%',containLabel:true},{height:'35%',top:'65%',bottom:'5%',containLabel:true}],
+        legend: {type:'scroll',orient:'vertica',right:0,top:'middle'},
+        grid:[{height:'35%',top:'20%',right:'30%',containLabel:true},{height:'35%',top:'65%',bottom:'5%',right:'30%',containLabel:true}],
         xAxis: [
           {type: 'category', gridIndex: 0,name:'车牌'},
           {type: 'category', gridIndex: 1,name:'车牌'}
         ],
         yAxis: [
-          {gridIndex: 0,name:'人数'},
+          {gridIndex: 0,name:'人数',minInterval: 1},
           {gridIndex: 1,name:'元'}
         ],
         dataset:{
           dimensions: ['plateNum', 'number', 'lossAmount', 'otherAmount','deadNumber','seriousNumbe','myAmout'],
-          source:this.vehicleData
+          source:[]
         },
         series: [
-          {type: 'bar',name:'事故人数'},
+          {type: 'bar',name:'事故人数',label:{show:true}},
           {type: 'bar',name:'损失金额',xAxisIndex:1,yAxisIndex:1},
           {type: 'bar',name:'对方赔偿金额',xAxisIndex:1,yAxisIndex:1},
           {type: 'bar',name:'死亡人数'},
@@ -198,8 +171,57 @@ export default {
           {type: 'bar',name:'我方赔偿金额',xAxisIndex:1,yAxisIndex:1}
         ]
       };
-      myChart.setOption(option);
-    }
+    },
+    getChartsData(){
+      let params={startTime:this.startTime,endTime:this.endTime}
+
+      if(this.searchType==1)params.driverName=this.searchTxt;
+      if(this.searchType==2)params.vehiclePlateNumber=this.searchTxt;
+
+      this.totalChart.showLoading();
+      statisticalAcidentTotalByDate(params).then(Response=>{
+        this.totalChart.hideLoading();
+        this.totalChart.setOption({
+          dataset:{
+            source:Response.data.rows
+          },
+        })
+      })
+
+      this.driverChart.showLoading();
+      statisticalAcidentDriverByDate(params).then(Response=>{
+        this.driverChart.hideLoading();
+        this.driverChart.setOption({
+          dataset:{
+            source:Response.data.rows
+          },
+        })
+      })
+
+      this.vehicleChart.showLoading();
+      statisticalAcidentVehicleByDate(params).then(Response=>{
+        this.vehicleChart.hideLoading();
+        this.vehicleChart.setOption({
+          dataset:{
+            source:Response.data.rows
+          },
+        })
+      })
+    },
+    toSearch(){
+      if(!this.searchDate){
+        this.$message({
+          message: '请选择统计日期',
+          type: 'warning'
+        });
+        return;
+      }
+
+      this.startTime=parseTime(this.searchDate[0]);
+      this.endTime=parseTime(this.searchDate[1]);
+
+      this.getChartsData();
+    },
   }
 
 }
@@ -211,7 +233,6 @@ export default {
 }
 #totalbox,#driverbox,#vehiclebox{
   display: inline-block;
-  // margin-left: 100px;
   width:45%;
   min-width: 500px;
   height:400px;

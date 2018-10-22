@@ -19,7 +19,7 @@
           {{ scope.row.vehiclePlateNumber }}
         </template>
       </el-table-column>
-      <el-table-column label="驾驶员姓名" width="100" align="center">
+      <el-table-column label="驾驶员姓名" min-width="100" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.driverName }}</span>
         </template>
