@@ -8,11 +8,11 @@ export function getInfoList(params) {
   })
 }
 
-export function addInfo(data) {
+export function addInfo(params) {
   return request({
     url: '/admin/returnTeamAll',
     method: 'post',
-    data
+    params
   })
 }
 

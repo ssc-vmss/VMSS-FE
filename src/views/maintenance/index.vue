@@ -224,7 +224,7 @@ export default {
     return {
       dialogTitle:'添加',
       tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
-      list: null,
+      list: [],
       listLoading: true,
       searchType:'1',
       searchTxt:'',

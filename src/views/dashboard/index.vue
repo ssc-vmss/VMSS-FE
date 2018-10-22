@@ -1,37 +1,37 @@
 <template>
   <div class="dashboard-container">
-    <el-row :gutter="20">
-      <el-col :span="4" class="numeric">
+    <el-row :gutter="20" class="box1">
+      <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">车辆数量</div>
           <div class="numeric-value">254</div>
         </div>
       </el-col>
-      <el-col :span="4" class="numeric">
+      <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">驾驶员数量</div>
           <div class="numeric-value">153</div>
         </div>
       </el-col>
-      <el-col :span="4" class="numeric">
+      <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">车载设备数量</div>
           <div class="numeric-value">250</div>
         </div>
       </el-col>
-      <el-col :span="4" class="numeric">
+      <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">未审批申请单</div>
           <div class="numeric-value">25</div>
         </div>
       </el-col>
-      <el-col :span="4" class="numeric">
+      <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">派车单数量</div>
           <div class="numeric-value">326</div>
         </div>
       </el-col>
-      <el-col :span="4" class="numeric">
+      <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">事故违章数量</div>
           <div class="numeric-value">5</div>
@@ -39,21 +39,21 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="8">
+      <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
         <my-chart :option="option1" chartName="chart1"></my-chart>
       </el-col>
-      <el-col :span="8">
+      <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
         <my-chart :option="option2" chartName="chart2"></my-chart>
       </el-col>
-      <el-col :span="8">
+      <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
         <my-chart :option="option3" chartName="chart3"></my-chart>
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="12">
+      <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
         <my-chart :option="option4" chartName="chart4"></my-chart>
       </el-col>
-      <el-col :span="12">
+      <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
         <my-chart :option="option5" chartName="chart5"></my-chart>
       </el-col>
     </el-row>
@@ -483,7 +483,8 @@ export default {
 .numeric {
   &-box {
     text-align: center;
-    padding: 20px;
+    padding: 20px 10px;
+    margin: 10px;
     border: 1px solid rgba(0, 128, 128, 1);
     border-radius: 10px;
     // background: rgba(0, 128, 128,.1);
@@ -500,6 +501,9 @@ export default {
     white-space: nowrap;
     text-overflow: ellipsis;
     pointer-events: none;
+    @media screen and (max-device-width: 450px) {
+      font-size: 15px;
+    }
   }
   &-value {
     font-weight: 400;

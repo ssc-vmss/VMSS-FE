@@ -36,7 +36,7 @@
               {{ isDispatchFormat(scope.row.isDispatch) }}
             </template>
           </el-table-column>
-          <el-table-column prop="caruser" label="用车人" align="center">
+          <el-table-column prop="caruser" label="用车人" width="100" align="center">
           </el-table-column>
           <el-table-column prop="useDate" label="用车时间" width="160" align="center">
           </el-table-column>
@@ -63,9 +63,9 @@
               {{ approvalStatus(scope.row.result) }}
             </template>
           </el-table-column> -->
-          <el-table-column prop="ddid" align="center" label="申请单号">
+          <el-table-column prop="ddid" align="center" label="申请单号" width="200">
           </el-table-column>
-          <el-table-column label="备注" min-width="100" align="center">
+          <el-table-column label="备注" min-width="200" align="center">
             <template slot-scope="scope">
               {{ scope.row.demo }}
             </template>
@@ -130,23 +130,23 @@
               <span>{{ scope.row.department }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="用车时间" width="100" align="center">
+          <el-table-column label="用车时间" width="160" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.createTime }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="调度时间" width="100" align="center">
+          <el-table-column label="调度时间" width="160" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.createTime }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column label="用车申请单号" width="110" align="center">
+          <el-table-column label="用车申请单号" width="200" align="center">
             <template slot-scope="scope">
               {{ scope.row.applyId }}
             </template>
           </el-table-column>
-          <el-table-column label="备注" align="center">
+          <el-table-column label="备注" min-width="200" align="center">
             <template slot-scope="scope">
               {{ scope.row.demo }}
             </template>

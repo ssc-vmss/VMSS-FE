@@ -79,7 +79,7 @@
     <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
     <!-- add from -->
     <el-dialog :title="dialogTitle+'驾驶员信息'" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">
-      <el-form :model="form" :rules="rules" ref="ruleForm" :label-width="formLabelWidth">
+      <el-form ref="ruleForm" :model="form" :rules="rules" :label-width="formLabelWidth">
         <el-row>
           <el-col :span="12">
             <el-form-item label="姓名" prop="userId">
@@ -176,7 +176,7 @@ export default {
     return {
       dialogTitle: '添加',
       tableHeight: document.documentElement.clientHeight - 230 || document.body.clientHeight - 230,
-      list: null,
+      list: [],
       listLoading: true,
       searchTxt: '',
       searchType: '1',
@@ -273,8 +273,8 @@ export default {
       this.form.mobile = user.mobile;
     },
     clearUser() {
-      this.form.userName = '';
-      this.form.mobile = '';
+      this.form.userName = ''
+      this.form.mobile = ''
     },
     toDel(id) {
       this.$confirm('您确定要删除该记录?', '提示', {
@@ -286,18 +286,17 @@ export default {
           this.$message({
             type: 'success',
             message: '删除成功!'
-          });
-          this.fetchData();
+          })
+          this.fetchData()
         })
       }).catch(() => {
-      });
+      })
     },
     closeDialog(formName) {
-      this.editact = false;
-      this.dialogTitle = "添加";
-      // this.resetForm();
-      this.form.userName = this.editUserName;
-      this.$refs[formName].resetFields();
+      this.editact = false
+      this.dialogTitle = '添加'
+      this.form.userName = this.editUserName
+      this.$refs[formName].resetFields()
     },
     handleCreate() {
       console.log('this.form:', this.form)

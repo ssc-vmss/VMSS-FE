@@ -56,18 +56,18 @@
       </el-table-column>
     </el-table>
     <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
-    <el-dialog :visible.sync="dialogFormVisible" :title="isAdd?'添加加油记录信息':'编辑加油记录信息'" width="600px" @close="handleCancle">
+    <el-dialog :visible.sync="dialogFormVisible" :title="isAdd?'添加加油记录信息':'编辑加油记录信息'" width="600px" @close="closeDialog">
       <el-form ref="ruleForm" :model="form" :rules="rules" :label-width="formLabelWidth">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="车牌号码" prop="vehiclePlateNumber">
+            <el-form-item prop="vehicleId" label="车牌号码">
               <el-select v-model="form.vehicleId" clearable filterable remote placeholder="请输入关键词">
                 <el-option v-for="item in vehicleArray" :key="item.id" :label="item.plateNumber" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="驾驶员姓名" prop="driverName">
+            <el-form-item prop="driverId" label="驾驶员姓名">
               <el-select v-model="form.driverId" clearable filterable remote placeholder="请输入关键词">
                 <el-option v-for="item in driverArray" :key="item.id" :label="item.userName" :value="item.id"></el-option>
               </el-select>
@@ -76,7 +76,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="油卡编号" prop="fuelcardNo">
+            <el-form-item prop="fuelcardId" label="油卡编号">
               <el-select v-model="form.fuelcardId" clearable filterable remote placeholder="请输入关键词">
                 <el-option v-for="item in fuelCardArray" :key="item.id" :label="item.fuelcardNo" :value="item.id"></el-option>
               </el-select>
@@ -88,22 +88,22 @@
             </el-form-item>
           </el-col> -->
           <el-col :span="12">
-            <el-form-item label="加油地点" prop="place">
+            <el-form-item prop="place" label="加油地点">
               <el-input v-model="form.place" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="油价" prop="unitPrice">
-              <el-input-number v-model="form.unitPrice" auto-complete="off" :controls="false">
+            <el-form-item prop="unitPrice" label="油价">
+              <el-input-number v-model="form.unitPrice" :min="0" :controls="false">
                 <template slot="append">元</template>
               </el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="加油升数" prop="volume">
-              <el-input-number v-model="form.volume" :min="0" :max="500" :controls="false">
+            <el-form-item prop="volume" label="加油升数">
+              <el-input-number v-model="form.volume" :min="0" :controls="false">
                 <template slot="append">升</template>
               </el-input-number>
             </el-form-item>
@@ -111,8 +111,8 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addData('ruleForm')">确 定</el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="addData('ruleForm')">提交</el-button>
       </div>
     </el-dialog>
 
@@ -127,18 +127,16 @@ import { getInfoList as getFuelCardList } from '@/api/fuelcard'
 
 export default {
   data() {
-    const validateTotalAmount = (rule, value, callback) => {
-      if (value === '' && this.form.remainAmount !== '') {
-        callback(new Error('请输入总金额'))
-      } else if (value !== '' && value <= 0) {
-        callback(new Error('总金额须大于0'))
+    const validateUnitPrice = (rule, value, callback) => {
+      if (value === 0) {
+        callback(new Error('油价必须大于0'))
       } else {
         callback()
       }
     }
-    const validateRemainAmount = (rule, value, callback) => {
-      if (value !== '' && value > this.form.totalAmount) {
-        callback(new Error('余额不能大于总金额'))
+    const validateVolume = (rule, value, callback) => {
+      if (value === 0) {
+        callback(new Error('加油升数必须大于0'))
       } else {
         callback()
       }
@@ -150,6 +148,7 @@ export default {
       searchTxt: '',
       dialogFormVisible: false,
       form: {
+        id: '',
         vehicleId: '',
         driverId: '',
         fuelcardId: '',
@@ -158,20 +157,22 @@ export default {
         volume: 0
       },
       rules: {
-        vehiclePlateNumber: [
+        vehicleId: [
           { required: true, message: '请输入车牌号码', trigger: 'blur' }
         ],
-        driverName: [
+        driverId: [
           { required: true, message: '请输入驾驶员姓名', trigger: 'blur' }
         ],
-        fuelcardNo: [
+        fuelcardId: [
           { required: true, message: '请输入加油卡编号', trigger: 'blur' }
         ],
         unitPrice: [
-          { required: true, message: '请输入油价', trigger: 'blur'}
+          { required: true, type: 'number', message: '请输入油价', trigger: 'blur' },
+          { validator: validateUnitPrice, trigger: 'blur' }
         ],
         volume: [
-          { required: true, message: '请输入加油升数', trigger: 'blur' }
+          { required: true, type: 'number', message: '请输入加油升数', trigger: 'blur' },
+          { validator: validateVolume, trigger: 'blur' }
         ]
       },
       formLabelWidth: '120px',
@@ -241,23 +242,19 @@ export default {
         this.listLoading = false
       })
     },
-    changeColor(driverName) {
-
-    },
-    handleCancle() {
+    closeDialog() {
+      this.$refs['ruleForm'].resetFields()
       if (this.isAdd) {
         this.isAdd = false
       } else if (this.isEdit) {
         this.isEdit = false
       }
-      this.dialogFormVisible = false
     },
     addData(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.saveData()
         } else {
-          console.log('error submit!!')
           return false
         }
       })
