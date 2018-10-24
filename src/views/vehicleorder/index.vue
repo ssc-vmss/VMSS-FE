@@ -303,7 +303,7 @@ export default {
   data() {
     return {
       vechileType: vechileType,
-      tableHeight: document.documentElement.clientHeight - 300 || document.body.clientHeight - 300,
+      tableHeight: document.documentElement.clientHeight - 280 || document.body.clientHeight - 280,
       listData: [],
       listLoading: false,
       dialogFormVisible: false,
@@ -380,7 +380,7 @@ export default {
   mounted() {
     const that = this;
     window.onresize = function () {
-      that.tableHeight = document.documentElement.clientHeight - 300 || document.body.clientHeight - 300
+      that.tableHeight = document.documentElement.clientHeight - 280 || document.body.clientHeight - 280
     }
   },
   beforeDestroy() {

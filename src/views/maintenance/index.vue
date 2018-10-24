@@ -128,8 +128,16 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="报修人姓名" prop="repaireReporterName" :label-width="formLabelWidth">
-              <el-input v-model="form.repaireReporterName" auto-complete="off"></el-input>
+            <el-form-item label="报修人姓名" prop="repaireReporter" :label-width="formLabelWidth">
+              <!-- <el-input v-model="form.repaireReporterName" auto-complete="off"></el-input> -->
+              <el-select v-model="form.repaireReporter" clearable filterable remote :remote-method="searchRepaireReporter" :loading="repaireLoading" placeholder="请输入关键词">
+                <el-option
+                  v-for="item in repaireReporterOption"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -140,8 +148,16 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="送修人姓名" prop="senderReporterName" :label-width="formLabelWidth">
-              <el-input v-model="form.senderReporterName" auto-complete="off"></el-input>
+            <el-form-item label="送修人姓名" prop="senderReporter" :label-width="formLabelWidth">
+              <!-- <el-input v-model="form.senderReporterName" auto-complete="off"></el-input> -->
+              <el-select v-model="form.senderReporter" clearable filterable remote :remote-method="searchSendReporter" :loading="sendLoading" placeholder="请输入关键词">
+                <el-option
+                  v-for="item in senderReporterOption"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -181,8 +197,16 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="验收人姓名" prop="checkReporterName" :label-width="formLabelWidth">
-              <el-input v-model="form.checkReporterName" auto-complete="off"></el-input>
+            <el-form-item label="验收人姓名" prop="checkReporter" :label-width="formLabelWidth">
+              <!-- <el-input v-model="form.checkReporterName" auto-complete="off"></el-input> -->
+              <el-select v-model="form.checkReporter" clearable filterable remote :remote-method="searchCheckReporter" :loading="checkLoading" placeholder="请输入关键词">
+                <el-option
+                  v-for="item in checkReporterOption"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -207,6 +231,7 @@
 <script>
 import { getInfoList,addInfo,editInfo,delInfo } from '@/api/maintenance'
 import { getInfoList as getVehicleList } from '@/api/vehicle'
+import { getUserList } from '@/api/driver'
 
 export default {
   data() {
@@ -223,7 +248,7 @@ export default {
     };
     return {
       dialogTitle:'添加',
-      tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
+      tableHeight:document.documentElement.clientHeight-210||document.body.clientHeight-210,
       list: [],
       listLoading: true,
       searchType:'1',
@@ -231,16 +256,25 @@ export default {
       dialogFormVisible:false,
       vehicles:[],
       vehiclesLoading:false,
+      checkReporterOption:'',
+      checkLoading:false,
+      repaireReporterOption:'',
+      repaireLoading:false,
+      senderReporterOption:'',
+      sendLoading:false,
       form: {
         amount: '',
+        checkReporter:'',
         checkReporterName: '',
         checkResult: '',
         enterpriseName:'',
         manufactorId:'',
         repairProject: '',
+        repaireReporter:'',
         repaireReporterName: '',
         reportDate: '',
         sendDate:'',
+        senderReporter:'',
         senderReporterName:'',
         status:'',
         type:'',
@@ -272,7 +306,7 @@ export default {
   mounted(){
     const that=this;
     window.onresize=function(){
-      that.tableHeight=document.documentElement.clientHeight-230||document.body.clientHeight-230
+      that.tableHeight=document.documentElement.clientHeight-210||document.body.clientHeight-210
     }
   },
   beforeDestroy(){
@@ -281,10 +315,37 @@ export default {
   methods: {
     getVehicles(query){
       if(query){
-        this.optionsLoading=true;
+        this.vehiclesLoading=true;
         getVehicleList({plateNumber:query}).then(response=>{
           this.vehicles=response.data.rows;
-          this.optionsLoading=false;
+          this.vehiclesLoading=false;
+        })
+      }
+    },
+    searchRepaireReporter(query) {//获取报修人
+      if (query) {
+        this.repaireLoading = true;
+        getUserList({ name: query }).then(response => {
+          this.repaireReporterOption = response.data.rows;
+          this.repaireLoading = false;
+        })
+      }
+    },
+    searchSendReporter(query) {//获取送修人
+      if (query) {
+        this.sendLoading = true;
+        getUserList({ name: query }).then(response => {
+          this.senderReporterOption = response.data.rows;
+          this.sendLoading = false;
+        })
+      }
+    },
+    searchCheckReporter(query) {//获取验收人
+      if (query) {
+        this.checkLoading = true;
+        getUserList({ name: query }).then(response => {
+          this.checkReporterOption = response.data.rows;
+          this.checkLoading = false;
         })
       }
     },
@@ -398,11 +459,11 @@ export default {
       });
     },
     toEdit(data){
-      console.log('data:',data)
-      this.vehicles=[{plateNumber:data.vehiclePlateNumber,id:data.vehicleId}]
-      // data.status+='';
-      // data.type=data.type+'';
-      // this.form=data;
+      this.vehicles=[{plateNumber:data.vehiclePlateNumber,id:data.vehicleId}];
+      this.repaireReporterOption=[{id:data.repaireReporter,name:data.repaireReporterName}];
+      this.senderReporterOption=[{id:data.senderReporter,name:data.senderReporterName}];
+      this.checkReporterOption=[{id:data.checkReporter,name:data.checkReporterName}];
+
       this.form=Object.assign({},data);
       console.log('this.form:',this.form)
       this.dialogFormVisible=true;

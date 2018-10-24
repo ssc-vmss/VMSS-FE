@@ -115,10 +115,15 @@ export default {
             show:true,
             left:'center'
         },
-        tooltip: {},
+        tooltip: {
+          trigger: 'axis',
+          axisPointer : {
+            type : 'shadow'
+          }
+        },
         legend: {type:'scroll',orient:'vertica',right:0,top:'middle'},
         // dataZoom:[{type: 'slider',filterMode: 'empty',yAxisIndex:[0,1]}],
-        grid:[{height:'35%',top:'20%',right:'30%',containLabel:true},{height:'35%',top:'65%',bottom:'5%',right:'30%',containLabel:true}],
+        grid:[{left:70,right:150,top:'20%',bottom:'50%'},{left:70,top:'65%',bottom:'8%',right:'30%'}],
         xAxis: [
           {type: 'category', gridIndex: 0,name:'姓名'},
           {type: 'category', gridIndex: 1,name:'姓名'}
@@ -147,9 +152,14 @@ export default {
             show:true,
             left:'center'
         },
-        tooltip: {},
+        tooltip: {
+          trigger: 'axis',
+          axisPointer : {
+            type : 'shadow'
+          }
+        },
         legend: {type:'scroll',orient:'vertica',right:0,top:'middle'},
-        grid:[{height:'35%',top:'20%',right:'30%',containLabel:true},{height:'35%',top:'65%',bottom:'5%',right:'30%',containLabel:true}],
+        grid:[{left:70,right:150,top:'20%',bottom:'50%'},{left:70,top:'65%',bottom:'8%',right:'30%'}],
         xAxis: [
           {type: 'category', gridIndex: 0,name:'车牌'},
           {type: 'category', gridIndex: 1,name:'车牌'}

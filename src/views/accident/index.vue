@@ -135,7 +135,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="事故时间" prop="happenTime">
-              <el-date-picker v-model="form.happenTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+              <el-date-picker v-model="form.happenTime" type="datetime" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" :picker-options="pickerOptions"></el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -176,17 +176,17 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="事故人数" prop="number">
-              <el-input-number v-model="form.number" auto-complete="off" :controls="false"></el-input-number>
+              <el-input-number v-model="form.number" auto-complete="off" :min="0" :precision="0" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="死亡人数" prop="deadNumber">
-              <el-input-number v-model="form.deadNumber" auto-complete="off" :controls="false"></el-input-number>
+              <el-input-number v-model="form.deadNumber" auto-complete="off" :min="0" :precision="0" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="重伤人数" prop="seriousNumber">
-              <el-input-number v-model="form.seriousNumber" auto-complete="off" :controls="false"></el-input-number>
+              <el-input-number v-model="form.seriousNumber" auto-complete="off" :min="0" :precision="0" :controls="false"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -262,7 +262,7 @@ export default {
   data() {
     return {
       dialogTitle: '添加',
-      tableHeight: document.documentElement.clientHeight - 230 || document.body.clientHeight - 230,
+      tableHeight: document.documentElement.clientHeight - 210 || document.body.clientHeight - 210,
       list: [],
       listLoading: true,
       searchType: '1',
@@ -271,6 +271,11 @@ export default {
       vehicles: [],
       drivers: [],
       vehiclesLoading: false,
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        }
+      },
       form: {
         accidentLiability: '',
         content: '',
@@ -302,6 +307,9 @@ export default {
         ],
         vehicleId: [
           { required: true, message: '请选择事故车辆', trigger: 'blur' },
+        ],
+        degree:[
+          { required: true, message: '请选择事故程度', trigger: 'change' },
         ]
       },
       formLabelWidth: '130px',
@@ -321,7 +329,7 @@ export default {
   mounted() {
     const that = this;
     window.onresize = function () {
-      that.tableHeight = document.documentElement.clientHeight - 230 || document.body.clientHeight - 230
+      that.tableHeight = document.documentElement.clientHeight - 210 || document.body.clientHeight - 210
     }
   },
   beforeDestroy() {

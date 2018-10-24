@@ -120,7 +120,7 @@ export default {
     };
     return {
       dialogTitle:'添加',
-      tableHeight:document.documentElement.clientHeight-230||document.body.clientHeight-230,
+      tableHeight:document.documentElement.clientHeight-210||document.body.clientHeight-210,
       list: null,
       listLoading: true,
       searchType:'1',
@@ -167,7 +167,7 @@ export default {
   mounted(){
     const that=this;
     window.onresize=function(){
-      that.tableHeight=document.documentElement.clientHeight-230||document.body.clientHeight-230
+      that.tableHeight=document.documentElement.clientHeight-210||document.body.clientHeight-210
     }
   },
   beforeDestroy(){
