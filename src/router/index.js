@@ -209,10 +209,34 @@ export const constantRouterMap = [
     },
     children: [
       {
-        path: 'accident',
-        component: () => import('@/views/statisticals/accident/index'),
-        name: 'accident',
-        meta: { title: '事故统计' }
+        path: 'mileagestatistics',
+        component: () => import('@/views/mileagestatistics/index'),
+        name: 'mileagestatistics',
+        meta: { title: '里程统计' }
+      },
+      {
+        path: 'speedstatistics',
+        component: () => import('@/views/speedstatistics/index'),
+        name: 'speedstatistics',
+        meta: { title: '超速统计' }
+      },
+      {
+        path: 'warnstatistics',
+        component: () => import('@/views/warnstatistics/index'),
+        name: 'warnstatistics',
+        meta: { title: '报警信息统计' }
+      },
+      {
+        path: 'accidentstatistics',
+        component: () => import('@/views/accidentstatistics/index'),
+        name: 'accidentstatistics',
+        meta: { title: '事故违章统计' }
+      },
+      {
+        path: 'vehiclestatistics',
+        component: () => import('@/views/vehiclestatistics/index'),
+        name: 'vehiclestatistics',
+        meta: { title: '无单违规用车' }
       }
     ]
   },

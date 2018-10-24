@@ -31,3 +31,17 @@ export function getById(params) {
     params
   })
 }
+export function getMileage(params) {
+  return request({
+    url: '/gis/points/mileage',
+    method: 'get',
+    params
+  })
+}
+export function getMileageDetailAll(params) {
+  return request({
+    url: '/gis/points/mileageDetailAll',
+    method: 'get',
+    params
+  })
+}

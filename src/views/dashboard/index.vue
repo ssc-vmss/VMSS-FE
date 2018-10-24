@@ -348,7 +348,7 @@ export default {
         yAxis: [
           {
             type: 'value',
-            splitArea: { show: true },
+            // splitArea: { show: true },
             name: 'km'
           }
         ],

@@ -23,3 +23,34 @@ export function getById(params) {
     params
   })
 }
+
+export function getStatistics(params) {
+  return request({
+    url: '/gis/warn/speedStatistics',
+    method: 'get',
+    params
+  })
+}
+
+export function getDetailAll(params) {
+  return request({
+    url: '/gis/warn/speedDetailAll',
+    method: 'get',
+    params
+  })
+}
+
+export function getVehicleStatistics(params) {
+  return request({
+    url: '/gis/warn/byVehicleStatistics',
+    method: 'get',
+    params
+  })
+}
+export function getVehicleDetailAll(params) {
+  return request({
+    url: '/gis/warn/byVehicleDetailAll',
+    method: 'get',
+    params
+  })
+}
