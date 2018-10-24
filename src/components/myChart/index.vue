@@ -12,20 +12,31 @@ export default {
     chartName: String,
     option: Object
   },
+  data() {
+    return {
+      myChart: null
+    }
+  },
   mounted() {
     this.initChart()
   },
   methods: {
     initChart() {
-      let myChart = echarts.init(this.$refs[this.chartName])
-      myChart.setOption(this.option)
+      this.myChart = echarts.init(this.$refs[this.chartName])
+      this.myChart.setOption(this.option)
+    },
+    showLoading() {
+      this.myChart.showLoading()
+    },
+    hideLoading() {
+      this.myChart.hideLoading()
     }
   }
 }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.mychart-box{
+.mychart-box {
   width: 100%;
   height: 400px;
   // border: 1px solid red;

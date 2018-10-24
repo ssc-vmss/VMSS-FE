@@ -28,19 +28,19 @@ const user = {
     // 登录
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
-        // const data = { token: 'admin' }
-        // setToken(data.token)
-        // commit('SET_TOKEN', data.token)
-        // resolve()
+        const data = { token: 'admin' }
+        setToken(data.token)
+        commit('SET_TOKEN', data.token)
+        resolve()
 
-        login({account:userInfo.username, password:userInfo.password}).then(response => {
-          const data = response.data
-          setToken(data.token)
-          commit('SET_TOKEN', data.token)
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
+        // login({account:userInfo.username, password:userInfo.password}).then(response => {
+        //   const data = response.data
+        //   setToken(data.token)
+        //   commit('SET_TOKEN', data.token)
+        //   resolve()
+        // }).catch(error => {
+        //   reject(error)
+        // })
       })
     },
 

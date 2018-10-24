@@ -15,7 +15,7 @@
                   <el-checkbox :class="{search:vehicle.id == searchVehicle}" v-for="(vehicle,index) in unMonitorList" v-model="vehicle.id" :key="index" :label="vehicle.id">{{ vehicle.plateNumber }}</el-checkbox>
                 </el-checkbox-group>
               </div>
-              <el-select v-model="searchVehicle" clearable filterable remote placeholder="请输入关键词" @change="handleSelectNumber">
+              <el-select v-model="searchVehicle" clearable filterable remote placeholder="请输入关键词" @change="changePlateNumber">
                 <el-option v-for="item in unMonitorList" :key="item.id" :label="item.plateNumber" :value="item.id"></el-option>
               </el-select>
               <button :disabled="!(unMonitorIds.length||searchVehicle)&&tabIndex=='0'" class="btn" @click="handleMonitor">监控</button>
@@ -309,11 +309,10 @@ export default {
       }
     },
     // 点击建议项里的车牌号
-    handleSelectNumber(data) {
+    changePlateNumber(data) {
       let searchVehicleIndex = -1
       this.unMonitorList.forEach((vehicle, index) => {
         if (data === vehicle.id) {
-          console.log(11111111)
           searchVehicleIndex = index
         }
       })
