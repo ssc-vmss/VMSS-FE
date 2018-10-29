@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="searchbox">
       <el-form inline>
-        <el-form-item label="事故时间">
+        <el-form-item label="时间范围">
           <el-date-picker
             v-model="searchDate"
             type="datetimerange"
@@ -22,20 +22,30 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-input clearable v-model="searchTxt" placeholder="可选关键字" style="width:120px"></el-input>
+          <!-- <el-input clearable v-model="searchTxt" placeholder="可选关键字" style="width:120px"></el-input> -->
+          <el-select v-if="searchType==2" v-model="vehicleId" clearable filterable remote :remote-method="getVehicles" :loading="vehiclesLoading" placeholder="请输入关键词" style="width:150px">
+            <el-option v-for="item in vehicles" :key="item.id" :label="item.plateNumber" :value="item.id">
+            </el-option>
+          </el-select>
+          <el-select v-if="searchType==1" v-model="driverId" clearable filterable remote :remote-method="getDrivers" :loading="driversLoading" placeholder="请输入关键词" style="width:150px">
+            <el-option v-for="item in drivers" :key="item.id" :label="item.userName" :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-button @click="toSearch" :loading="loading">查询</el-button>
       </el-form>
     </div>
-    <div id="totalbox" v-show="!searchType"></div>
+
     <div id="driverbox" v-show="!searchType||searchType==1"></div>
     <div id="vehiclebox" v-show="!searchType||searchType==2"></div>
   </div>
 </template>
 
 <script>
-import { statisticalAcidentTotalByDate,statisticalAcidentDriverByDate,statisticalAcidentVehicleByDate } from '@/api/statisticals'
+import { statisticalOilsDriverByDate,statisticalOilsVehicleByDate } from '@/api/statisticals'
 import {parseTime} from '@/utils'
+import { getInfoList as getVehicleList } from '@/api/vehicle'
+import { getInfoList as getDriverList } from '@/api/driver'
 
 export default {
   data() {
@@ -44,9 +54,12 @@ export default {
       searchDate:[new Date(Date.now()-3600*1000*24*180),new Date()],
       searchType:'',
       searchTxt:'',
-      totalChart:'',
-      listData:null,
-      totalOption:'',
+      vehicles: [],
+      vehicleId:'',
+      vehiclesLoading:false,
+      drivers: [],
+      driverId:'',
+      driversLoading:false,
       driverChart:'',
       driverData:null,
       driverOption:'',
@@ -69,11 +82,27 @@ export default {
     this.initCharts();
   },
   methods: {
+    getVehicles(query) {
+      if (query != '') {
+        this.optionsLoading = true;
+        getVehicleList({ plateNumber: query }).then(response => {
+          this.vehicles = response.data.rows;
+          this.optionsLoading = false;
+        })
+      }
+    },
+    getDrivers(query) {
+      if (query != '') {
+        this.optionsLoading = true;
+        getDriverList({ userName: query }).then(response => {
+          this.drivers = response.data.rows;
+          this.optionsLoading = false;
+        })
+      }
+    },
     initCharts(){
       this.initChartsOption();
 
-      this.totalChart=echarts.init(document.getElementById('totalbox'));
-      this.totalChart.setOption(this.totalOption);
       this.driverChart=echarts.init(document.getElementById('driverbox'));
       this.driverChart.setOption(this.driverOption);
       this.vehicleChart=echarts.init(document.getElementById('vehiclebox'));
@@ -82,36 +111,9 @@ export default {
       this.getChartsData();
     },
     initChartsOption(){
-      this.totalOption={
-        title: {
-            text: '事故类型总计',
-            show:true,
-            left:'center'
-        },
-        tooltip: {},
-        legend: {top:'10%'},
-        grid:{top:'25%'},
-        xAxis: [
-          {type: 'category',name:'月份'}
-        ],
-        yAxis: [
-          {gridIndex: 0,name:'次数',minInterval: 1}
-        ],
-        dataset:{
-          dimensions: ['happenTime', 'majorAccident', 'oversizeAccident', 'generalAccident','minorAccident'],
-          source:[]
-        },
-        series: [
-          {type: 'bar',name:'重大事故',barMaxWidth:50},
-          {type: 'bar',name:'特大事故',barMaxWidth:50},
-          {type: 'bar',name:'一般事故',barMaxWidth:50},
-          {type: 'bar',name:'轻微事故',barMaxWidth:50},
-        ]
-      };
-
       this.driverOption={
         title: {
-            text: '驾驶员事故统计',
+            text: '驾驶员加油统计',
             show:true,
             left:'center'
         },
@@ -121,37 +123,26 @@ export default {
             type : 'shadow'
           }
         },
-        legend: {type:'scroll',orient:'vertica',right:0,top:'middle'},
+        // legend: {type:'scroll',orient:'vertica',right:0,top:'middle'},
         // dataZoom:[{type: 'slider',filterMode: 'empty',yAxisIndex:[0,1]}],
-        grid:[{left:70,right:150,top:'20%',bottom:'50%'},{left:70,top:'65%',bottom:'8%',right:'30%'}],
         xAxis: [
-          {type: 'category', gridIndex: 0,name:'姓名'},
-          {type: 'category', gridIndex: 1,name:'姓名'}
+          {type: 'category', gridIndex: 0,name:'姓名'}
         ],
         yAxis: [
-          {gridIndex: 0,name:'人数',minInterval: 1},
-          {gridIndex: 1,name:'元'}
+          {gridIndex: 0,name:'升',minInterval: 1}
         ],
-        axisPointer:{
-          link: {xAxisIndex: [0,1]},
-        },
         dataset:{
-          dimensions: ['driverName', 'number', 'lossAmount', 'otherAmount','deadNumber','seriousNumbe','myAmout'],
+          dimensions: ['driverName', 'volume'],
           source:[]
         },
         series: [
-          {type: 'bar',name:'事故人数'},
-          {type: 'bar',name:'损失金额',xAxisIndex:1,yAxisIndex:1},
-          {type: 'bar',name:'对方赔偿金额',xAxisIndex:1,yAxisIndex:1},
-          {type: 'bar',name:'死亡人数'},
-          {type: 'bar',name:'重伤人数'},
-          {type: 'bar',name:'我方赔偿金额',xAxisIndex:1,yAxisIndex:1}
+          {type: 'bar',name:'油量',barMaxWidth:50},
         ]
       };
 
       this.vehicleOption={
         title: {
-            text: '车辆事故统计',
+            text: '车辆加油统计',
             show:true,
             left:'center'
         },
@@ -161,51 +152,31 @@ export default {
             type : 'shadow'
           }
         },
-        legend: {type:'scroll',orient:'vertica',right:0,top:'middle'},
-        grid:[{left:70,right:150,top:'20%',bottom:'50%'},{left:70,top:'65%',bottom:'8%',right:'30%'}],
+        // legend: {type:'scroll',orient:'vertica',right:0,top:'middle'},
+        // grid:[{left:70,right:150,top:'20%',bottom:'50%'},{left:70,top:'65%',bottom:'8%',right:'30%'}],
         xAxis: [
           {type: 'category', gridIndex: 0,name:'车牌'},
-          {type: 'category', gridIndex: 1,name:'车牌'}
         ],
         yAxis: [
-          {gridIndex: 0,name:'人数',minInterval: 1},
-          {gridIndex: 1,name:'元'}
+          {gridIndex: 0,name:'升',minInterval: 1},
         ],
-        axisPointer:{
-          link: {xAxisIndex: 'all'},
-        },
         dataset:{
-          dimensions: ['plateNum', 'number', 'lossAmount', 'otherAmount','deadNumber','seriousNumbe','myAmout'],
+          dimensions: ['vehiclePlateNumber', 'volume'],
           source:[]
         },
         series: [
-          {type: 'bar',name:'事故人数',label:{show:false}},
-          {type: 'bar',name:'损失金额',xAxisIndex:1,yAxisIndex:1},
-          {type: 'bar',name:'对方赔偿金额',xAxisIndex:1,yAxisIndex:1},
-          {type: 'bar',name:'死亡人数'},
-          {type: 'bar',name:'重伤人数'},
-          {type: 'bar',name:'我方赔偿金额',xAxisIndex:1,yAxisIndex:1}
+          {type: 'bar',name:'油量',barMaxWidth:50},
         ]
       };
     },
     getChartsData(){
       let params={startTime:this.startTime,endTime:this.endTime}
 
-      if(this.searchType==1)params.driverName=this.searchTxt;
-      if(this.searchType==2)params.vehiclePlateNumber=this.searchTxt;
-
-      this.totalChart.showLoading();
-      statisticalAcidentTotalByDate(params).then(Response=>{
-        this.totalChart.hideLoading();
-        this.totalChart.setOption({
-          dataset:{
-            source:Response.data.rows
-          },
-        })
-      })
+      if(this.searchType==1)params.driverId=this.driverId;
+      if(this.searchType==2)params.vehicleId=this.vehicleId;
 
       this.driverChart.showLoading();
-      statisticalAcidentDriverByDate(params).then(Response=>{
+      statisticalOilsDriverByDate(params).then(Response=>{
         this.driverChart.hideLoading();
         this.driverChart.setOption({
           dataset:{
@@ -215,7 +186,7 @@ export default {
       })
 
       this.vehicleChart.showLoading();
-      statisticalAcidentVehicleByDate(params).then(Response=>{
+      statisticalOilsVehicleByDate(params).then(Response=>{
         this.vehicleChart.hideLoading();
         this.vehicleChart.setOption({
           dataset:{

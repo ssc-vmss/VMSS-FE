@@ -24,26 +24,42 @@ export function statisticalAcidentVehicleByDate(params) {
   })
 }
 
-export function addInfo(data) {
+export function statisticalOilsVehicleByDate(params) {
   return request({
-    url: '/admin/repair',
-    method: 'post',
-    data
+    url: '/admin/oilRecord/byVehicleStatistics',
+    method: 'get',
+    params
   })
 }
 
-export function editInfo(data) {
+export function statisticalOilsDriverByDate(params) {
   return request({
-    url: '/admin/repair',
-    method: 'put',
-    data
+    url: '/admin/oilRecord/ByUserStatistics',
+    method: 'get',
+    params
   })
 }
 
-export function delInfo(params) {
+export function statisticalPeccancyByType(params) {
   return request({
-    url: '/admin/logoutRepair',
-    method: 'put',
+    url: '/admin/peccancy/statisticsByType',
+    method: 'get',
+    params
+  })
+}
+
+export function statisticalPeccancyByDriver(params) {
+  return request({
+    url: '/admin/peccancy/peccancyStatisticsAll',
+    method: 'get',
+    params
+  })
+}
+
+export function statisticalPeccancyByDriverDetail(params) {
+  return request({
+    url: '/admin/peccancy/peccancyStatisticsDetail',
+    method: 'get',
     params
   })
 }

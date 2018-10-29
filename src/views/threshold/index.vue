@@ -14,7 +14,7 @@
         </el-table-column>
         <el-table-column align="center" prop="state" label="状态">
         </el-table-column>
-        <el-table-column align="center" prop=" createTime" label="创建时间">
+        <el-table-column align="center" prop="createTime" label="创建时间">
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="100" align="center">
           <template slot-scope="scope">

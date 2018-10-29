@@ -262,7 +262,7 @@ export default {
   data() {
     return {
       dialogTitle: '添加',
-      tableHeight: document.documentElement.clientHeight - 210 || document.body.clientHeight - 210,
+      tableHeight: 200||document.documentElement.clientHeight - 210 || document.body.clientHeight - 210,
       list: [],
       listLoading: true,
       searchType: '1',
@@ -329,7 +329,7 @@ export default {
   mounted() {
     const that = this;
     window.onresize = function () {
-      that.tableHeight = document.documentElement.clientHeight - 210 || document.body.clientHeight - 210
+      that.tableHeight = document.documentElement.clientHeight - 210 || document.body.clientHeight - 210;
     }
   },
   beforeDestroy() {
@@ -462,7 +462,7 @@ export default {
       }
 
       getInfoList(params).then(response => {
-        this.list = response.data.rows;
+        this.list = response.data.rows||[];
         this.total = response.data.total;
         this.listLoading = false
       })
