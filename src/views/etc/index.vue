@@ -39,10 +39,10 @@
           <span>{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="100" align="center">
+      <el-table-column fixed="right" label="操作" width="120" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="toEdit(scope.row)">修改</el-button>
-          <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button>
+          <button class="btn" @click="toEdit(scope.row)">修改</button>
+          <button class="btn" @click="toDel(scope.row.id)">删除</button>
         </template>
       </el-table-column>
     </el-table>

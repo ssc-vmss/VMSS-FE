@@ -104,9 +104,9 @@
           <span>{{ typeName(scope.row.type) }}</span>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="80" align="center">
+      <el-table-column fixed="right" label="操作" width="70" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="toEdit(scope.row)">修改</el-button>
+          <button class="btn" @click="toEdit(scope.row)">修改</button>
           <!-- <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button> -->
         </template>
       </el-table-column>

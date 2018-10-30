@@ -3,9 +3,11 @@
     <div class="conf-form">
       <div class="conf-form-row">
         <input type="text" class="conf-form-input" id="suggestId" placeholder="搜索地址" />
-        <div id="searchResult"></div>
-        <button :disabled="!(isadd||isedit)||overlays.length==0" class="btn" @click="remove">区域清除</button>
-        <!-- <button class="btn" @click="remove">区域清除</button> -->
+        <div class="btn-padding">
+          <div id="searchResult"></div>
+          <button :disabled="!(isadd||isedit)||overlays.length==0" class="btn" @click="remove">区域清除</button>
+          <!-- <button class="btn" @click="remove">区域清除</button> -->
+        </div>
       </div>
     </div>
     <div id="allmap" ref="map"></div>

@@ -2,7 +2,6 @@
   <div class="app-container">
     <el-row class="toptools" type="flex" justify="space-between">
       <el-col :span="6">
-        <el-button size="medium" style="margin-left: 10px;" type="primary" icon="el-icon-plus" @click="handleCreate">添加</el-button>
       </el-col>
       <div>
         <el-select v-model="searchType" style="width:120px">
@@ -58,9 +57,9 @@
           {{ scope.row.distpachId }}
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="100" align="center">
+      <el-table-column fixed="right" label="操作" width="70" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button>
+          <button class="btn" @click="toDel(scope.row.id)">删除</button>
         </template>
       </el-table-column>
     </el-table>
@@ -187,10 +186,6 @@ export default {
       getDriverList().then(response => {
         this.driverArray = response.data.rows
       })
-    },
-    handleCreate() {
-      this.dialogFormVisible = true
-      this.isAdd = true
     },
     handleCurrentChange(val) {
       this.page = val

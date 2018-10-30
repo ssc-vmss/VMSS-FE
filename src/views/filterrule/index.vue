@@ -16,10 +16,10 @@
         </el-table-column>
         <el-table-column align="center" prop="status" label="状态">
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="100" align="center">
+        <el-table-column fixed="right" label="操作" width="120" align="center">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="edit(scope.row.id)">修改</el-button>
-            <el-button type="text" size="small" @click="del(scope.row.id)">删除</el-button>
+            <button class="btn" @click="edit(scope.row.id)">修改</button>
+            <button class="btn" @click="del(scope.row.id)">删除</button>
           </template>
         </el-table-column>
       </el-table>
@@ -95,18 +95,21 @@ export default {
       this.listLoading = true
       getFilterRuleList().then(response => {
         if (response.data) {
-          this.filterruleList = JSON.parse(JSON.stringify(response.data.rows))
-          this.tableData = []
-          response.data.rows.forEach((item, index) => {
-            if (item.status === 1) {
-              item.status = '启用'
-            } else if (item.status === 2) {
-              item.status = '禁用'
-            }
-            this.tableData.push(item)
-          })
-          this.total = response.data.total
           this.listLoading = false
+          if (response.data.rows) {
+            console.log(response.data)
+            this.filterruleList = JSON.parse(JSON.stringify(response.data.rows))
+            this.tableData = []
+            response.data.rows.forEach((item, index) => {
+              if (item.status === 1) {
+                item.status = '启用'
+              } else if (item.status === 2) {
+                item.status = '禁用'
+              }
+              this.tableData.push(item)
+            })
+            this.total = response.data.total
+          }
         }
       })
     },

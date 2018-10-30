@@ -2,16 +2,18 @@
   <div class="map-view">
     <div class="conf-form">
       <div class="conf-form-row">
-        <button class="btn">
-          <el-checkbox v-model="isChecked" class="allow-checkbox">画面跟随</el-checkbox>
-        </button>
-        <button ref="play" :disabled="isPlaying||allOverlay.length == 0" class="btn" @click="play">播放</button>
-        <button ref="pause" :disabled="!isPlaying" class="btn" @click="pause">暂停</button>
-        <button :disabled="allOverlay.length == 0" class="btn" @click="reset">重置</button>
-        <div class="slider-box">
-          <div class="slider-label">播放慢速</div>
-          <el-slider :format-tooltip="formatSpeed" :show-tooltip="false" v-model="speed" :step="250" :min="0" :max="4000" class="slider"></el-slider>
-          
+        <div class="btn-padding">
+          <button class="btn">
+            <el-checkbox v-model="isChecked" class="allow-checkbox">画面跟随</el-checkbox>
+          </button>
+          <button ref="play" :disabled="isPlaying||allOverlay.length == 0" class="btn" @click="play">播放</button>
+          <button ref="pause" :disabled="!isPlaying" class="btn" @click="pause">暂停</button>
+          <button :disabled="allOverlay.length == 0" class="btn" @click="reset">重置</button>
+          <div class="slider-box">
+            <div class="slider-label">播放慢速</div>
+            <el-slider :format-tooltip="formatSpeed" :show-tooltip="false" v-model="speed" :step="250" :min="0" :max="4000" class="slider"></el-slider>
+
+          </div>
         </div>
       </div>
     </div>
@@ -270,5 +272,7 @@ export default {
 }
 .allow-checkbox {
   padding-right: 0;
+  color: #000;
+  font-weight: 700;
 }
 </style>
