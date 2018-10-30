@@ -94,10 +94,17 @@ export default {
           source: []
         },
         series: [
+<<<<<<< HEAD
           { type: 'bar', name: '重大事故' },
           { type: 'bar', name: '特大事故' },
           { type: 'bar', name: '一般事故' },
           { type: 'bar', name: '轻微事故' },
+=======
+          {type: 'bar',name:'重大事故',barMaxWidth:50},
+          {type: 'bar',name:'特大事故',barMaxWidth:50},
+          {type: 'bar',name:'一般事故',barMaxWidth:50},
+          {type: 'bar',name:'轻微事故',barMaxWidth:50},
+>>>>>>> 4f70b8f5ec281a238c38bca1eb98dff52f3b08ff
         ]
       };
 
@@ -125,9 +132,12 @@ export default {
           { gridIndex: 0, name: '人数', minInterval: 1 },
           { gridIndex: 1, name: '元' }
         ],
-        dataset: {
-          dimensions: ['driverName', 'number', 'lossAmount', 'otherAmount', 'deadNumber', 'seriousNumbe', 'myAmout'],
-          source: []
+        axisPointer:{
+          link: {xAxisIndex: [0,1]},
+        },
+        dataset:{
+          dimensions: ['driverName', 'number', 'lossAmount', 'otherAmount','deadNumber','seriousNumbe','myAmout'],
+          source:[]
         },
         series: [
           { type: 'bar', name: '事故人数' },
@@ -162,6 +172,7 @@ export default {
           { gridIndex: 0, name: '人数', minInterval: 1 },
           { gridIndex: 1, name: '元' }
         ],
+<<<<<<< HEAD
         dataset: {
           dimensions: ['plateNum', 'number', 'lossAmount', 'otherAmount', 'deadNumber', 'seriousNumbe', 'myAmout'],
           source: []
@@ -173,6 +184,22 @@ export default {
           { type: 'bar', name: '死亡人数' },
           { type: 'bar', name: '重伤人数' },
           { type: 'bar', name: '我方赔偿金额', xAxisIndex: 1, yAxisIndex: 1 }
+=======
+        axisPointer:{
+          link: {xAxisIndex: 'all'},
+        },
+        dataset:{
+          dimensions: ['plateNum', 'number', 'lossAmount', 'otherAmount','deadNumber','seriousNumbe','myAmout'],
+          source:[]
+        },
+        series: [
+          {type: 'bar',name:'事故人数',label:{show:false}},
+          {type: 'bar',name:'损失金额',xAxisIndex:1,yAxisIndex:1},
+          {type: 'bar',name:'对方赔偿金额',xAxisIndex:1,yAxisIndex:1},
+          {type: 'bar',name:'死亡人数'},
+          {type: 'bar',name:'重伤人数'},
+          {type: 'bar',name:'我方赔偿金额',xAxisIndex:1,yAxisIndex:1}
+>>>>>>> 4f70b8f5ec281a238c38bca1eb98dff52f3b08ff
         ]
       };
     },

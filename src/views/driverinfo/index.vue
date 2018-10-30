@@ -334,7 +334,7 @@ export default {
 
 
       getInfoList(params).then(response => {
-        this.list = response.data.rows
+        this.list = response.data.rows||[]
         this.total = response.data.total;
         this.listLoading = false
       })

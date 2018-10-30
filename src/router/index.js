@@ -238,6 +238,18 @@ export const constantRouterMap = [
         component: () => import('@/views/statisticals/vehiclestatistics/index'),
         name: 'vehiclestatistics',
         meta: { title: '无单违规用车' }
+      },
+      {
+        path: 'oilrecordstatistics',
+        component: () => import('@/views/statisticals/oilrecordstatistics/index'),
+        name: 'oilrecordstatistics',
+        meta: { title: '加油统计' }
+      },
+      {
+        path: 'peccancystatistics',
+        component: () => import('@/views/statisticals/peccancy/index'),
+        name: 'peccancystatistics',
+        meta: { title: '违章统计' }
       }
     ]
   },

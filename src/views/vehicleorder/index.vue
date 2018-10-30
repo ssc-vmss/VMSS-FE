@@ -575,7 +575,7 @@ export default {
         }
 
         getApplyList(params).then(response => {
-          this.listData = response.data.rows
+          this.listData = response.data.rows||[]
           this.total = response.data.total;
           this.listLoading = false
         })

@@ -448,7 +448,7 @@ export default {
           let { id, plateNumber: LPNO, plateColour: Color, plateType: Type, engineNumber: EngineNO, engineId, type: Status, enterpriseNumber: EnterpriseNO, emissionStandard: Emission, buyTimes, plateBrand, unitType, simNo, isPickproof } = item;
           return { id, LPNO, Color, Type, EngineNO, engineId, Status, EnterpriseNO, Emission, buyTimes, plateBrand, unitType, simNo, isPickproof }
         })
-        this.list = resData;
+        this.list = resData||[];
         this.total = response.data.total;
 
         this.listLoading = false

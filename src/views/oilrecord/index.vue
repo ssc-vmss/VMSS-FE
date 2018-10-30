@@ -12,7 +12,7 @@
         <el-button size="medium" type="primary" icon="el-icon-search" @click="toSearch">搜索</el-button>
       </div>
     </el-row>
-    <el-table v-loading="listLoading" :data="list" element-loading-text="Loading" border fit>
+    <el-table :max-height="tableHeight" v-loading="listLoading" :data="list" element-loading-text="Loading" border fit>
       <el-table-column label="车牌号码" align="center">
         <template slot-scope="scope">
           {{ scope.row.vehiclePlateNumber }}
@@ -142,6 +142,7 @@ export default {
       }
     }
     return {
+      tableHeight: 200||document.documentElement.clientHeight - 210 || document.body.clientHeight - 210,
       list: null,
       listLoading: true,
       searchType: '1',
@@ -196,6 +197,15 @@ export default {
     this.fetchData()
   },
   methods: {
+    mounted() {
+      const that = this;
+      window.onresize = function () {
+        that.tableHeight = document.documentElement.clientHeight - 210 || document.body.clientHeight - 210;
+      }
+    },
+    beforeDestroy() {
+      window.onresize = "";
+    },
     fetchDataList() {
       // 获取车辆信息
       getVehicleList().then(response => {
@@ -237,7 +247,7 @@ export default {
           break
       }
       getOilRecordList(params).then(response => {
-        this.list = response.data.rows
+        this.list = response.data.rows||[]
         this.total = response.data.total
         this.listLoading = false
       })
