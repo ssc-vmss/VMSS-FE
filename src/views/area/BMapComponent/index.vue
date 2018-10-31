@@ -133,6 +133,7 @@ export default {
         isOpen: true, // 是否开启绘制模式
         polygonOptions: this.styleOptions // 多边形的样式
       })
+
       this.drawingManager.addEventListener('overlaycomplete', this.overlaycomplete)
       if (this.overlays.length > 0) {
         this.map.clearOverlays()
@@ -189,6 +190,7 @@ export default {
         this.map.clearOverlays()
         this.overlays = []
         this.location = ''
+        this.add();
       }
       this.$emit('handleGetLocation', this.location)
     }

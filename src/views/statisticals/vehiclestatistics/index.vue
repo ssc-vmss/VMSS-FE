@@ -109,7 +109,7 @@ export default {
       }
     },
     getChartsData() {
-      this.param = { startTime: this.searchDate[0], endTime: this.searchDate[1], plateNumber: this.searchDriverName, type: '1' }
+      this.param = { startTime: this.searchDate[0], endTime: this.searchDate[1], plateNumber: this.searchDriverName, type: '3' }
       if (!this.searchDriverName) {
         delete this.param.plateNumber
       }
@@ -189,7 +189,7 @@ export default {
       }
       this.speeddetailChart.setOption(this.speeddetailOption)
       this.speeddetail = { count: [], createTime: [] }
-      this.param = { startTime: this.searchDate[0], endTime: this.searchDate[1], plateNumber: this.detailPlateNumber, type: '1' }
+      this.param = { startTime: this.searchDate[0], endTime: this.searchDate[1], plateNumber: this.detailPlateNumber, type: '3' }
       getVehicleDetailAll(this.param).then(response => {
         response.data.rows.forEach(element => {
           element.createTime = element.createTime.split(' ')[0]

@@ -11,7 +11,7 @@
         <div class="slider-box">
           <div class="slider-label">播放慢速</div>
           <el-slider :format-tooltip="formatSpeed" :show-tooltip="false" v-model="speed" :step="250" :min="0" :max="4000" class="slider"></el-slider>
-          
+
         </div>
       </div>
     </div>
@@ -24,7 +24,7 @@
         <span>行驶速度：{{ list[index].speed?list[index].speed:0 }} km/h</span>
       </div>
       <div class="label-row">
-        <span>定位时间：{{ list[index].createTime }}</span>
+        <span>定位时间：{{ list[index].posTime }}</span>
       </div>
     </div>
   </div>

@@ -376,6 +376,9 @@ export default {
         })
         return
       }
+      if(!this.isSpeedLimit){
+        this.list.max=0
+      }
       if (this.isediting) {
         if (!this.hasRemove) {
           this.$refs.map.save()

@@ -16,7 +16,7 @@
         </el-table-column>
         <el-table-column align="center" prop="endTime" label="防盗结束时间">
         </el-table-column>
-        <el-table-column align="center" prop=" createTime" label="创建时间">
+        <el-table-column align="center" prop="createTime" label="创建时间">
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="100" align="center">
           <template slot-scope="scope">

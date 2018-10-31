@@ -73,7 +73,7 @@
           </el-table-column>
           <el-table-column align="center" prop="driverName" width="150" label="驾驶员姓名">
           </el-table-column>
-          <el-table-column align="center" prop="createTime" width="200" label="定位时间">
+          <el-table-column align="center" prop="posTime" width="200" label="定位时间">
           </el-table-column>
           <el-table-column align="center" prop="location" label="点位(经度,纬度)">
           </el-table-column>
@@ -221,12 +221,12 @@ export default {
         this.param = { vehicleId: this.paramString }
       }
       this.getNewPoint(this.param)
-      if (this.total) {
+      // if (this.total) {
         this.interval = setInterval(() => {
           this.getNewPoint(this.param)
           console.log('this.count', this.count++)
         }, 5000)
-      }
+      // }
     },
     // 获取最新点位列表
     getNewPoint(param) {
@@ -234,7 +234,8 @@ export default {
         this.newPointsList = response.data.rows
         this.locationList = JSON.parse(JSON.stringify(response.data.rows))
         if (this.locationList.length === 0) {
-          clearInterval(this.interval)
+          this.oldPointsList=[];
+          // clearInterval(this.interval)
           this.$refs.map.map.clearOverlays()
         } else {
           this.locationList.forEach(location => {
@@ -294,15 +295,18 @@ export default {
     },
     //  切换标签页
     handleChangeTab() {
+      clearInterval(this.interval);
+      this.states=[];
       if (this.tabIndex === '0') {
         console.log(this.param)
         this.oldPointsList = []
-        clearInterval(this.interval)
+        // clearInterval(this.interval)
         // this.oldPointsList = []
         // this.newPointsList = []
         // this.monitorIds = []
         // this.monitorList = []
-        this.$refs.map.map.clearOverlays()
+        this.$refs.map.map.clearOverlays();
+        if(!this.monitorList.length)return;
         setTimeout(() => {
           this.getMonitoredPoint()
         }, 100)
