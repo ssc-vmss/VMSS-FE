@@ -99,6 +99,12 @@ export const constantRouterMap = [
         meta: { title: '加油记录' }
       },
       {
+        path: 'tolls',
+        name: 'tolls',
+        component: () => import('@/views/tolls/index'),
+        meta: { title: '过路费信息' }
+      },
+      {
         path: 'returnteam',
         name: 'returnteam',
         component: () => import('@/views/returnteam/index'),
