@@ -4,37 +4,37 @@
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">车辆数量</div>
-          <div class="numeric-value">{{totalCount.vehicleCount||0}}</div>
+          <div class="numeric-value">254</div>
         </div>
       </el-col>
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">驾驶员数量</div>
-          <div class="numeric-value">{{totalCount.driverCount||0}}</div>
+          <div class="numeric-value">153</div>
         </div>
       </el-col>
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">车载设备数量</div>
-          <div class="numeric-value">{{totalCount.vehicleEquipmentCount||0}}</div>
+          <div class="numeric-value">250</div>
         </div>
       </el-col>
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
-          <div class="numeric-label">用车申请单</div>
-          <div class="numeric-value">{{totalCount.completeApplication||0}}</div>
+          <div class="numeric-label">未审批申请单</div>
+          <div class="numeric-value">25</div>
         </div>
       </el-col>
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">派车单数量</div>
-          <div class="numeric-value">{{totalCount.dispatchCount||0}}</div>
+          <div class="numeric-value">326</div>
         </div>
       </el-col>
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">事故违章数量</div>
-          <div class="numeric-value">{{totalCount.acidentCount||0}}</div>
+          <div class="numeric-value">5</div>
         </div>
       </el-col>
     </el-row>
@@ -64,7 +64,6 @@
 import path from 'path'
 import { mapGetters } from 'vuex'
 import MyChart from "@/components/myChart"
-import { getAllCount } from '@/api/dashboard'
 
 export default {
   name: 'Dashboard',
@@ -77,8 +76,7 @@ export default {
       option2: {},
       option3: {},
       option4: {},
-      option5: {},
-      totalCount:''
+      option5: {}
     }
   },
   computed: {
@@ -89,16 +87,8 @@ export default {
   },
   created() {
     this.getChart()
-    this.getTotalCount()
   },
   methods: {
-    getTotalCount(){
-      getAllCount().then(response=>{
-        this.totalCount=response.data.rows[0]
-      }).catch(error=>{
-
-      })
-    },
     getChart() {
       this.option1 = {
         color: ['#49978A', '#fbb263', '#5B98B4', '#A6E8A1'],

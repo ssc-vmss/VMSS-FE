@@ -18,10 +18,10 @@
         </el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间">
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="100" align="center">
+        <el-table-column fixed="right" label="操作" width="120" align="center">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="edit(scope.row)">修改</el-button>
-            <el-button type="text" size="small" @click="del(scope.row.id)">删除</el-button>
+            <button class="btn" @click="edit(scope.row)">修改</button>
+            <button class="btn" @click="del(scope.row.id)">删除</button>
           </template>
         </el-table-column>
       </el-table>

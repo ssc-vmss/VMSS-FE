@@ -70,10 +70,10 @@
               {{ scope.row.demo }}
             </template>
           </el-table-column>
-          <el-table-column fixed="right" label="操作" width="100" align="center">
+          <el-table-column fixed="right" label="操作" width="120" align="center">
             <template slot-scope="scope" v-if="scope.row.isDispatch==1">
-              <el-button type="text" size="small" @click="openDispatchDialog(scope.row)">调度</el-button>
-              <el-button type="text" size="small" @click="rejected(scope.row.ddid)">驳回</el-button>
+              <button class="btn" @click="openDispatchDialog(scope.row)">调度</button>
+              <button class="btn" @click="rejected(scope.row.ddid)">驳回</button>
             </template>
           </el-table-column>
         </el-table>
@@ -151,11 +151,11 @@
               {{ scope.row.demo }}
             </template>
           </el-table-column>
-          <el-table-column fixed="right" label="操作" width="100" align="center">
+          <el-table-column fixed="right" label="操作" width="120" align="center">
             <template slot-scope="scope" v-if="(scope.row.doStatus!=2)&&(scope.row.doStatus!=3)&&(scope.row.doStatus!=5)">
               <!-- <el-button  type="text" size="small" @click="toEdit(scope.row.id,6)" >提醒</el-button> -->
-              <el-button v-if="scope.row.doStatus!=6" type="text" size="small" @click="toInvalidDispatch(scope.row.id,6,'取消')">取消</el-button>
-              <el-button type="text" size="small" @click="toInvalidDispatch(scope.row.id,5,'作废')">作废</el-button>
+              <button class="btn" v-if="scope.row.doStatus!=6" @click="toInvalidDispatch(scope.row.id,6,'取消')">取消</button>
+              <button class="btn" @click="toInvalidDispatch(scope.row.id,5,'作废')">作废</button>
             </template>
           </el-table-column>
         </el-table>

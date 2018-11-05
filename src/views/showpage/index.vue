@@ -1,52 +1,57 @@
 <template>
-  <div class="dashboard-container">
+  <div class="showpage-container">
+    <el-row type="flex" justify="space-between" class="row">
+      <el-col :span="8"></el-col>
+      <el-col :span="8">车辆调度管理系统</el-col>
+      <el-col :span="8"></el-col>
+    </el-row>
     <el-row :gutter="20" class="row1">
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">车辆数量</div>
-          <div class="numeric-value">{{totalCount.vehicleCount||0}}</div>
+          <div class="numeric-value">254</div>
         </div>
       </el-col>
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">驾驶员数量</div>
-          <div class="numeric-value">{{totalCount.driverCount||0}}</div>
+          <div class="numeric-value">153</div>
         </div>
       </el-col>
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">车载设备数量</div>
-          <div class="numeric-value">{{totalCount.vehicleEquipmentCount||0}}</div>
+          <div class="numeric-value">250</div>
         </div>
       </el-col>
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
-          <div class="numeric-label">用车申请单</div>
-          <div class="numeric-value">{{totalCount.completeApplication||0}}</div>
+          <div class="numeric-label">未审批申请单</div>
+          <div class="numeric-value">25</div>
         </div>
       </el-col>
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">派车单数量</div>
-          <div class="numeric-value">{{totalCount.dispatchCount||0}}</div>
+          <div class="numeric-value">326</div>
         </div>
       </el-col>
       <el-col :xs="12" :sm="8" :md="6" :lg="4" :xl="4" class="numeric">
         <div class="numeric-box">
           <div class="numeric-label">事故违章数量</div>
-          <div class="numeric-value">{{totalCount.acidentCount||0}}</div>
+          <div class="numeric-value">5</div>
         </div>
       </el-col>
     </el-row>
     <el-row :gutter="20" class="row2">
       <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-        <my-chart :option="option1" chartName="chart1"></my-chart>
+        <my-chart ref="chart1" :option="option1" chartName="chart1"></my-chart>
       </el-col>
       <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-        <my-chart :option="option2" chartName="chart2"></my-chart>
+        <my-chart ref="chart2" :option="option2" chartName="chart2"></my-chart>
       </el-col>
       <el-col :xs="24" :sm="8" :md="8" :lg="8" :xl="8">
-        <my-chart :option="option3" chartName="chart3"></my-chart>
+        <my-chart ref="chart3" :option="option3" chartName="chart3"></my-chart>
       </el-col>
     </el-row>
     <el-row :gutter="20" class="row3">
@@ -64,7 +69,6 @@
 import path from 'path'
 import { mapGetters } from 'vuex'
 import MyChart from "@/components/myChart"
-import { getAllCount } from '@/api/dashboard'
 
 export default {
   name: 'Dashboard',
@@ -78,7 +82,7 @@ export default {
       option3: {},
       option4: {},
       option5: {},
-      totalCount:''
+      interval: null
     }
   },
   computed: {
@@ -89,16 +93,27 @@ export default {
   },
   created() {
     this.getChart()
-    this.getTotalCount()
+    let length1 = this.option1.series[0].data.length
+    let length2 = this.option2.series[0].data.length
+    // let length3 = this.option3.series[0].data.length
+    this.interval = setInterval(() => {
+      setTimeout(() => {
+        this.$refs.chart1.pieSelect(length1)
+        this.$refs.chart2.pieSelect(length2)
+        // this.$refs.chart3.pieSelect(length3)
+      }, 1000)
+      this.$refs.chart1.pieUnSelect(length1)
+      this.$refs.chart2.pieUnSelect(length2)
+      // this.$refs.chart3.pieUnSelect(length3)
+      length1 = length1 < 3 ? length1 + 1 : 0
+      length2 = length2 < 2 ? length2 + 1 : 0
+      // length3 = length3 < 1 ? length3 + 1 : 0
+    }, 1000)
+  },
+  destroyed() {
+    clearInterval(this.interval)
   },
   methods: {
-    getTotalCount(){
-      getAllCount().then(response=>{
-        this.totalCount=response.data.rows[0]
-      }).catch(error=>{
-
-      })
-    },
     getChart() {
       this.option1 = {
         color: ['#49978A', '#fbb263', '#5B98B4', '#A6E8A1'],
@@ -107,57 +122,50 @@ export default {
           left: 'center',
           top: 20,
           textStyle: {
-            color: '#000'
+            color: 'rgba(245,255,250, .8)'
           }
         },
         tooltip: {
+          show: true,
           trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
+          formatter: '<p>{b}</p><p style="font-size:large;font-weight:bolder">{d}%</p>',
+          position: (point, params, dom, rect, size) => {
+            // size参数可以拿到提示框的outerWidth和outerheight，dom参数可以拿到提示框div节点。
+            // console.log(dom)可以看到，提示框是用position定位
+            var marginW = Math.ceil(size.contentSize[0] / 2)
+            var marginH = Math.ceil(size.contentSize[1] / 2)
+            dom.style.marginLeft = '-' + marginW + 'px'
+            dom.style.marginTop = '-' + marginH + 'px'
+            return ['50%', '50%']
+          },
+          alwaysShowContent: true,
+          backgroundColor: 'transparent'
         },
         legend: {
           orient: 'vertical',
           top: '50',
           left: '10',
-          data: ['执行任务', '警告', '空闲', '离线']
+          data: ['执行任务', '警告', '空闲', '离线'],
+          textStyle: {
+            color: 'rgba(245,255,250, .8)'
+          }
         },
         series: [
           {
             name: '车辆调度状态',
             type: 'pie',
-            radius: '50%',
+            radius: ['45%', '65%'],
+            // radius: '60%',
             center: ['50%', '55%'],
-            avoidLabelOverlap: false,
+            // avoidLabelOverlap: false,
+            // hoverAnimation: false,
+            silent: true,
             label: {
               normal: {
-                show: true,
-                color: '#000',
-                // position: 'inside',
-                formatter: '{d}%',
-                textStyle: {
-                  align: 'center',
-                  baseline: 'middle',
-                  fontFamily: '微软雅黑',
-                  fontSize: 15
-                }
+                show: false,
+                position: 'default'
               }
             },
-            labelLine: {
-              normal: {
-                lineStyle: {
-                  color: '#000'
-                },
-                smooth: 0.2,
-                length: 10,
-                length2: 20
-              }
-            },
-            // itemStyle: {
-            //   normal: {
-            //     color: '#c23531',
-            // shadowBlur: 200,
-            //     shadowColor: 'rgba(0, 0, 0, 0.5)'
-            //   }
-            // },
             data: [
               { value: 33, name: '执行任务' },
               { value: 13, name: '警告' },
@@ -176,57 +184,48 @@ export default {
           left: 'center',
           top: 20,
           textStyle: {
-            color: '#000'
+            color: 'rgba(245,255,250, .8)'
           }
         },
         tooltip: {
+          show: true,
           trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
+          formatter: '<p>{b}</p><p style="font-size:large;font-weight:bolder">{d}%</p>',
+          position: (point, params, dom, rect, size) => {
+            // size参数可以拿到提示框的outerWidth和outerheight，dom参数可以拿到提示框div节点。
+            // console.log(dom)可以看到，提示框是用position定位
+            var marginW = Math.ceil(size.contentSize[0] / 2)
+            var marginH = Math.ceil(size.contentSize[1] / 2)
+            dom.style.marginLeft = '-' + marginW + 'px'
+            dom.style.marginTop = '-' + marginH + 'px'
+            return ['50%', '50%']
+          },
+          alwaysShowContent: true,
+          backgroundColor: 'transparent'
         },
         legend: {
           orient: 'vertical',
           top: '50',
           left: '10',
-          data: ['区域报警', '防盗', '违规用车']
+          data: ['区域报警', '防盗', '违规用车'],
+          textStyle: {
+            color: 'rgba(245,255,250, .8)'
+          }
         },
         series: [
           {
             name: '警告信息',
             type: 'pie',
-            radius: '50%',
+            radius: ['45%', '65%'],
             center: ['50%', '55%'],
-            avoidLabelOverlap: false,
+            // avoidLabelOverlap: false,
+            silent: true,
             label: {
               normal: {
-                show: true,
-                color: '#000',
-                // position: 'inside',
-                formatter: '{d}%',
-                textStyle: {
-                  align: 'center',
-                  baseline: 'middle',
-                  fontFamily: '微软雅黑',
-                  fontSize: 15
-                }
+                show: false,
+                position: 'default'
               }
             },
-            labelLine: {
-              normal: {
-                lineStyle: {
-                  color: 'rgba(0, 0, 0, 1)'
-                },
-                smooth: 0.2,
-                length: 10,
-                length2: 20
-              }
-            },
-            // itemStyle: {
-            //   normal: {
-            //     color: '#c23531',
-            // shadowBlur: 200,
-            //     shadowColor: 'rgba(0, 0, 0, 0.5)'
-            //   }
-            // },
             data: [
               { value: 25, name: '区域报警' },
               { value: 10, name: '防盗' },
@@ -238,97 +237,53 @@ export default {
         ]
       }
       this.option3 = {
-        // title: {
-        //   top: 20,
-        //   text: '派车单归队情况',
-        //   x: 'center'
-        // },
-        // tooltip: {
-        //   trigger: 'item',
-        //   formatter: "{b} : {c} ({d}%)"
-        // },
-        // legend: {
-        //   orient: 'vertical',
-        //   data: ['未归队', '已归队'],
-        //   top: '50',
-        //   right: '20'
-        // },
-        // series: [
-        //   {
-        //     name: '归队情况',
-        //     type: 'pie',
-        //     radius: '55%',
-        //     center: ['50%', '60%'],
-        //     data: [
-        //       { value: 335, name: '未归队' },
-        //       { value: 310, name: '已归队' }
-        //     ],
-        //     itemStyle: {
-        //       emphasis: {
-        //         shadowBlur: 10,
-        //         shadowOffsetX: 0,
-        //         shadowColor: 'rgba(0, 0, 0, 0.5)'
-        //       }
-        //     }
-        //   }
-        // ]
         color: ['#49978A', '#fbb263', '#5B98B4', '#A6E8A1'],
         title: {
           text: '派车单归队情况',
           left: 'center',
           top: 20,
           textStyle: {
-            color: '#000'
+            color: 'rgba(245,255,250, .8)'
           }
         },
         tooltip: {
+          show: true,
           trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
+          formatter: '<p>{b}</p><p style="font-size:large;font-weight:bolder">{d}%</p>',
+          position: (point, params, dom, rect, size) => {
+            // size参数可以拿到提示框的outerWidth和outerheight，dom参数可以拿到提示框div节点。
+            // console.log(dom)可以看到，提示框是用position定位
+            var marginW = Math.ceil(size.contentSize[0] / 2)
+            var marginH = Math.ceil(size.contentSize[1] / 2)
+            dom.style.marginLeft = '-' + marginW + 'px'
+            dom.style.marginTop = '-' + marginH + 'px'
+            return ['50%', '50%']
+          },
+          alwaysShowContent: true,
+          backgroundColor: 'transparent'
         },
         legend: {
           orient: 'vertical',
           top: '50',
           left: '10',
-          data: ['未归队', '已归队']
+          data: ['未归队', '已归队'],
+          textStyle: {
+            color: 'rgba(245,255,250, .8)'
+          }
         },
         series: [
           {
             name: '派车单归队情况',
             type: 'pie',
-            radius: '50%',
+            radius: ['45%', '65%'],
             center: ['50%', '55%'],
-            avoidLabelOverlap: false,
+            silent: true,
             label: {
               normal: {
-                show: true,
-                color: '#000',
-                // position: 'inside',
-                formatter: '{d}%',
-                textStyle: {
-                  align: 'center',
-                  baseline: 'middle',
-                  fontFamily: '微软雅黑',
-                  fontSize: 15
-                }
+                show: false,
+                position: 'default'
               }
             },
-            labelLine: {
-              normal: {
-                lineStyle: {
-                  color: 'rgba(0, 0, 0, 1)'
-                },
-                smooth: 0.2,
-                length: 10,
-                length2: 20
-              }
-            },
-            // itemStyle: {
-            //   normal: {
-            //     color: '#c23531',
-            //      shadowBlur: 200,
-            //     shadowColor: 'rgba(0, 0, 0, 0.5)'
-            //   }
-            // },
             data: [
               { value: 35, name: '未归队' },
               { value: 30, name: '已归队' }
@@ -341,14 +296,20 @@ export default {
       this.option4 = {
         title: {
           text: '里程统计',
-          x: 'center'
+          x: 'center',
+          textStyle: {
+            color: 'rgba(245,255,250, .8)'
+          }
         },
         tooltip: {
           trigger: 'axis'
         },
         legend: {
           data: ['里程数'],
-          y: 'bottom'
+          y: 'bottom',
+          textStyle: {
+            color: 'rgba(245,255,250, .8)'
+          }
         },
         calculable: true,
         xAxis: [
@@ -384,7 +345,10 @@ export default {
       this.option5 = {
         title: {
           text: '加油统计',
-          x: 'center'
+          x: 'center',
+          textStyle: {
+            color: 'rgba(245,255,250, .8)'
+          }
         },
         tooltip: {
           trigger: 'axis'
@@ -486,11 +450,14 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.dashboard {
+.showpage {
   &-container {
     padding: 10px;
-    // height: calc(100vh);
-    // background-color: rgba(88, 199, 199, 0.3);
+    height: calc(100vh);
+    background-color: rgba(0, 128, 128, 1);
+    // background-image: url('../../assets/images/background.png');
+    // background-repeat: no-repeat;
+    // background-size: 100% 100%;
   }
   &-text {
     font-size: 30px;
@@ -502,7 +469,7 @@ export default {
     text-align: center;
     padding: 10px 10px;
     margin: 10px;
-    border: 1px solid rgb(0, 0, 0);
+    border: 1px solid rgba(245, 255, 250, 0.8);
     border-radius: 15px;
     // background: rgba(0, 128, 128,.1);
     cursor: pointer;
@@ -512,7 +479,7 @@ export default {
     }
   }
   &-label {
-    color: #909399;
+    color: rgba(245, 255, 250, 0.5);
     padding: 5px;
     overflow: hidden;
     white-space: nowrap;
@@ -523,19 +490,30 @@ export default {
     }
   }
   &-value {
+    color: rgba(245, 255, 250, 0.8);
     font-weight: 400;
-    font-size: 25px;
+    font-size: 30px;
     padding: 5px;
     pointer-events: none;
   }
 }
-.row1{
+.row {
+  height: 5%;
+  text-align: center;
+  font-size: 25px;
+  color: rgba(245, 255, 250, 0.8);
+  letter-spacing: 5px;
+}
+.row1 {
   height: 10%;
 }
-.row2{
+.row2 {
   height: 40%;
 }
-.row3{
+.row3 {
   height: 40%;
+}
+.pie-numbric {
+  font-size: 25px;
 }
 </style>

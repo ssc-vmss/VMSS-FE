@@ -588,4 +588,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.el-select{
+  width: 98%;
+}
 </style>

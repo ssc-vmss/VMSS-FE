@@ -54,7 +54,7 @@ export default {
   },
   data() {
     return {
-      tableHeight: document.documentElement.clientHeight - 210 || document.body.clientHeight - 210,
+      tableHeight: document.documentElement.clientHeight - 220 || document.body.clientHeight - 220,
       form: {
         plateNumber: '',
         type: '1',
@@ -76,7 +76,7 @@ export default {
   mounted() {
     const that = this;
     window.onresize = function () {
-      that.tableHeight = document.documentElement.clientHeight - 210 || document.body.clientHeight - 210
+      that.tableHeight = document.documentElement.clientHeight - 220 || document.body.clientHeight - 220
     }
   },
   methods: {

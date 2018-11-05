@@ -230,8 +230,6 @@ export default {
   background-color: rgba(0, 128, 128, 1);
   height: 50px;
   line-height: 50px;
-  border-radius: 0px !important;
-  border-bottom: 1px solid #fff;
   .logo {
     display: inline-block;
     float: left;

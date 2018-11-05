@@ -3,16 +3,17 @@ $--font-path: '~element-ui/lib/theme-chalk/fonts';
 @import "~element-ui/packages/theme-chalk/src/index";
 %section{
   height: 100%;
-  overflow-y: scroll;
-  overflow-x: scroll;
+  overflow-y: hidden;
+  overflow-x: auto;
+  cursor: pointer;
   &::-webkit-scrollbar-thumb{
     background-color: rgba(136,136,136,.5);
     border-radius: 20px;
     z-index: 999;
   }
   &::-webkit-scrollbar{
-   height: 10px;
-   width: 8px;
+   height: 15px;
+  //  width: 8px;
   }
   &::-webkit-scrollbar-track{
     border-radius: 20px
@@ -33,18 +34,19 @@ input[type="number"]{
 }
 .btn {
   line-height: 25px;
-  padding: 0 10px;
-  margin: 4px;
-  font-size: 14px;
+  padding: 0 8px;
+  // margin: 4px;
+  font-size: 13px;
+  // font-weight: 700;
   border-radius: 5px;
-  background-color: #fff;
-  border: 1px solid #606266;
-  color: #606266;
+  background-color: rgba(0, 128, 128,.5);
+  border: 1px solid rgba(0, 128, 128,.5);
+  color: #000;
   outline-style: none;
   cursor: pointer;
   &:hover {
     border: 1px solid #008080;
-    color: #008080;
+    // color: #fff;
     font-weight: 700;
     border-radius: 5px;
     transition: all 0.3s;
@@ -52,12 +54,12 @@ input[type="number"]{
   }
   &:disabled{
     font-weight: 400;
-    color: #bfcbd9;
-    border-color: #bfcbd9;
+    border-color: rgba(	169,169,169,1);
+    background-color: rgba(	169,169,169,1);
+    color: #fff;
     transform: scale(1);
     cursor: not-allowed;
   }
-
 }
 .btn-padding{
   padding: 5px;
@@ -72,7 +74,7 @@ input[type="number"]{
 }
 .list-box {
   .list {
-    border: 1px solid #e6e6e6;
+    border: 2px solid rgba(0, 128, 128,.5);
     border-radius: 5px;
     margin: 5px 10px;
     padding: 5px;
@@ -346,9 +348,9 @@ input[type="number"]{
   }
 }
 .checkbox{
-  border: 1px solid #e6e6e6;
+  border: 2px solid rgba(0, 128, 128,.5);
   border-radius: 5px;
-  margin: 5px;
+  margin: 5px 0;
   padding: 10px 20px;
   width: 330px;
   .el-checkbox-group{
@@ -446,7 +448,9 @@ input[type="number"]{
   }
 }
 .el-table th{
-  background:#f5f7fa;
+  color: rgba(0, 0, 0,.5);
+  background:rgba(0, 128, 128,.5);
+  font-weight: 700;
 }
 .BMap_cpyCtrl {
   display: none;
@@ -561,8 +565,10 @@ input[type="number"]{
   width: 200px;
 }
 .slider-box{
+  display: inline-flex;
   width: 200px;
-  padding: 0 10px;
+  height: 40px;
+  padding: 2px 10px;
   // margin: 4px;
   border-radius: 5px;
   background-color: #fff;
@@ -584,4 +590,37 @@ input[type="number"]{
 }
 .el-table th, .el-table td{
   padding: 8px 0;
+}
+.el-table__body-wrapper{
+  @extend %section;
+}
+.el-button--small{
+  display: inline-block;
+  line-height: 25px;
+  padding: 0 10px;
+  margin: 4px;
+  font-size: 14px;
+  // font-weight: 700;
+  border-radius: 5px;
+  background-color: rgba(0, 128, 128,.5);
+  border: 1px solid rgba(0, 128, 128,.5);
+  color: #008080;
+  outline-style: none;
+  cursor: pointer;
+  &:hover {
+    border: 1px solid #008080;
+    // color: #fff;
+    background-color: rgba(0, 128, 128,.5);
+    font-weight: 700;
+    border-radius: 5px;
+    transition: all 0.3s;
+    transform: scale(1.1)
+  }
+  &:disabled{
+    font-weight: 400;
+    background-color: rgba(	169,169,169,1);
+    color: #fff;
+    transform: scale(1);
+    cursor: not-allowed;
+  }
 }

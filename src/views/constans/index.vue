@@ -252,11 +252,9 @@ export default {
           this.total = response.data.total
           // 设置地图的中心点
           this.$refs.map.setZoom(this.newPointsList)
-          console.log('param.action', param.action)
           // if (param.action) {
           var allOverlay = this.$refs.map.map.getOverlays()
           console.log("allOverlay", allOverlay.length)
-          console.log("this.oldPointsList", this.oldPointsList)
           const pointsList = JSON.parse(JSON.stringify(this.newPointsList))
           if (this.count > 0) {
             for (var j = 0; j < this.oldPointsList.length;) {
@@ -466,7 +464,7 @@ export default {
   position: absolute;
   bottom: 15px;
   .btn {
-    opacity: 0.7;
+    font-weight: 700;
     border-radius: 15px;
     padding: 5px;
     width: 70px;
@@ -479,7 +477,7 @@ export default {
   width: 80%;
 }
 .tab {
-  padding: 0 10px;
+  padding: 0 5px;
 }
 .app-main {
   @media screen and (max-device-width: 450px) {

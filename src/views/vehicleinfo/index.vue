@@ -89,12 +89,12 @@
           {{ (scope.row.isPickproof==1)?'未开启':'已开启' }}
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" width="180" align="center">
+      <el-table-column fixed="right" label="操作" width="190" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="toEdit(scope.row)">修改</el-button>
-          <el-button v-if="scope.row.isPickproof==1" type="text" size="small" @click="Pickproof(scope.row.LPNO,'open')">开启防盗</el-button>
-          <el-button v-if="scope.row.isPickproof==2" type="text" size="small" @click="Pickproof(scope.row.LPNO,'close')">关闭防盗</el-button>
-          <el-button type="text" size="small" @click="toDel(scope.row.id)">删除</el-button>
+          <button class="btn" @click="toEdit(scope.row)">修改</button>
+          <button class="btn" v-if="scope.row.isPickproof==1" @click="Pickproof(scope.row.LPNO,'open')">开启防盗</button>
+          <button class="btn" v-if="scope.row.isPickproof==2" @click="Pickproof(scope.row.LPNO,'close')">关闭防盗</button>
+          <button class="btn" @click="toDel(scope.row.id)">删除</button>
         </template>
       </el-table-column>
     </el-table>
