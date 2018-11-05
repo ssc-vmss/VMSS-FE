@@ -38,7 +38,7 @@
       </el-table-column>
     </el-table>
 
-    <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
+    <el-pagination background layout="prev, pager, next" :current-page.sync="page" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
 
     <!-- add from -->
     <el-dialog title="添加绑定信息" :visible.sync="dialogFormVisible" width="600px" @close="closeDialog('ruleForm')">

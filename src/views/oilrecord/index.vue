@@ -55,7 +55,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
+    <el-pagination background layout="prev, pager, next" :current-page.sync="page" :page-size="pageSize" :total="total" @current-change="handleCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
     <el-dialog :visible.sync="dialogFormVisible" :title="isAdd?'添加加油记录信息':'编辑加油记录信息'" width="600px" @close="closeDialog">
       <el-form ref="ruleForm" :model="form" :rules="rules" :label-width="formLabelWidth">
         <el-row>

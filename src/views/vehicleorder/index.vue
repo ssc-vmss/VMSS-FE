@@ -162,7 +162,7 @@
       </el-tab-pane>
     </el-tabs>
     <!-- 分页 -->
-    <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="total" @current-change="pageCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
+    <el-pagination background layout="prev, pager, next" :current-page.sync="page" :page-size="pageSize" :total="total" @current-change="pageCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
     <!-- add dispatch dialog -->
     <el-dialog class="dispatchDialog" title="添加车辆调度信息" :visible.sync="dialogFormVisible" width="900px" :fullscreen="false" :before-close="closeDialog">
       <!-- <div style="display:none">
@@ -248,7 +248,7 @@
                 </template>
               </el-table-column>
             </el-table>
-            <el-pagination background layout="prev, pager, next" :page-size="vform.pageSize" :total="vform.total" @current-change="vPageCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
+            <el-pagination background layout="prev, pager, next" :current-page.sync="vform.page" :page-size="vform.pageSize" :total="vform.total" @current-change="vPageCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
           </el-col>
           <el-col :span="12">
             <div style="margin-bottom:5px">
@@ -271,7 +271,7 @@
               <el-table-column label="性别" prop="sex" align="center"></el-table-column>
               <el-table-column label="准驾车型" align="center" prop="driverLicenseType"></el-table-column>
             </el-table>
-            <el-pagination background layout="prev, pager, next" :page-size="dform.pageSize" :total="dform.total" @current-change="dPageCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
+            <el-pagination background layout="prev, pager, next" :current-page.sync="dform.page" :page-size="dform.pageSize" :total="dform.total" @current-change="dPageCurrentChange" style="text-align:right;margin-top:20px"></el-pagination>
           </el-col>
         </el-row>
         <!-- <div class="groupbox"><el-button type="primary" @click="groupData">组合</el-button></div> -->
